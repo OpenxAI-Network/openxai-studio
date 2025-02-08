@@ -61,87 +61,101 @@ async function getVultrPaging(url: string, resultKey: string) {
 }
 
 export async function GET(_: NextRequest) {
-  const rawInventory: VultrProduct[] = []
-  const locations: VultrLocation[] = []
-  await Promise.all([
-    getVultrPaging('https://api.vultr.com/v2/plans', 'plans').then((plans) =>
-      rawInventory.push(
-        ...plans.map((plan) => {
-          return {
-            source: 'plans',
-            ...plan,
-          } as VultrPlanProduct
-        })
-      )
-    ),
-    getVultrPaging('https://api.vultr.com/v2/plans-metal', 'plans_metal').then(
-      (plans) =>
+  if (!process.env.VULTR_API_KEY) {
+    return Response.json({ 
+      data: [], 
+      message: "Vultr API key not configured" 
+    })
+  }
+  
+  try {
+    const rawInventory: VultrProduct[] = []
+    const locations: VultrLocation[] = []
+    await Promise.all([
+      getVultrPaging('https://api.vultr.com/v2/plans', 'plans').then((plans) =>
         rawInventory.push(
           ...plans.map((plan) => {
             return {
-              source: 'plansmetal',
+              source: 'plans',
               ...plan,
-            } as VultrMetalPlanProduct
+            } as VultrPlanProduct
           })
         )
-    ),
-    getVultrPaging('https://api.vultr.com/v2/regions', 'regions').then(
-      (regions) => locations.push(...regions)
-    ),
-  ])
-  const inventory: HardwareProduct[] = rawInventory.flatMap((product) => {
-    return product.locations.map((locationId) => {
-      const id = `${product.id}_${locationId}`
-      const drives = new Array(product.disk_count).fill({
-        capacity: product.disk,
-        type: product.source === 'plans' ? undefined : product.type,
+      ),
+      getVultrPaging('https://api.vultr.com/v2/plans-metal', 'plans_metal').then(
+        (plans) =>
+          rawInventory.push(
+            ...plans.map((plan) => {
+              return {
+                source: 'plansmetal',
+                ...plan,
+              } as VultrMetalPlanProduct
+            })
+          )
+      ),
+      getVultrPaging('https://api.vultr.com/v2/regions', 'regions').then(
+        (regions) => locations.push(...regions)
+      ),
+    ])
+    const inventory: HardwareProduct[] = rawInventory.flatMap((product) => {
+      return product.locations.map((locationId) => {
+        const id = `${product.id}_${locationId}`
+        const drives = new Array(product.disk_count).fill({
+          capacity: product.disk,
+          type: product.source === 'plans' ? undefined : product.type,
+        })
+        const location = locations.find((l) => l.id === locationId)
+        const cpu =
+          product.source === 'plans'
+            ? {
+                cores: product.vcpu_count,
+              }
+            : {
+                cores: product.cpu_count,
+                threads: product.cpu_threads,
+                name: product.cpu_model,
+              }
+        return {
+          type: product.source === 'plans' ? 'VPS' : 'Bare Metal',
+          available: 1_000_000_000, // Unavailable machines have no locations
+          cpu: cpu,
+          id: id,
+          location: location
+            ? `${location.city}, ${location.country}`
+            : locationId,
+          network: {
+            max_usage: product.bandwidth,
+          },
+          price: {
+            hourly: parseFloat(
+              ((product.monthly_cost * 12) / (365 * 24)).toFixed(3)
+            ),
+            monthly: product.monthly_cost,
+          },
+          productName: product.id,
+          providerName: 'Vultr',
+          ram: {
+            capacity: product.ram / 1024,
+          },
+          storage: drives,
+          gpu: product.gpu_vram_gb
+            ? [
+                {
+                  vram: product.gpu_vram_gb,
+                  type: product.gpu_type.replaceAll('_', ' '),
+                },
+              ]
+            : [],
+        }
       })
-      const location = locations.find((l) => l.id === locationId)
-      const cpu =
-        product.source === 'plans'
-          ? {
-              cores: product.vcpu_count,
-            }
-          : {
-              cores: product.cpu_count,
-              threads: product.cpu_threads,
-              name: product.cpu_model,
-            }
-      return {
-        type: product.source === 'plans' ? 'VPS' : 'Bare Metal',
-        available: 1_000_000_000, // Unavailable machines have no locations
-        cpu: cpu,
-        id: id,
-        location: location
-          ? `${location.city}, ${location.country}`
-          : locationId,
-        network: {
-          max_usage: product.bandwidth,
-        },
-        price: {
-          hourly: parseFloat(
-            ((product.monthly_cost * 12) / (365 * 24)).toFixed(3)
-          ),
-          monthly: product.monthly_cost,
-        },
-        productName: product.id,
-        providerName: 'Vultr',
-        ram: {
-          capacity: product.ram / 1024,
-        },
-        storage: drives,
-        gpu: product.gpu_vram_gb
-          ? [
-              {
-                vram: product.gpu_vram_gb,
-                type: product.gpu_type.replaceAll('_', ' '),
-              },
-            ]
-          : [],
-      }
     })
-  })
-  return Response.json(inventory)
+    return Response.json(inventory)
+  } catch (error) {
+    return Response.json({ 
+      data: [], 
+      message: "Failed to fetch Vultr inventory" 
+    })
+  }
 }
 
 /*

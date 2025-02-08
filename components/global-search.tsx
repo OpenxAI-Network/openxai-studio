@@ -73,24 +73,6 @@ export function GlobalSearch({ onSelect }: GlobalSearchProps) {
                 </CommandItem>
               ))}
           </CommandGroup>
-          <CommandGroup heading="Support">
-            {navItems.support
-              .filter((navItem) => navItem.type === 'item')
-              .map((navItem) => (
-                <CommandItem
-                  key={`globalSearch-nav-${navItem.name}`}
-                  asChild
-                  onSelect={onSelect}
-                >
-                  <Link href={navItem.href}>
-                    {navItem.icon ? (
-                      <navItem.icon className="mr-2 size-4 max-hdplus:size-3" />
-                    ) : null}
-                    <span className="max-hdplus:text-xs">{navItem.name}</span>
-                  </Link>
-                </CommandItem>
-              ))}
-          </CommandGroup>
           <CommandSeparator />
           <CommandGroup heading="Settings">
             <CommandItem onSelect={onSelect} asChild>

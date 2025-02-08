@@ -1,0 +1,39 @@
+{
+  "name": "DeepSeek R1",
+  "desc": "Deploy and run your own DeepSeek R1 model for advanced language processing and generation capabilities.",
+  "longDesc": "**What is DeepSeek R1?**\n\nDeepSeek R1 is a powerful language model designed for natural text generation and understanding. It offers state-of-the-art performance for various NLP tasks while being efficient and deployable on standard hardware.\n\n**Key Features:**\n\n- **Advanced Text Generation:** Generate human-like text for various applications\n- **Context Understanding:** Deep comprehension of context and nuanced responses\n- **Efficient Deployment:** Optimized for deployment on standard hardware\n- **Multiple Model Sizes:** Various sizes to balance performance and resource usage\n- **Open Source:** Community-driven development and improvements",
+  "useCases": "**Content Creation:** Generate high-quality content for various purposes.\n- **Code Generation:** Assist in programming and code generation tasks.\n- **Research:** Aid in research and analysis through text processing.\n- **Education:** Support learning and teaching through interactive responses.",
+  "support": "**Community Channels:**\n  - **GitHub:** [DeepSeek Repository](https://github.com/deepseek-ai/DeepSeek-R1)\n  - **Documentation:** Comprehensive guides and API documentation\n- **Commercial Support:** Available through DeepSeek AI",
+  "nixName": "deepseekr1",
+  "specs": {
+    "ram": 16000,
+    "storage": 50000
+  },
+  "tags": ["AI", "Language Model", "NLP"],
+  "website": "https://deepseek.ai",
+  "implemented": true,
+  "logo": "/images/models/deepseek.png",
+  "options": [
+    {
+      "name": "model_size",
+      "desc": "Size of the DeepSeek R1 model to deploy.",
+      "nixName": "model.size",
+      "type": "string",
+      "value": "7b"
+    },
+    {
+      "name": "quantization",
+      "desc": "Model quantization level for optimized deployment.",
+      "nixName": "model.quantization",
+      "type": "string",
+      "value": "4bit"
+    },
+    {
+      "name": "max_tokens",
+      "desc": "Maximum number of tokens for model responses.",
+      "nixName": "model.max_tokens",
+      "type": "integer",
+      "value": "2048"
+    }
+  ]
+} 

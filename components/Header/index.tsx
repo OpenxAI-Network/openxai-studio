@@ -168,8 +168,8 @@ export default function Header({ sessionToken }: { sessionToken?: string }) {
         )}
         <div className="flex grow items-center justify-between gap-x-32 px-6 max-hdplus:gap-x-20">
           <div className="flex items-center gap-6">
-            <div className="shrink-0 text-2xl font-medium text-background max-hdplus:text-lg">
-              Xnode Studio
+            <div className="shrink-0 text-3xl font-bold text-background max-hdplus:text-xl">
+              OpenxAI<sup className="relative top-[-10px] text-xs font-normal">Studio</sup>
             </div>
             <Popover>
               <PopoverTrigger className="flex h-9 min-w-56 items-center justify-between rounded border border-background/15 bg-background/10 px-3 text-sm text-background max-hdplus:min-w-48 max-hdplus:text-xs">

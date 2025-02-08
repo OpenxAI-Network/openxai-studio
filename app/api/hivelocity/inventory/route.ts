@@ -84,158 +84,172 @@ function extractNumberBeforePostfix({
 }
 
 export async function GET(_: NextRequest) {
-  const rawInventory: HivelocityProduct[] = []
-  const locations: HivelocityLocation[] = []
-  await Promise.all(
-    ['MAIN', 'GPU', 'OUTLET', 'LANDING']
-      .map(async (location) => {
-        rawInventory.push(
-          ...(await fetch(
-            `https://core.hivelocity.net/api/v2/inventory/product?location=${location}&bonding_support=null&group_by=flat`,
-            {
-              headers: [
-                ['Accept', 'application/json'],
-                ['X-API-KEY', process.env.HIVELOCITY_API_KEY],
-              ],
-            }
-          ).then((res) => res.json()))
-        )
+  if (!process.env.HIVELOCITY_API_KEY) {
+    return Response.json({ 
+      data: [], 
+      message: "Hivelocity API key not configured" 
+    })
+  }
+
+  try {
+    const rawInventory: HivelocityProduct[] = []
+    const locations: HivelocityLocation[] = []
+    await Promise.all(
+      ['MAIN', 'GPU', 'OUTLET', 'LANDING']
+        .map(async (location) => {
+          rawInventory.push(
+            ...(await fetch(
+              `https://core.hivelocity.net/api/v2/inventory/product?location=${location}&bonding_support=null&group_by=flat`,
+              {
+                headers: [
+                  ['Accept', 'application/json'],
+                  ['X-API-KEY', process.env.HIVELOCITY_API_KEY],
+                ],
+              }
+            ).then((res) => res.json()))
+          )
+        })
+        .concat([
+          fetch('https://core.hivelocity.net/api/v2/inventory/locations')
+            .then((res) => res.json())
+            .then((data) => {
+              locations.push(...data)
+            }),
+        ])
+    )
+    const inventory: HardwareProduct[] = rawInventory.map((product) => {
+      const id = `${product.product_id.toString()}_${product.data_center}`
+      const drives = product.product_drive.split(', ').flatMap((drive) => {
+        const amountOfDrives = extractNumberBeforePostfix({
+          data: drive.toLowerCase(),
+          postfix: ' x',
+          isInt: true,
+        })
+        let storageCapacity = extractNumberBeforePostfix({
+          data: drive.toLowerCase(),
+          postfix: 'gb',
+          isInt: true,
+        })
+        if (storageCapacity === undefined) {
+          storageCapacity = extractNumberBeforePostfix({
+            data: drive.toLowerCase(),
+            postfix: 'tb',
+            isInt: false,
+          })
+          if (!isNaN(storageCapacity)) {
+            storageCapacity *= 1000
+          }
+        }
+        const storageType = drive.toLowerCase().includes('nvme')
+          ? 'NVMe'
+          : drive.toLowerCase().includes('ssd')
+            ? 'SSD'
+            : drive.toLowerCase().includes('sata')
+              ? 'SATA'
+              : undefined
+        return new Array(amountOfDrives === undefined ? 1 : amountOfDrives).fill({
+          capacity: storageCapacity,
+          type: storageType,
+        })
       })
-      .concat([
-        fetch('https://core.hivelocity.net/api/v2/inventory/locations')
-          .then((res) => res.json())
-          .then((data) => {
-            locations.push(...data)
-          }),
-      ])
-  )
-  const inventory: HardwareProduct[] = rawInventory.map((product) => {
-    const id = `${product.product_id.toString()}_${product.data_center}`
-    const drives = product.product_drive.split(', ').flatMap((drive) => {
-      const amountOfDrives = extractNumberBeforePostfix({
-        data: drive.toLowerCase(),
-        postfix: ' x',
-        isInt: true,
-      })
-      let storageCapacity = extractNumberBeforePostfix({
-        data: drive.toLowerCase(),
+      const location = locations.find((l) => l.code === product.data_center)
+      let networkMaxUsage = extractNumberBeforePostfix({
+        data: product.product_bandwidth.split(' / ')[0].toLowerCase(),
         postfix: 'gb',
         isInt: true,
       })
-      if (storageCapacity === undefined) {
-        storageCapacity = extractNumberBeforePostfix({
-          data: drive.toLowerCase(),
+      if (isNaN(networkMaxUsage)) {
+        networkMaxUsage = extractNumberBeforePostfix({
+          data: product.product_bandwidth.split(' / ')[0].toLowerCase(),
           postfix: 'tb',
           isInt: false,
         })
-        if (!isNaN(storageCapacity)) {
-          storageCapacity *= 1000
+        if (!isNaN(networkMaxUsage)) {
+          networkMaxUsage *= 1000
         }
       }
-      const storageType = drive.toLowerCase().includes('nvme')
-        ? 'NVMe'
-        : drive.toLowerCase().includes('ssd')
-          ? 'SSD'
-          : drive.toLowerCase().includes('sata')
-            ? 'SATA'
-            : undefined
-      return new Array(amountOfDrives === undefined ? 1 : amountOfDrives).fill({
-        capacity: storageCapacity,
-        type: storageType,
-      })
-    })
-    const location = locations.find((l) => l.code === product.data_center)
-    let networkMaxUsage = extractNumberBeforePostfix({
-      data: product.product_bandwidth.split(' / ')[0].toLowerCase(),
-      postfix: 'gb',
-      isInt: true,
-    })
-    if (isNaN(networkMaxUsage)) {
-      networkMaxUsage = extractNumberBeforePostfix({
-        data: product.product_bandwidth.split(' / ')[0].toLowerCase(),
-        postfix: 'tb',
-        isInt: false,
-      })
-      if (!isNaN(networkMaxUsage)) {
-        networkMaxUsage *= 1000
+      return {
+        type: product.is_vps ? 'VPS' : 'Bare Metal',
+        available:
+          /*product.stock === 'limited'
+            ? 1_000
+            :*/ product.stock === 'available' ? 1_000_000_000 : 0,
+        cpu: {
+          cores: product.processor_info.cores,
+          threads: product.processor_info.threads,
+          ghz: extractNumberBeforePostfix({
+            data: product.product_cpu.toLowerCase(),
+            postfix: 'ghz',
+            isInt: false,
+          }),
+          name: product.is_vps
+            ? undefined
+            : product.product_cpu.replace('2x ', '').split(' ')[0],
+        },
+        id: id,
+        location: location
+          ? `${location.location.city}, ${location.location.country}`
+          : product.data_center,
+        network: {
+          speed: extractNumberBeforePostfix({
+            data: product.product_bandwidth.toLowerCase(),
+            postfix: 'gbps',
+            isInt: true,
+          }),
+          max_usage: networkMaxUsage,
+        },
+        price: {
+          hourly: product.product_disabled_billing_periods.includes('hourly')
+            ? undefined
+            : product.product_hourly_price + product.hourly_location_premium,
+          monthly: product.product_disabled_billing_periods.includes('monthly')
+            ? undefined
+            : product.product_monthly_price + product.monthly_location_premium,
+          quarterly: product.product_disabled_billing_periods.includes(
+            'quarterly'
+          )
+            ? undefined
+            : (product.product_quarterly_price +
+                product.quarterly_location_premium) *
+              3,
+          // semi_annually: product.product_disabled_billing_periods.includes(
+          //   'semi_annually'
+          // )
+          //   ? undefined
+          //   : (product.product_semi_annually_price +
+          //       product.semi_annually_location_premium) *
+          //     6,
+          yearly: product.product_disabled_billing_periods.includes('annually')
+            ? undefined
+            : (product.product_annually_price +
+                product.annually_location_premium) *
+              12,
+          // biennial: product.product_disabled_billing_periods.includes('biennial')
+          //   ? undefined
+          //   : (product.product_biennial_price +
+          //       product.biennial_location_premium) *
+          //     24,
+        },
+        productName: product.product_name || id,
+        providerName: 'Hivelocity',
+        ram: {
+          capacity: extractNumberBeforePostfix({
+            data: product.product_memory.toLowerCase(),
+            postfix: 'gb',
+            isInt: true,
+          }),
+        },
+        storage: drives,
+        gpu: [],
       }
-    }
-    return {
-      type: product.is_vps ? 'VPS' : 'Bare Metal',
-      available:
-        /*product.stock === 'limited'
-          ? 1_000
-          :*/ product.stock === 'available' ? 1_000_000_000 : 0,
-      cpu: {
-        cores: product.processor_info.cores,
-        threads: product.processor_info.threads,
-        ghz: extractNumberBeforePostfix({
-          data: product.product_cpu.toLowerCase(),
-          postfix: 'ghz',
-          isInt: false,
-        }),
-        name: product.is_vps
-          ? undefined
-          : product.product_cpu.replace('2x ', '').split(' ')[0],
-      },
-      id: id,
-      location: location
-        ? `${location.location.city}, ${location.location.country}`
-        : product.data_center,
-      network: {
-        speed: extractNumberBeforePostfix({
-          data: product.product_bandwidth.toLowerCase(),
-          postfix: 'gbps',
-          isInt: true,
-        }),
-        max_usage: networkMaxUsage,
-      },
-      price: {
-        hourly: product.product_disabled_billing_periods.includes('hourly')
-          ? undefined
-          : product.product_hourly_price + product.hourly_location_premium,
-        monthly: product.product_disabled_billing_periods.includes('monthly')
-          ? undefined
-          : product.product_monthly_price + product.monthly_location_premium,
-        quarterly: product.product_disabled_billing_periods.includes(
-          'quarterly'
-        )
-          ? undefined
-          : (product.product_quarterly_price +
-              product.quarterly_location_premium) *
-            3,
-        // semi_annually: product.product_disabled_billing_periods.includes(
-        //   'semi_annually'
-        // )
-        //   ? undefined
-        //   : (product.product_semi_annually_price +
-        //       product.semi_annually_location_premium) *
-        //     6,
-        yearly: product.product_disabled_billing_periods.includes('annually')
-          ? undefined
-          : (product.product_annually_price +
-              product.annually_location_premium) *
-            12,
-        // biennial: product.product_disabled_billing_periods.includes('biennial')
-        //   ? undefined
-        //   : (product.product_biennial_price +
-        //       product.biennial_location_premium) *
-        //     24,
-      },
-      productName: product.product_name || id,
-      providerName: 'Hivelocity',
-      ram: {
-        capacity: extractNumberBeforePostfix({
-          data: product.product_memory.toLowerCase(),
-          postfix: 'gb',
-          isInt: true,
-        }),
-      },
-      storage: drives,
-      gpu: [],
-    }
-  })
-  return Response.json(inventory)
+    })
+    return Response.json(inventory)
+  } catch (error) {
+    return Response.json({ 
+      data: [], 
+      message: "Failed to fetch Hivelocity inventory" 
+    })
+  }
 }
 
 /*

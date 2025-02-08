@@ -27,12 +27,12 @@ import { type Icon } from '@/components/Icons'
 
 import { useDemoModeContext } from '../demo-mode'
 
-interface SidebarNav {
+interface SidebarNavProps {
   isMobile?: boolean
   className?: string
 }
 
-const SidebarNav: React.FC<SidebarNav> = ({
+const SidebarNav: React.FC<SidebarNavProps> = ({
   isMobile = false,
   className = '',
 }) => {
@@ -54,9 +54,8 @@ const SidebarNav: React.FC<SidebarNav> = ({
 
   return (
     <NavContainer className={className}>
-      {/* <NavHeader isMobile={isMobile}></NavHeader> */}
-      <NavContent className="mt-0 h-full overflow-y-auto overflow-x-clip p-2">
-        <NavCategory>
+      <NavContent className="h-full overflow-y-auto overflow-x-clip p-2 flex flex-col">
+        <div className="mt-0 flex flex-col space-y-2">
           {(demoMode ? demoMainNavItems : navItems.main).map((navItem) =>
             navItem.type === 'item' ? (
               <NavLink
@@ -84,36 +83,14 @@ const SidebarNav: React.FC<SidebarNav> = ({
               />
             )
           )}
-        </NavCategory>
-        <NavCategory label="Support">
-          {navItems.support.map((navItem) =>
-            navItem.type === 'item' ? (
-              <NavLink
-                key={`navItem-${navItem.name}`}
-                label={navItem.name}
-                href={navItem.href}
-                icon={navItem.icon}
-              />
-            ) : (
-              <NavCollapsable
-                key={`navCategory-${navItem.name}`}
-                label={navItem.name}
-                icon={navItem.icon}
-                disabled={navItem.disabled}
-                links={navItem.items
-                  .map((subItem) =>
-                    subItem.type === 'item'
-                      ? {
-                          label: subItem.name,
-                          href: subItem.href,
-                        }
-                      : null
-                  )
-                  .filter((item) => item !== null)}
-              />
-            )
-          )}
-        </NavCategory>
+        </div>
+        <div className="mt-4 flex items-start ml-4 text-left">
+          <span className="text-red-500 mr-2 text-xl">❤️</span>
+          <div className="text-xs text-neutral-500">
+            <div>Made & Powered</div>
+            <div>by Xnode</div>
+          </div>
+        </div>
       </NavContent>
     </NavContainer>
   )

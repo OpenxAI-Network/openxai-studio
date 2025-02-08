@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server'
 import { db } from '@/db'
 import { Providers } from '@/db/schema'
-import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 
 export async function GET(
@@ -10,11 +9,7 @@ export async function GET(
 ) {
   const productName = z.string().parse(params.productName)
 
-  const data = await db.query.Providers.findFirst({
-    where: eq(Providers.productName, productName),
-  })
+  const data = await db.query.Providers.findFirst()
 
-  if (!data)
-    return Response.json({ error: "Couldn't find a matching Baremetal Server" })
-  return Response.json(data)
+  return Response.json(data ?? null)
 }

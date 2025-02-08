@@ -1,0 +1,1069 @@
+[
+  {
+    "id": "0",
+    "logo": "/images/models/deepseek.png",
+    "name": "deepseek-r1",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Deploy and run your own DeepSeek R1 model for advanced language processing and generation capabilities.",
+    "longDesc": "**What is DeepSeek R1?**\n\nDeepSeek R1 is a powerful language model designed for natural text generation and understanding. It offers state-of-the-art performance for various NLP tasks while being efficient and deployable on standard hardware.",
+    "nixName": "deepseekr1",
+    "specs": {
+      "ram": 16000,
+      "storage": 50000
+    },
+    "implemented": true,
+    "isUnitRunnable": true,
+    "last_updated": "8 days ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the DeepSeek R1 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "1.5b,7b,8b,14b,32b,70b,671b"
+      }
+    ]
+  },
+  {
+    "id": "1",
+    "logo": "/images/models/ai-models.png",
+    "name": "llama2",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Meta's state-of-the-art large language model optimized for dialogue use cases.",
+    "nixName": "llama2",
+    "specs": {
+      "ram": 16000,
+      "storage": 45000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "1 month ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Llama 2 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "7b,13b,70b"
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "logo": "/images/models/ai-models.png",
+    "name": "mistral",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "High-performance language model with strong reasoning capabilities.",
+    "nixName": "mistral",
+    "specs": {
+      "ram": 16000,
+      "storage": 40000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "3 weeks ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Mistral model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "7b"
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "logo": "/images/models/ai-models.png",
+    "name": "mixtral",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "A mixture-of-experts model offering superior performance across various tasks.",
+    "nixName": "mixtral",
+    "specs": {
+      "ram": 32000,
+      "storage": 55000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "1 week ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Mixtral model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "8x7b"
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "logo": "/images/models/ai-models.png",
+    "name": "qwen",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "A versatile language model with multiple size options for different use cases.",
+    "nixName": "qwen",
+    "specs": {
+      "ram": 16000,
+      "storage": 45000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "9 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Qwen model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "0.5b,1.8b,4b,7b,14b,32b,72b,110b"
+      }
+    ]
+  },
+  {
+    "id": "5",
+    "logo": "/images/models/ai-models.png",
+    "name": "gemma",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Google's efficient and powerful language model for various tasks.",
+    "nixName": "gemma",
+    "specs": {
+      "ram": 16000,
+      "storage": 40000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "9 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Gemma model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "2b,7b"
+      }
+    ]
+  },
+  {
+    "id": "6",
+    "logo": "/images/models/ai-models.png",
+    "name": "phi3",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Microsoft's efficient language model known for strong reasoning capabilities.",
+    "nixName": "phi3",
+    "specs": {
+      "ram": 16000,
+      "storage": 35000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "6 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Phi-3 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "3.8b,14b"
+      }
+    ]
+  },
+  {
+    "id": "7",
+    "logo": "/images/models/ai-models.png",
+    "name": "codellama",
+    "category": "AI",
+    "tags": ["Code"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Meta's code-specialized language model optimized for programming tasks.",
+    "nixName": "codellama",
+    "specs": {
+      "ram": 24000,
+      "storage": 60000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "6 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the CodeLlama model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "7b,13b,34b,70b"
+      }
+    ]
+  },
+  {
+    "id": "8",
+    "logo": "/images/models/ai-models.png",
+    "name": "tinyllama",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Compact and efficient language model suitable for resource-constrained environments.",
+    "nixName": "tinyllama",
+    "specs": {
+      "ram": 8000,
+      "storage": 20000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "13 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the TinyLlama model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "1.1b"
+      }
+    ]
+  },
+  {
+    "id": "9",
+    "logo": "/images/models/ai-models.png",
+    "name": "starcoder2",
+    "category": "AI",
+    "tags": ["Code"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Advanced code generation model trained on a diverse set of programming languages.",
+    "nixName": "starcoder2",
+    "specs": {
+      "ram": 20000,
+      "storage": 45000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "4 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the StarCoder 2 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "3b,7b,15b"
+      }
+    ]
+  },
+  {
+    "id": "10",
+    "logo": "/images/models/ai-models.png",
+    "name": "dolphin-mixtral",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "A fine-tuned version of Mixtral offering enhanced instruction following capabilities.",
+    "nixName": "dolphin-mixtral",
+    "specs": {
+      "ram": 32000,
+      "storage": 65000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "5 weeks ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Dolphin-Mixtral model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "8x7b,8x22b"
+      }
+    ]
+  },
+  {
+    "id": "11",
+    "logo": "/images/models/ai-models.png",
+    "name": "deepseek-coder-v2",
+    "category": "AI",
+    "tags": ["Code"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Advanced code generation model with strong performance on programming tasks.",
+    "nixName": "deepseek-coder-v2",
+    "specs": {
+      "ram": 32000,
+      "storage": 70000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "4 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the DeepSeek Coder V2 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "16b,236b"
+      }
+    ]
+  },
+  {
+    "id": "12",
+    "logo": "/images/models/ai-models.png",
+    "name": "codegemma",
+    "category": "AI",
+    "tags": ["Code"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Code-specialized version of Google's Gemma model for programming tasks.",
+    "nixName": "codegemma",
+    "specs": {
+      "ram": 16000,
+      "storage": 40000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "6 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the CodeGemma model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "2b,7b"
+      }
+    ]
+  },
+  {
+    "id": "13",
+    "logo": "/images/models/ai-models.png",
+    "name": "wizardlm2",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Advanced language model focused on instruction following and reasoning.",
+    "nixName": "wizardlm2",
+    "specs": {
+      "ram": 32000,
+      "storage": 65000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "9 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the WizardLM 2 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "7b,8x22b"
+      }
+    ]
+  },
+  {
+    "id": "14",
+    "logo": "/images/models/ai-models.png",
+    "name": "zephyr",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Fine-tuned language model optimized for chat and instruction following.",
+    "nixName": "zephyr",
+    "specs": {
+      "ram": 24000,
+      "storage": 55000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "9 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Zephyr model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "7b,141b"
+      }
+    ]
+  },
+  {
+    "id": "15",
+    "logo": "/images/models/ai-models.png",
+    "name": "yi",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Versatile language model with strong multilingual capabilities.",
+    "nixName": "yi",
+    "specs": {
+      "ram": 20000,
+      "storage": 50000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "8 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Yi model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "6b,9b,34b"
+      }
+    ]
+  },
+  {
+    "id": "16",
+    "logo": "/images/models/ai-models.png",
+    "name": "llava",
+    "category": "AI",
+    "tags": ["Vision"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Multimodal model capable of understanding and reasoning about images and text.",
+    "nixName": "llava",
+    "specs": {
+      "ram": 24000,
+      "storage": 55000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "12 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the LLaVA model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "7b,13b,34b"
+      }
+    ]
+  },
+  {
+    "id": "17",
+    "logo": "/images/models/ai-models.png",
+    "name": "gemma2",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Second generation of Google's Gemma model with improved capabilities.",
+    "nixName": "gemma2",
+    "specs": {
+      "ram": 20000,
+      "storage": 50000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "6 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Gemma 2 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "2b,9b,27b"
+      }
+    ]
+  },
+  {
+    "id": "18",
+    "logo": "/images/models/ai-models.png",
+    "name": "qwen2.5",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Latest version of the Qwen model series with enhanced performance.",
+    "nixName": "qwen2.5",
+    "specs": {
+      "ram": 24000,
+      "storage": 55000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "4 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Qwen 2.5 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "0.5b,1.5b,3b,7b,14b,32b,72b"
+      }
+    ]
+  },
+  {
+    "id": "19",
+    "logo": "/images/models/ai-models.png",
+    "name": "mistral-nemo",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "NVIDIA-optimized version of Mistral for enhanced performance.",
+    "nixName": "mistral-nemo",
+    "specs": {
+      "ram": 20000,
+      "storage": 45000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "5 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Mistral-NeMo model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "12b"
+      }
+    ]
+  },
+  {
+    "id": "20",
+    "logo": "/images/models/ai-models.png",
+    "name": "llama3.2-vision",
+    "category": "AI",
+    "tags": ["Vision"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Multimodal version of LLaMA 3.2 with vision capabilities.",
+    "nixName": "llama3.2-vision",
+    "specs": {
+      "ram": 28000,
+      "storage": 60000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "2 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the LLaMA 3.2 Vision model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "11b,90b"
+      }
+    ]
+  },
+  {
+    "id": "21",
+    "logo": "/images/models/ai-models.png",
+    "name": "qwen2.5-coder",
+    "category": "AI",
+    "tags": ["Code"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Code-specialized version of Qwen 2.5 optimized for programming tasks.",
+    "nixName": "qwen2.5-coder",
+    "specs": {
+      "ram": 24000,
+      "storage": 55000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "2 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Qwen 2.5 Coder model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "0.5b,1.5b,3b,7b,14b,32b"
+      }
+    ]
+  },
+  {
+    "id": "22",
+    "logo": "/images/models/ai-models.png",
+    "name": "internlm2",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Advanced language model with strong multilingual capabilities.",
+    "nixName": "internlm2",
+    "specs": {
+      "ram": 24000,
+      "storage": 50000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "5 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the InternLM2 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "1m,1.8b,7b,20b"
+      }
+    ]
+  },
+  {
+    "id": "23",
+    "logo": "/images/models/ai-models.png",
+    "name": "nemotron",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "NVIDIA's high-performance language model for general tasks.",
+    "nixName": "nemotron",
+    "specs": {
+      "ram": 32000,
+      "storage": 60000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "3 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Nemotron model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "70b"
+      }
+    ]
+  },
+  {
+    "id": "24",
+    "logo": "/images/models/ai-models.png",
+    "name": "phi3.5",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Latest version of Microsoft's Phi model series with improved capabilities.",
+    "nixName": "phi3.5",
+    "specs": {
+      "ram": 16000,
+      "storage": 35000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "4 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Phi-3.5 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "3.8b"
+      }
+    ]
+  },
+  {
+    "id": "25",
+    "logo": "/images/models/ai-models.png",
+    "name": "codestral",
+    "category": "AI",
+    "tags": ["Code"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Code-specialized language model optimized for programming tasks.",
+    "nixName": "codestral",
+    "specs": {
+      "ram": 24000,
+      "storage": 50000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "4 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Codestral model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "22b"
+      }
+    ]
+  },
+  {
+    "id": "26",
+    "logo": "/images/models/ai-models.png",
+    "name": "starcoder",
+    "category": "AI",
+    "tags": ["Code"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Original StarCoder model for code generation and understanding.",
+    "nixName": "starcoder",
+    "specs": {
+      "ram": 20000,
+      "storage": 45000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "15 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the StarCoder model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "1b,3b,7b,15b"
+      }
+    ]
+  },
+  {
+    "id": "27",
+    "logo": "/images/models/ai-models.png",
+    "name": "granite-code",
+    "category": "AI",
+    "tags": ["Code"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Specialized code generation model with multiple size options.",
+    "nixName": "granite-code",
+    "specs": {
+      "ram": 24000,
+      "storage": 50000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "4 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Granite Code model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "3b,8b,20b,34b"
+      }
+    ]
+  },
+  {
+    "id": "28",
+    "logo": "/images/models/ai-models.png",
+    "name": "vicuna",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Fine-tuned language model known for high-quality chat interactions.",
+    "nixName": "vicuna",
+    "specs": {
+      "ram": 24000,
+      "storage": 50000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "15 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Vicuna model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "7b,13b,33b"
+      }
+    ]
+  },
+  {
+    "id": "29",
+    "logo": "/images/models/ai-models.png",
+    "name": "smollm",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Efficient small language model for resource-constrained environments.",
+    "nixName": "smollm",
+    "specs": {
+      "ram": 8000,
+      "storage": 20000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "5 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the SmoLLM model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "135m,360m,1.7b"
+      }
+    ]
+  },
+  {
+    "id": "30",
+    "logo": "/images/models/ai-models.png",
+    "name": "wizard-vicuna-uncensored",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Uncensored version of Wizard-Vicuna for open-ended interactions.",
+    "nixName": "wizard-vicuna-uncensored",
+    "specs": {
+      "ram": 24000,
+      "storage": 55000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "15 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Wizard-Vicuna Uncensored model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "7b,13b,30b"
+      }
+    ]
+  },
+  {
+    "id": "31",
+    "logo": "/images/models/ai-models.png",
+    "name": "mistral-openorca",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Fine-tuned version of Mistral optimized with the OpenOrca dataset.",
+    "nixName": "mistral-openorca",
+    "specs": {
+      "ram": 16000,
+      "storage": 40000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "15 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Mistral-OpenOrca model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "7b"
+      }
+    ]
+  },
+  {
+    "id": "32",
+    "logo": "/images/models/ai-models.png",
+    "name": "qwq",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "General purpose language model with strong performance.",
+    "nixName": "qwq",
+    "specs": {
+      "ram": 24000,
+      "storage": 50000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "2 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the QWQ model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "32b"
+      }
+    ]
+  },
+  {
+    "id": "33",
+    "logo": "/images/models/ai-models.png",
+    "name": "llama2-chinese",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Chinese-optimized version of LLaMA 2 for enhanced Chinese language capabilities.",
+    "nixName": "llama2-chinese",
+    "specs": {
+      "ram": 20000,
+      "storage": 45000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "15 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the LLaMA 2 Chinese model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "7b,13b"
+      }
+    ]
+  },
+  {
+    "id": "34",
+    "logo": "/images/models/ai-models.png",
+    "name": "smollm2",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Second generation of the efficient small language model.",
+    "nixName": "smollm2",
+    "specs": {
+      "ram": 8000,
+      "storage": 20000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "3 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the SmoLLM 2 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "135m,360m,1.7b"
+      }
+    ]
+  },
+  {
+    "id": "35",
+    "logo": "/images/models/ai-models.png",
+    "name": "codegeex4",
+    "category": "AI",
+    "tags": ["Code"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Advanced code generation model with multilingual programming capabilities.",
+    "nixName": "codegeex4",
+    "specs": {
+      "ram": 20000,
+      "storage": 45000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "6 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the CodeGeex4 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "9b"
+      }
+    ]
+  },
+  {
+    "id": "36",
+    "logo": "/images/models/ai-models.png",
+    "name": "openchat",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Open-source chat model optimized for dialogue interactions.",
+    "nixName": "openchat",
+    "specs": {
+      "ram": 16000,
+      "storage": 40000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "12 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the OpenChat model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "7b"
+      }
+    ]
+  },
+  {
+    "id": "37",
+    "logo": "/images/models/ai-models.png",
+    "name": "aya",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Versatile language model with strong general capabilities.",
+    "nixName": "aya",
+    "specs": {
+      "ram": 24000,
+      "storage": 50000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "8 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Aya model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "8b,35b"
+      }
+    ]
+  },
+  {
+    "id": "38",
+    "logo": "/images/models/ai-models.png",
+    "name": "deepseek-v3",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Latest version of DeepSeek's general-purpose language model.",
+    "nixName": "deepseek-v3",
+    "specs": {
+      "ram": 32000,
+      "storage": 70000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "2 weeks ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the DeepSeek V3 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "671b"
+      }
+    ]
+  },
+  {
+    "id": "39",
+    "logo": "/images/models/ai-models.png",
+    "name": "codeqwen",
+    "category": "AI",
+    "tags": ["Code"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Code-specialized version of Qwen optimized for programming tasks.",
+    "nixName": "codeqwen",
+    "specs": {
+      "ram": 20000,
+      "storage": 45000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "7 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the CodeQwen model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "7b"
+      }
+    ]
+  },
+  {
+    "id": "40",
+    "logo": "/images/models/ai-models.png",
+    "name": "nous-hermes2",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2024-03-22T12:00:00Z",
+    "desc": "Second generation of the Nous Hermes language model.",
+    "nixName": "nous-hermes2",
+    "specs": {
+      "ram": 24000,
+      "storage": 50000
+    },
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "13 months ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the Nous Hermes 2 model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "value": "10.7b,34b"
+      }
+    ]
+  }
+]
