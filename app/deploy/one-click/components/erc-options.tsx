@@ -11,10 +11,11 @@ type ERCOption = {
 
 interface ERCOptionsProps {
   selected?: ERCOption
+  showAll?: boolean
   onSelect: (option: ERCOption) => void
 }
 
-export function ERCOptions({ selected, onSelect }: ERCOptionsProps) {
+export function ERCOptions({ selected, showAll, onSelect }: ERCOptionsProps) {
   const options: ERCOption[] = [
     {
       id: 'erc-4337',
@@ -22,12 +23,25 @@ export function ERCOptions({ selected, onSelect }: ERCOptionsProps) {
       description: 'Pay-as-you-go service subscription',
       price: '0.021Ξ'
     },
-    // Add other ERC options...
+    {
+      id: 'erc-721',
+      title: 'ERC-721 - Model Ownership',
+      description: 'Full ownership and licensing control over AI models',
+      price: '0.021Ξ'
+    },
+    {
+      id: 'erc-1155',
+      title: 'ERC-1155 - Fractionalized',
+      description: 'Fractionalized AI Datasets (contributors to retain rights)',
+      price: '0.021Ξ'
+    }
   ]
+
+  const displayOptions = showAll ? options : (selected ? [...options.filter(o => o.id === selected.id)] : options)
 
   return (
     <div className="space-y-3">
-      {options.map((option) => (
+      {displayOptions.map((option) => (
         <div
           key={option.id}
           onClick={() => onSelect(option)}
@@ -41,7 +55,6 @@ export function ERCOptions({ selected, onSelect }: ERCOptionsProps) {
               <div className="font-medium">{option.title}</div>
               <div className="text-sm text-muted-foreground">{option.description}</div>
             </div>
-            {selected?.id === option.id}
           </div>
           {option.price && <div className="text-sm">{option.price}</div>}
         </div>

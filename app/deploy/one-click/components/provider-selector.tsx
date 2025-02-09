@@ -13,10 +13,11 @@ type Provider = {
 
 interface ProviderSelectorProps {
   selected?: Provider
+  showAll?: boolean
   onSelect: (provider: Provider) => void
 }
 
-export function ProviderSelector({ selected, onSelect }: ProviderSelectorProps) {
+export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelectorProps) {
   const providers: Provider[] = [
     {
       name: 'Xnode DVM (Decentralized)',
@@ -30,33 +31,33 @@ export function ProviderSelector({ selected, onSelect }: ProviderSelectorProps) 
     }
   ]
 
+  const displayProviders = showAll ? providers : (selected ? [...providers.filter(p => p.name === selected.name)] : providers)
+
   return (
     <div className="space-y-3">
-      {(selected ? [providers.find(p => p.name === selected.name)] : providers)
-        .filter(Boolean)
-        .map((provider) => (
-          <div
-            key={provider.name}
-            onClick={() => onSelect(provider)}
-            className={cn(
-              "relative flex cursor-pointer items-center justify-between rounded-lg border p-4 hover:border-primary/50",
-              selected?.name === provider.name && "border-primary bg-primary/5"
-            )}
-          >
-            <div className="flex items-center gap-3">
-              <div>
-                <div className="font-medium">{provider.name}</div>
-                <div className="text-sm text-muted-foreground">
-                  {provider.features.join(' • ')}
-                </div>
+      {displayProviders.map((provider) => (
+        <div
+          key={provider.name}
+          onClick={() => onSelect(provider)}
+          className={cn(
+            "relative flex cursor-pointer items-center justify-between rounded-lg border p-4 hover:border-primary/50",
+            selected?.name === provider.name && "border-primary bg-primary/5"
+          )}
+        >
+          <div className="flex items-center gap-3">
+            <div>
+              <div className="font-medium">{provider.name}</div>
+              <div className="text-sm text-muted-foreground">
+                {provider.features.join(' • ')}
               </div>
             </div>
-            <div className="text-sm">
-              {provider.action.price && <span className="mr-2">{provider.action.price}</span>}
-              {provider.action.label}
-            </div>
           </div>
-        ))}
+          <div className="text-sm">
+            {provider.action.price && <span className="mr-2">{provider.action.price}</span>}
+            {provider.action.label}
+          </div>
+        </div>
+      ))}
     </div>
   )
 }

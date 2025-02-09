@@ -12,10 +12,11 @@ type ModelSize = {
 
 interface ModelSizeSelectorProps {
   selected?: ModelSize
+  showAll?: boolean
   onSelect: (size: ModelSize) => void
 }
 
-export function ModelSizeSelector({ selected, onSelect }: ModelSizeSelectorProps) {
+export function ModelSizeSelector({ selected, showAll, onSelect }: ModelSizeSelectorProps) {
   const sizes: ModelSize[] = [
     {
       name: '7b',
@@ -40,27 +41,27 @@ export function ModelSizeSelector({ selected, onSelect }: ModelSizeSelectorProps
     }
   ]
 
+  const displaySizes = showAll ? sizes : (selected ? [...sizes.filter(s => s.name === selected.name)] : sizes)
+
   return (
     <div className="space-y-3">
-      {(selected ? [sizes.find(s => s.name === selected.name)] : sizes)
-        .filter(Boolean)
-        .map((size) => (
-          <div
-            key={size.name}
-            onClick={() => onSelect(size)}
-            className={cn(
-              "flex cursor-pointer items-center justify-between rounded-lg border p-4 hover:border-primary/50",
-              selected?.name === size.name && "border-primary bg-primary/5"
-            )}
-          >
-            <div className="flex items-center gap-3">
-              <div className="font-medium">{size.name}</div>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {size.ram} RAM • {size.storage} Storage
-            </div>
+      {displaySizes.map((size) => (
+        <div
+          key={size.name}
+          onClick={() => onSelect(size)}
+          className={cn(
+            "flex cursor-pointer items-center justify-between rounded-lg border p-4 hover:border-primary/50",
+            selected?.name === size.name && "border-primary bg-primary/5"
+          )}
+        >
+          <div className="flex items-center gap-3">
+            <div className="font-medium">{size.name}</div>
           </div>
-        ))}
+          <div className="text-sm text-muted-foreground">
+            {size.ram} RAM • {size.storage} Storage
+          </div>
+        </div>
+      ))}
     </div>
   )
 } 
