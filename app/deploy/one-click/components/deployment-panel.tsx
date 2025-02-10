@@ -38,6 +38,35 @@ export function DeploymentPanel() {
     'Deploying your service'
   ]
 
+  const handleModelClick = () => {
+    if (currentStep > 0) {
+      setCurrentStep(0)
+      // Only reset subsequent steps, keep current model selection
+      setStep(prev => ({
+        modelSize: prev.modelSize,
+        provider: undefined,
+        ercOption: undefined
+      }))
+    }
+  }
+
+  const handleProviderClick = () => {
+    if (currentStep > 1) {
+      setCurrentStep(1)
+      // Only reset ERC option, keep model and provider selections
+      setStep(prev => ({
+        ...prev,
+        ercOption: undefined
+      }))
+    }
+  }
+
+  const handleERCClick = () => {
+    if (currentStep > 2) {
+      setCurrentStep(2)
+    }
+  }
+
   const handleModelSelect = (model: any) => {
     setStep(prev => ({ 
       modelSize: model,
@@ -55,25 +84,6 @@ export function DeploymentPanel() {
   const handleERCSelect = (ercOption: any) => {
     setStep(prev => ({ ...prev, ercOption }))
     setCurrentStep(3)
-  }
-
-  const handleModelClick = () => {
-    if (step.modelSize) {
-      setCurrentStep(0)
-      setStep(prev => ({
-        ...prev,
-        provider: undefined,
-        ercOption: undefined
-      }))
-    }
-  }
-
-  const handleProviderClick = () => {
-    if (step.provider) setCurrentStep(1)
-  }
-
-  const handleERCClick = () => {
-    if (step.ercOption) setCurrentStep(2)
   }
 
   const handleDeploy = async () => {
