@@ -118,7 +118,7 @@ export function DeploymentPanel() {
             onSelect={handleModelSelect} 
           />
           {currentStep > 0 && step.modelSize && (
-            <div className="absolute right-[-10] top-[-10] flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
+            <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
               <Check className="size-4 stroke-[3] text-white" />
             </div>
           )}
@@ -138,7 +138,7 @@ export function DeploymentPanel() {
               onSelect={handleProviderSelect} 
             />
             {currentStep > 1 && step.provider && (
-              <div className="absolute right-[-10] top-[-10] flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
+              <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
                 <Check className="size-4 stroke-[3] text-white" />
               </div>
             )}
@@ -159,7 +159,7 @@ export function DeploymentPanel() {
               onSelect={handleERCSelect} 
             />
             {currentStep > 2 && step.ercOption && (
-              <div className="absolute right-[-10] top-[-10] flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
+              <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
                 <Check className="size-4 stroke-[3] text-white" />
               </div>
             )}
