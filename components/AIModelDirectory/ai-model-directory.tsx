@@ -58,7 +58,7 @@ function ModelCard({ data }: { data: ModelData }) {
   const isDeepseek = data.name === 'deepseek-r1'
   const cardContent = (
     <div className={cn(
-      "flex flex-col rounded-lg border p-4",
+      "flex flex-col rounded-lg border p-4 h-[200px]",
       isDeepseek ? "cursor-pointer hover:bg-muted/50" : "cursor-not-allowed opacity-70"
     )}>
       <div className="flex items-start gap-4">
@@ -76,12 +76,12 @@ function ModelCard({ data }: { data: ModelData }) {
         <span className="ml-auto text-sm text-muted-foreground">{data.last_updated}</span>
       </div>
 
-      <div className="mt-auto flex items-center justify-between pt-4">
-        <div className="flex flex-wrap gap-2">
+      <div className="mt-auto flex items-center justify-between">
+        <div className="flex flex-wrap gap-2 max-h-[80px] overflow-y-auto">
           {sizes.map((size) => (
             <span
               key={size}
-              className="rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700"
+              className="rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 whitespace-nowrap"
             >
               {size.trim()}
             </span>
