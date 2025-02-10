@@ -77,10 +77,7 @@ export function useXnodes(sessionToken: string) {
     enabled: !!baseUrl || demoMode,
     refetchInterval: 30 * 1000,
     retry: 3,
-    retryDelay: 5000,
-    onSettled: (_data, error) => {
-      if (error) console.error('Query error:', error)
-    }
+    retryDelay: 5000
   })
 }
 
