@@ -5,6 +5,7 @@ import { Check, X } from 'lucide-react'
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import DeploymentProvider from "../../deployment-provider"
 import { useState } from 'react'
+import { useDeploymentContext } from '../../deployment-context'
 
 type Provider = {
   name: string
@@ -25,6 +26,7 @@ interface ProviderSelectorProps {
 
 export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelectorProps) {
   const [showExtendedOptions, setShowExtendedOptions] = useState(false)
+  const {provider} = useDeploymentContext();
 
   const providers: Provider[] = [
     {
@@ -113,15 +115,17 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
       <Dialog open={showExtendedOptions} onOpenChange={setShowExtendedOptions}>
         <DialogContent className="max-w-[1200px]">
           <DeploymentProvider 
-            onSelect={(hardwareProduct) => {
-              onSelect({
-                name: hardwareProduct.productName,
-                features: ['Decentralized', 'Web3 Ready', 'No KYC'],
-                action: { 
-                  label: `$${hardwareProduct.price.monthly}p/m`,
-                  price: `$${hardwareProduct.price.monthly}`
-                }
-              })
+            onSelect={() => {
+              if (provider) {
+                onSelect({
+                  name: provider.productName,
+                  features: ['Decentralized', 'Web3 Ready', 'No KYC'],
+                  action: { 
+                    label: `$${provider.price.monthly}p/m`,
+                    price: `$${provider.price.monthly}`
+                  }
+                })
+              }
               setShowExtendedOptions(false)
             }}
           />

@@ -49,7 +49,7 @@ const PRICE_MAX = 10000
 
 type DeploymentProviderProps = {
   specs?: Specs
-  onSelect: (provider: HardwareProduct) => void
+  onSelect: () => void
 }
 export default function DeploymentProvider({
   specs,
@@ -66,50 +66,156 @@ export default function DeploymentProvider({
   const [onlyDedicated, setOnlyDedicated] = useState<boolean>(false)
   const { setConfig, setProvider } = useDeploymentContext()
 
-  const { data: providerData, isFetching } = useQuery({
-    queryKey: ['resources'],
-    queryFn: async () => {
-      const data = await fetch('/api/openxai').then(res => res.json())
-      return data.map((item: any) => ({
-        type: item.type || 'Bare Metal',
-        available: item.availability || 1000,
-        cpu: {
-          cores: item.cpuCores,
-          threads: item.cpuThreads,
-          name: item.cpuName,
-        },
-        id: item.id.toString(),
-        location: item.location,
-        network: {
-          max_usage: item.bandwidthNetwork,
-        },
-        price: {
-          hourly: item.priceHour,
-          monthly: item.priceMonth,
-        },
-        productName: item.productName,
-        providerName: item.providerName,
-        ram: {
-          capacity: item.ram,
-        },
-        storage: [{
-          capacity: item.avgSizeDrive,
-          count: item.numberDrives,
-        }],
-        gpu: item.gpuType ? [{
-          type: item.gpuType,
-          vram: parseInt(item.gpuMemory),
-        }] : [],
-        summary: item.productName
-      })) as (HardwareProduct & { summary: string })[]
+  const { data: hivelocityData, isFetching: hivelocityFetching } = useQuery({
+    queryKey: ['resources', 'Hivelocity'],
+    queryFn: () => {
+      return fetch(prefix + '/api/hivelocity/inventory')
+        .then((res) => res.json())
+        .then((res) => res as HardwareProduct[])
     },
+    placeholderData: keepPreviousData,
+    staleTime: 60 * 1000, // 1 min
+  })
+  const { data: vultrData, isFetching: vultrFetching } = useQuery({
+    queryKey: ['resources', 'Vultr'],
+    queryFn: () => {
+      return fetch(prefix + '/api/vultr/inventory')
+        .then((res) => res.json())
+        .then((res) => res as HardwareProduct[])
+    },
+    placeholderData: keepPreviousData,
     staleTime: 60 * 1000, // 1 min
   })
 
   const rawProviderData = useMemo(
-    () => providerData ?? [],
-    [providerData]
+    () => (hivelocityData ?? []).concat(vultrData ?? []),
+    [hivelocityData, vultrData]
   )
+  const providersLoading = useMemo(
+    () => [
+      { name: 'Hivelocity', loaded: !hivelocityFetching },
+      { name: 'Vultr', loaded: !vultrFetching },
+    ],
+    [hivelocityFetching, vultrFetching]
+  )
+  const providersFetching = useMemo(
+    () => providersLoading.some((provider) => !provider.loaded),
+    [providersLoading]
+  )
+  const filteredProviderData = useMemo(() => {
+    return rawProviderData
+      .filter((product) => {
+        if (!product.price.monthly) {
+          // No price or free is probably not meant to be shown
+          return false
+        }
+
+        if (
+          debouncedSearchInput &&
+          !product.productName
+            .toLowerCase()
+            .includes(debouncedSearchInput.toLowerCase()) &&
+          !product.location
+            .toLowerCase()
+            .includes(debouncedSearchInput.toLowerCase())
+        ) {
+          return false
+        }
+
+        if (region && region.toLowerCase() !== product.location.toLowerCase()) {
+          return false
+        }
+
+        if (specs?.ram && product.ram.capacity < specs.ram / 1024) {
+          return false
+        }
+
+        if (
+          specs?.storage &&
+          product.storage.reduce((prev, cur) => prev + cur.capacity, 0) <
+            specs.storage / 1024
+        ) {
+          return false
+        }
+
+        if (
+          debouncedPriceRange[0] !== undefined &&
+          product.price.monthly < debouncedPriceRange[0]
+        ) {
+          return false
+        }
+
+        if (
+          debouncedPriceRange[1] !== undefined &&
+          product.price.monthly > debouncedPriceRange[1]
+        ) {
+          return false
+        }
+
+        if (onlyAvailable && product.available === 0) {
+          return false
+        }
+
+        if (onlyDedicated && product.type === 'VPS') {
+          return false
+        }
+
+        return true
+      })
+      .sort((p1, p2) => {
+        return p1.price.monthly - p2.price.monthly
+      })
+      .map((product) => {
+        let summary = ''
+        if (product.cpu.name) summary += `${product.cpu.name}: `
+        if (product.cpu.ghz) summary += `${product.cpu.ghz}GHz `
+        if (product.cpu.cores) summary += `${product.cpu.cores}-Core`
+        if (product.cpu.threads) summary += ` (${product.cpu.threads} threads)`
+        if (product.ram.capacity) summary += `, ${product.ram.capacity}GB RAM`
+        if (product.ram.ghz) summary += ` ${product.ram.ghz}GHz`
+        if (product.storage.length) {
+          summary += `, ${product.storage.reduce((prev, cur) => prev + cur.capacity, 0)} GB Storage (`
+          const drives = product.storage
+            .map((drive) => {
+              let driveDescription = `${drive.capacity} GB`
+              if (drive.type) {
+                driveDescription += ` ${drive.type}`
+              }
+              return driveDescription
+            })
+            .reduce(
+              (prev, cur) => {
+                prev[cur] = (prev[cur] ?? 0) + 1
+                return prev
+              },
+              {} as { [driveDescription: string]: number }
+            )
+          Object.keys(drives).forEach((driveDescription, i) => {
+            if (i > 0) {
+              summary += ', '
+            }
+            summary += `${drives[driveDescription]}x ${driveDescription}`
+          })
+          summary += ')'
+        }
+        if (product.network.speed)
+          summary += `, ${product.network.speed} Gbps Networking`
+        if (product.network.max_usage)
+          summary += `, ${product.network.max_usage} GB Bandwidth`
+        if (product.gpu.length) {
+          summary += `, ${product.gpu[0].vram}GB VRAM ${product.gpu[0].type ? ` (${product.gpu[0].type})` : ''}`
+        }
+        return { ...product, summary }
+      })
+  }, [
+    rawProviderData,
+    debouncedSearchInput,
+    region,
+    specs,
+    debouncedPriceRange,
+    onlyAvailable,
+    onlyDedicated,
+  ])
 
   const regionData = useMemo(() => {
     const regionMap = new Map<string, number>()
@@ -173,66 +279,85 @@ export default function DeploymentProvider({
 
   const [shownResults, setShownResults] = useState<number>(10)
   useEffect(() => {
-    if (shownResults > rawProviderData.length) {
+    if (shownResults > filteredProviderData.length) {
       return
     }
     // Reduce the initial load time (CPU bottleneck from all product cards)
     const timer = setTimeout(() => setShownResults(shownResults + 100), 100)
     return () => clearTimeout(timer)
-  }, [shownResults, setShownResults, rawProviderData.length])
+  }, [shownResults, setShownResults, filteredProviderData.length])
 
   const products = useMemo(() => {
-    if (!rawProviderData) return []
+    // Cache this (as its significantly large / slow to generate)
+    if (!filteredProviderData) {
+      return []
+    }
 
     return Object.entries(
-      rawProviderData
-        .slice(0, Math.min(shownResults, rawProviderData.length))
+      filteredProviderData
+        .slice(0, Math.min(shownResults, filteredProviderData.length))
         .reduce(
           (prev, cur) => {
-            const id = `${cur.providerName}_${cur.id.split('_')[0]}_${cur.available}_${cur.price.monthly}_${cur.summary}` 
+            const id = `${cur.providerName}_${cur.id.split('_')[0]}_${cur.available}_${cur.price.monthly}_${cur.summary}` // Products with the same id are assumed to be the same
             if (!Object.hasOwn(prev, id)) {
-              prev[id] = {} as { [location: string]: HardwareProduct & { summary: string } }
+              prev[id] = {}
             }
-            prev[id][cur.location] = { ...cur, summary: cur.productName }
+
+            prev[id][cur.location] = cur
             return prev
           },
-          {} as { [id: string]: { [location: string]: HardwareProduct & { summary: string } } }
+          {} as {
+            [id: string]: {
+              [location: string]: (typeof filteredProviderData)[0]
+            }
+          }
         )
     ).map(([id, product]) => {
       return (
         <ProductCard
           key={id}
           product={product}
-          onSelect={onSelect}
+          onSelect={(selectedProduct) => {
+            setProvider(selectedProduct)
+            setConfig((prev) => ({
+              ...prev,
+              name: selectedProduct.productName!,
+              provider: selectedProduct.providerName!,
+              location: selectedProduct.location!,
+              isUnit: false,
+            }))
+            onSelect()
+          }}
         />
       )
     })
-  }, [rawProviderData, shownResults])
+  }, [filteredProviderData, shownResults])
 
   return (
     <div>
       <div
         className={cn(
           'relative w-full overflow-hidden rounded-lg bg-primary/10 transition-all',
-          isFetching ? 'h-3' : 'h-0'
+          providersFetching ? 'h-3' : 'h-0'
         )}
       >
         <div
           className="absolute left-0 top-0 h-full animate-pulse rounded-full bg-primary transition-all"
           style={{
-            width: `${(100 / 1) * (isFetching ? 1 : 0)}%`,
+            width: `${(100 / providersLoading.length) * providersLoading.reduce((prev, cur) => prev + (cur.loaded ? 1 : 0), 0)}%`,
           }}
         />
       </div>
       <div
         className={cn(
           'mt-1 flex items-center gap-1 overflow-hidden transition-all',
-          isFetching ? 'h-auto' : 'h-0'
+          providersFetching ? 'h-auto' : 'h-0'
         )}
       >
         <Loader className="size-3.5 animate-spin" />
         <p className="text-sm font-medium text-muted-foreground">
-          Searching...
+          Searching{' '}
+          {providersLoading.find((provider) => !provider.loaded)?.name}...
         </p>
       </div>
       <div className="mt-8 flex gap-12">
@@ -367,7 +492,7 @@ export default function DeploymentProvider({
           <div className="flex flex-col space-y-2">
             <Label htmlFor="region">Region</Label>
             <Popover>
-              <PopoverTrigger id="region" asChild disabled={isFetching}>
+              <PopoverTrigger id="region" asChild disabled={providersFetching}>
                 <Button
                   size="lg"
                   variant="outline"
