@@ -39,7 +39,11 @@ export function DeploymentPanel() {
   ]
 
   const handleModelSelect = (model: any) => {
-    setStep(prev => ({ ...prev, modelSize: model }))
+    setStep(prev => ({ 
+      modelSize: model,
+      provider: undefined,
+      ercOption: undefined 
+    }))
     setCurrentStep(1)
   }
 
@@ -54,7 +58,14 @@ export function DeploymentPanel() {
   }
 
   const handleModelClick = () => {
-    if (step.modelSize) setCurrentStep(0)
+    if (step.modelSize) {
+      setCurrentStep(0)
+      setStep(prev => ({
+        ...prev,
+        provider: undefined,
+        ercOption: undefined
+      }))
+    }
   }
 
   const handleProviderClick = () => {
