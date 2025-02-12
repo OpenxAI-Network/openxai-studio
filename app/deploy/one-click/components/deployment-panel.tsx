@@ -38,8 +38,41 @@ export function DeploymentPanel() {
     'Deploying your service'
   ]
 
+  const handleModelClick = () => {
+    if (currentStep > 0) {
+      setCurrentStep(0)
+      // Only reset subsequent steps, keep current model selection
+      setStep(prev => ({
+        modelSize: prev.modelSize,
+        provider: undefined,
+        ercOption: undefined
+      }))
+    }
+  }
+
+  const handleProviderClick = () => {
+    if (currentStep > 1) {
+      setCurrentStep(1)
+      // Only reset ERC option, keep model and provider selections
+      setStep(prev => ({
+        ...prev,
+        ercOption: undefined
+      }))
+    }
+  }
+
+  const handleERCClick = () => {
+    if (currentStep > 2) {
+      setCurrentStep(2)
+    }
+  }
+
   const handleModelSelect = (model: any) => {
-    setStep(prev => ({ ...prev, modelSize: model }))
+    setStep(prev => ({ 
+      modelSize: model,
+      provider: undefined,
+      ercOption: undefined 
+    }))
     setCurrentStep(1)
   }
 
@@ -51,18 +84,6 @@ export function DeploymentPanel() {
   const handleERCSelect = (ercOption: any) => {
     setStep(prev => ({ ...prev, ercOption }))
     setCurrentStep(3)
-  }
-
-  const handleModelClick = () => {
-    if (step.modelSize) setCurrentStep(0)
-  }
-
-  const handleProviderClick = () => {
-    if (step.provider) setCurrentStep(1)
-  }
-
-  const handleERCClick = () => {
-    if (step.ercOption) setCurrentStep(2)
   }
 
   const handleDeploy = async () => {
@@ -118,7 +139,7 @@ export function DeploymentPanel() {
             onSelect={handleModelSelect} 
           />
           {currentStep > 0 && step.modelSize && (
-            <div className="absolute right-[-10] top-[-10] flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
+            <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
               <Check className="size-4 stroke-[3] text-white" />
             </div>
           )}
@@ -138,7 +159,7 @@ export function DeploymentPanel() {
               onSelect={handleProviderSelect} 
             />
             {currentStep > 1 && step.provider && (
-              <div className="absolute right-[-10] top-[-10] flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
+              <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
                 <Check className="size-4 stroke-[3] text-white" />
               </div>
             )}
@@ -159,7 +180,7 @@ export function DeploymentPanel() {
               onSelect={handleERCSelect} 
             />
             {currentStep > 2 && step.ercOption && (
-              <div className="absolute right-[-10] top-[-10] flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
+              <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
                 <Check className="size-4 stroke-[3] text-white" />
               </div>
             )}

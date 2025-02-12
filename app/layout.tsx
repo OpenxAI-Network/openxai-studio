@@ -24,7 +24,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'OpenxAI Studio',
   icons: {
-    icon: `${prefix}/images/old-logo.png`,
+    icon: `${prefix}/images/openxai-logo.png`,
   },
 }
 
