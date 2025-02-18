@@ -392,7 +392,7 @@
   },
   {
     "id": "15",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/yi.svg",
     "name": "yi",
     "category": "AI",
     "tags": ["General"],
@@ -912,7 +912,7 @@
   },
   {
     "id": "35",
-    "logo": "/images/models/codegeex4.png",
+    "logo": "/images/models/codegeex4.jpg",
     "name": "codegeex4",
     "category": "AI",
     "tags": ["Code"],
