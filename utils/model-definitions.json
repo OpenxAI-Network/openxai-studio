@@ -210,7 +210,7 @@
   },
   {
     "id": "8",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/tinyllama.png",
     "name": "tinyllama",
     "category": "AI",
     "tags": ["General"],
@@ -262,7 +262,7 @@
   },
   {
     "id": "10",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/dolphin.png",
     "name": "dolphin-mixtral",
     "category": "AI",
     "tags": ["General"],
@@ -340,7 +340,7 @@
   },
   {
     "id": "13",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/wizardlm2.jpg",
     "name": "wizardlm2",
     "category": "AI",
     "tags": ["General"],
@@ -366,7 +366,7 @@
   },
   {
     "id": "14",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/h4.png",
     "name": "zephyr",
     "category": "AI",
     "tags": ["General"],
@@ -600,7 +600,7 @@
   },
   {
     "id": "23",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/nvidia.png",
     "name": "nemotron",
     "category": "AI",
     "tags": ["General"],
@@ -730,7 +730,7 @@
   },
   {
     "id": "28",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/vicuna.png",
     "name": "vicuna",
     "category": "AI",
     "tags": ["General"],
@@ -756,7 +756,7 @@
   },
   {
     "id": "29",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/smollm2.png",
     "name": "smollm",
     "category": "AI",
     "tags": ["General"],
@@ -834,7 +834,7 @@
   },
   {
     "id": "32",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/qwen.png",
     "name": "qwq",
     "category": "AI",
     "tags": ["General"],
@@ -938,7 +938,7 @@
   },
   {
     "id": "36",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/openchat.png",
     "name": "openchat",
     "category": "AI",
     "tags": ["General"],
@@ -964,7 +964,7 @@
   },
   {
     "id": "37",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/cohere.png",
     "name": "aya",
     "category": "AI",
     "tags": ["General"],
@@ -1016,7 +1016,7 @@
   },
   {
     "id": "39",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/qwen.png",
     "name": "codeqwen",
     "category": "AI",
     "tags": ["Code"],
@@ -1042,7 +1042,7 @@
   },
   {
     "id": "40",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/nous.png",
     "name": "nous-hermes2",
     "category": "AI",
     "tags": ["General"],
