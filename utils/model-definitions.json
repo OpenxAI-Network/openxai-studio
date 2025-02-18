@@ -184,7 +184,7 @@
   },
   {
     "id": "7",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/llama.png",
     "name": "codellama",
     "category": "AI",
     "tags": ["Code"],
@@ -236,7 +236,7 @@
   },
   {
     "id": "9",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/starcoder2.png",
     "name": "starcoder2",
     "category": "AI",
     "tags": ["Code"],
@@ -678,7 +678,7 @@
   },
   {
     "id": "26",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/starcoder2.png",
     "name": "starcoder",
     "category": "AI",
     "tags": ["Code"],
@@ -704,7 +704,7 @@
   },
   {
     "id": "27",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/ibm.png",
     "name": "granite-code",
     "category": "AI",
     "tags": ["Code"],
