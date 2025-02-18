@@ -54,7 +54,7 @@
   },
   {
     "id": "2",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/mistral.png",
     "name": "mistral",
     "category": "AI",
     "tags": ["General"],
@@ -496,7 +496,7 @@
   },
   {
     "id": "19",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/mistral.png",
     "name": "mistral-nemo",
     "category": "AI",
     "tags": ["General"],
@@ -808,7 +808,7 @@
   },
   {
     "id": "31",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/mistral.png",
     "name": "mistral-openorca",
     "category": "AI",
     "tags": ["General"],
@@ -886,7 +886,7 @@
   },
   {
     "id": "34",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/smollm2.png",
     "name": "smollm2",
     "category": "AI",
     "tags": ["General"],
@@ -912,7 +912,7 @@
   },
   {
     "id": "35",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/codegeex4.png",
     "name": "codegeex4",
     "category": "AI",
     "tags": ["Code"],
