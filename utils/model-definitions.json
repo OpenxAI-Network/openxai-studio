@@ -80,12 +80,12 @@
   },
   {
     "id": "3",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/mistral.png",
     "name": "mixtral",
     "category": "AI",
     "tags": ["General"],
     "dateAdded": "2024-03-22T12:00:00Z",
-    "desc": "A mixture-of-experts model offering superior performance across various tasks.",
+    "desc": "A mixture-of-experts model offering superior performance across various tasks, by Mistral team.",
     "nixName": "mixtral",
     "specs": {
       "ram": 32000,
@@ -132,7 +132,7 @@
   },
   {
     "id": "5",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/google.png",
     "name": "gemma",
     "category": "AI",
     "tags": ["General"],
@@ -444,7 +444,7 @@
   },
   {
     "id": "17",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/google.png",
     "name": "gemma2",
     "category": "AI",
     "tags": ["General"],
