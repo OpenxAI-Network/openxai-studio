@@ -28,7 +28,7 @@
   },
   {
     "id": "1",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/llama.png",
     "name": "llama2",
     "category": "AI",
     "tags": ["General"],
@@ -106,7 +106,7 @@
   },
   {
     "id": "4",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/qwen.png",
     "name": "qwen",
     "category": "AI",
     "tags": ["General"],
@@ -288,7 +288,7 @@
   },
   {
     "id": "11",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/deepseek.png",
     "name": "deepseek-coder-v2",
     "category": "AI",
     "tags": ["Code"],
@@ -470,7 +470,7 @@
   },
   {
     "id": "18",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/qwen.png",
     "name": "qwen2.5",
     "category": "AI",
     "tags": ["General"],
@@ -522,7 +522,7 @@
   },
   {
     "id": "20",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/llama.png",
     "name": "llama3.2-vision",
     "category": "AI",
     "tags": ["Vision"],
@@ -548,7 +548,7 @@
   },
   {
     "id": "21",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/qwen.png",
     "name": "qwen2.5-coder",
     "category": "AI",
     "tags": ["Code"],
@@ -574,7 +574,7 @@
   },
   {
     "id": "22",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/internlm.jpeg",
     "name": "internlm2",
     "category": "AI",
     "tags": ["General"],
@@ -860,7 +860,7 @@
   },
   {
     "id": "33",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/llama.png",
     "name": "llama2-chinese",
     "category": "AI",
     "tags": ["General"],
@@ -990,7 +990,7 @@
   },
   {
     "id": "38",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/deepseek.png",
     "name": "deepseek-v3",
     "category": "AI",
     "tags": ["General"],
