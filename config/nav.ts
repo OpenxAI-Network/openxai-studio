@@ -74,13 +74,13 @@ export const navItems: Record<NavCategory, NavItem[]> = {
     {
       type: 'item',
       name: 'Documentation',
-      href: 'https://openxai-docs.vercel.app/',
+      href: 'https://docs.openxai.org/',
       icon: BookText,
     },
     {
       type: 'item',
       name: 'Community',
-      href: 'https://openxai.discourse.group/',
+      href: 'https://community.openxai.org/',
       icon: Users,
     },
   ]
