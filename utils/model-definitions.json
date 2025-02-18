@@ -158,7 +158,7 @@
   },
   {
     "id": "6",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/microsoft.png",
     "name": "phi3",
     "category": "AI",
     "tags": ["General"],
@@ -314,7 +314,7 @@
   },
   {
     "id": "12",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/google.png",
     "name": "codegemma",
     "category": "AI",
     "tags": ["Code"],
@@ -626,7 +626,7 @@
   },
   {
     "id": "24",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/microsoft.png",
     "name": "phi3.5",
     "category": "AI",
     "tags": ["General"],
