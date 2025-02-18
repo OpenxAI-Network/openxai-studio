@@ -418,7 +418,7 @@
   },
   {
     "id": "16",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/llava.jpeg",
     "name": "llava",
     "category": "AI",
     "tags": ["Vision"],
@@ -652,7 +652,7 @@
   },
   {
     "id": "25",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/codestral.png",
     "name": "codestral",
     "category": "AI",
     "tags": ["Code"],
