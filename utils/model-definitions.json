@@ -28,7 +28,7 @@
   },
   {
     "id": "1",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/llama.png",
     "name": "llama2",
     "category": "AI",
     "tags": ["General"],
@@ -54,7 +54,7 @@
   },
   {
     "id": "2",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/mistral.png",
     "name": "mistral",
     "category": "AI",
     "tags": ["General"],
@@ -80,12 +80,12 @@
   },
   {
     "id": "3",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/mistral.png",
     "name": "mixtral",
     "category": "AI",
     "tags": ["General"],
     "dateAdded": "2024-03-22T12:00:00Z",
-    "desc": "A mixture-of-experts model offering superior performance across various tasks.",
+    "desc": "A mixture-of-experts model offering superior performance across various tasks, by Mistral team.",
     "nixName": "mixtral",
     "specs": {
       "ram": 32000,
@@ -106,7 +106,7 @@
   },
   {
     "id": "4",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/qwen.png",
     "name": "qwen",
     "category": "AI",
     "tags": ["General"],
@@ -132,7 +132,7 @@
   },
   {
     "id": "5",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/google.png",
     "name": "gemma",
     "category": "AI",
     "tags": ["General"],
@@ -158,7 +158,7 @@
   },
   {
     "id": "6",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/microsoft.png",
     "name": "phi3",
     "category": "AI",
     "tags": ["General"],
@@ -184,7 +184,7 @@
   },
   {
     "id": "7",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/llama.png",
     "name": "codellama",
     "category": "AI",
     "tags": ["Code"],
@@ -210,7 +210,7 @@
   },
   {
     "id": "8",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/tinyllama.png",
     "name": "tinyllama",
     "category": "AI",
     "tags": ["General"],
@@ -236,7 +236,7 @@
   },
   {
     "id": "9",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/starcoder2.png",
     "name": "starcoder2",
     "category": "AI",
     "tags": ["Code"],
@@ -262,7 +262,7 @@
   },
   {
     "id": "10",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/dolphin.png",
     "name": "dolphin-mixtral",
     "category": "AI",
     "tags": ["General"],
@@ -288,7 +288,7 @@
   },
   {
     "id": "11",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/deepseek.png",
     "name": "deepseek-coder-v2",
     "category": "AI",
     "tags": ["Code"],
@@ -314,7 +314,7 @@
   },
   {
     "id": "12",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/google.png",
     "name": "codegemma",
     "category": "AI",
     "tags": ["Code"],
@@ -340,7 +340,7 @@
   },
   {
     "id": "13",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/wizardlm2.jpg",
     "name": "wizardlm2",
     "category": "AI",
     "tags": ["General"],
@@ -366,7 +366,7 @@
   },
   {
     "id": "14",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/h4.png",
     "name": "zephyr",
     "category": "AI",
     "tags": ["General"],
@@ -392,7 +392,7 @@
   },
   {
     "id": "15",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/yi.svg",
     "name": "yi",
     "category": "AI",
     "tags": ["General"],
@@ -418,7 +418,7 @@
   },
   {
     "id": "16",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/llava.jpeg",
     "name": "llava",
     "category": "AI",
     "tags": ["Vision"],
@@ -444,7 +444,7 @@
   },
   {
     "id": "17",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/google.png",
     "name": "gemma2",
     "category": "AI",
     "tags": ["General"],
@@ -470,7 +470,7 @@
   },
   {
     "id": "18",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/qwen.png",
     "name": "qwen2.5",
     "category": "AI",
     "tags": ["General"],
@@ -496,7 +496,7 @@
   },
   {
     "id": "19",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/mistral.png",
     "name": "mistral-nemo",
     "category": "AI",
     "tags": ["General"],
@@ -522,7 +522,7 @@
   },
   {
     "id": "20",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/llama.png",
     "name": "llama3.2-vision",
     "category": "AI",
     "tags": ["Vision"],
@@ -548,7 +548,7 @@
   },
   {
     "id": "21",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/qwen.png",
     "name": "qwen2.5-coder",
     "category": "AI",
     "tags": ["Code"],
@@ -574,7 +574,7 @@
   },
   {
     "id": "22",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/internlm.jpeg",
     "name": "internlm2",
     "category": "AI",
     "tags": ["General"],
@@ -600,7 +600,7 @@
   },
   {
     "id": "23",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/nvidia.png",
     "name": "nemotron",
     "category": "AI",
     "tags": ["General"],
@@ -626,7 +626,7 @@
   },
   {
     "id": "24",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/microsoft.png",
     "name": "phi3.5",
     "category": "AI",
     "tags": ["General"],
@@ -652,7 +652,7 @@
   },
   {
     "id": "25",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/codestral.png",
     "name": "codestral",
     "category": "AI",
     "tags": ["Code"],
@@ -678,7 +678,7 @@
   },
   {
     "id": "26",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/starcoder2.png",
     "name": "starcoder",
     "category": "AI",
     "tags": ["Code"],
@@ -704,7 +704,7 @@
   },
   {
     "id": "27",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/ibm.png",
     "name": "granite-code",
     "category": "AI",
     "tags": ["Code"],
@@ -730,7 +730,7 @@
   },
   {
     "id": "28",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/vicuna.png",
     "name": "vicuna",
     "category": "AI",
     "tags": ["General"],
@@ -756,7 +756,7 @@
   },
   {
     "id": "29",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/smollm2.png",
     "name": "smollm",
     "category": "AI",
     "tags": ["General"],
@@ -782,7 +782,7 @@
   },
   {
     "id": "30",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/wizard-vicuna-uncensored.png",
     "name": "wizard-vicuna-uncensored",
     "category": "AI",
     "tags": ["General"],
@@ -808,7 +808,7 @@
   },
   {
     "id": "31",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/mistral.png",
     "name": "mistral-openorca",
     "category": "AI",
     "tags": ["General"],
@@ -834,7 +834,7 @@
   },
   {
     "id": "32",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/qwen.png",
     "name": "qwq",
     "category": "AI",
     "tags": ["General"],
@@ -860,7 +860,7 @@
   },
   {
     "id": "33",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/llama.png",
     "name": "llama2-chinese",
     "category": "AI",
     "tags": ["General"],
@@ -886,7 +886,7 @@
   },
   {
     "id": "34",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/smollm2.png",
     "name": "smollm2",
     "category": "AI",
     "tags": ["General"],
@@ -912,7 +912,7 @@
   },
   {
     "id": "35",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/codegeex4.jpg",
     "name": "codegeex4",
     "category": "AI",
     "tags": ["Code"],
@@ -938,7 +938,7 @@
   },
   {
     "id": "36",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/openchat.png",
     "name": "openchat",
     "category": "AI",
     "tags": ["General"],
@@ -964,7 +964,7 @@
   },
   {
     "id": "37",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/cohere.png",
     "name": "aya",
     "category": "AI",
     "tags": ["General"],
@@ -990,7 +990,7 @@
   },
   {
     "id": "38",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/deepseek.png",
     "name": "deepseek-v3",
     "category": "AI",
     "tags": ["General"],
@@ -1016,7 +1016,7 @@
   },
   {
     "id": "39",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/qwen.png",
     "name": "codeqwen",
     "category": "AI",
     "tags": ["Code"],
@@ -1042,7 +1042,7 @@
   },
   {
     "id": "40",
-    "logo": "/images/models/ai-models.png",
+    "logo": "/images/models/nous.png",
     "name": "nous-hermes2",
     "category": "AI",
     "tags": ["General"],
