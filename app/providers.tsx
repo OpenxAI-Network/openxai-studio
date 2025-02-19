@@ -1,6 +1,7 @@
 'use client'
 
 import AccountContextProvider from '@/contexts/AccountContext'
+import { DemoContextProvider } from '@/contexts/XnodeDemoContext'
 import { chain } from '@/utils/chain'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createWeb3Modal } from '@web3modal/wagmi/react'
@@ -60,11 +61,13 @@ export function Providers({
           <ThemeProvider attribute="class" enableSystem={false}>
             <DemoModeProvider>
               <SelectedXnodeProvider>
-                <ScreenProvider>
-                  {children}
-                  <ToastContainer />
-                  <Toaster />
-                </ScreenProvider>
+                <DemoContextProvider>
+                  <ScreenProvider>
+                    {children}
+                    <ToastContainer />
+                    <Toaster />
+                  </ScreenProvider>
+                </DemoContextProvider>
               </SelectedXnodeProvider>
             </DemoModeProvider>
           </ThemeProvider>

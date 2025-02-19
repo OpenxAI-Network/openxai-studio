@@ -1,18 +1,37 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useDemoContext, useSetDemoContext } from '@/contexts/XnodeDemoContext'
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
+import { format } from 'date-fns'
+import { Check, Clock, RefreshCcw, RotateCw } from 'lucide-react'
+
+import { cn } from '@/lib/utils'
+import { deployModel, reserveDemo, useDemosAvailable } from '@/lib/xnode-demo'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { useToast } from '@/components/ui/use-toast'
+
+import { ERCOptions } from './erc-options'
 import { ModelSizeSelector } from './model-size-selector'
 import { ProviderSelector } from './provider-selector'
-import { ERCOptions } from './erc-options'
-import { cn } from '@/lib/utils'
-import { Check, RotateCw, Clock } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
-import { Table, TableHeader, TableBody, TableHead, TableRow } from '@/components/ui/table'
-import { RefreshCcw } from 'lucide-react'
-import { format } from 'date-fns'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 
 type DeploymentStep = {
   modelSize?: any
@@ -28,24 +47,24 @@ export function DeploymentPanel() {
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [redirectCounter, setRedirectCounter] = useState(30)
   const [deploymentProgress, setDeploymentProgress] = useState<{
-    step: number;
-    status: string[];
+    step: number
+    status: string[]
   }>({ step: 0, status: [] })
 
   const deploymentSteps = [
     'Model is selected',
     'Infrastructure activated',
-    'Deploying your service'
+    'Deploying your service',
   ]
 
   const handleModelClick = () => {
     if (currentStep > 0) {
       setCurrentStep(0)
       // Only reset subsequent steps, keep current model selection
-      setStep(prev => ({
+      setStep((prev) => ({
         modelSize: prev.modelSize,
         provider: undefined,
-        ercOption: undefined
+        ercOption: undefined,
       }))
     }
   }
@@ -54,9 +73,9 @@ export function DeploymentPanel() {
     if (currentStep > 1) {
       setCurrentStep(1)
       // Only reset ERC option, keep model and provider selections
-      setStep(prev => ({
+      setStep((prev) => ({
         ...prev,
-        ercOption: undefined
+        ercOption: undefined,
       }))
     }
   }
@@ -68,21 +87,21 @@ export function DeploymentPanel() {
   }
 
   const handleModelSelect = (model: any) => {
-    setStep(prev => ({ 
+    setStep((prev) => ({
       modelSize: model,
       provider: undefined,
-      ercOption: undefined 
+      ercOption: undefined,
     }))
     setCurrentStep(1)
   }
 
   const handleProviderSelect = (provider: any) => {
-    setStep(prev => ({ ...prev, provider }))
+    setStep((prev) => ({ ...prev, provider }))
     setCurrentStep(2)
   }
 
   const handleERCSelect = (ercOption: any) => {
-    setStep(prev => ({ ...prev, ercOption }))
+    setStep((prev) => ({ ...prev, ercOption }))
     setCurrentStep(3)
   }
 
@@ -90,14 +109,18 @@ export function DeploymentPanel() {
     setDeploymentModalOpen(true)
     setDeploymentProgress({
       step: 0,
-      status: ['Preparing to deploy on XnodeG 001', 'Installing Ollama 3.1', 'Installing WebUI...']
+      status: [
+        'Preparing to deploy on XnodeG 001',
+        'Installing Ollama 3.1',
+        'Installing WebUI...',
+      ],
     })
-    
+
     // Simulate deployment progress
     setTimeout(() => {
-      setDeploymentProgress(prev => ({ ...prev, step: 1 }))
+      setDeploymentProgress((prev) => ({ ...prev, step: 1 }))
       setTimeout(() => {
-        setDeploymentProgress(prev => ({ ...prev, step: 2 }))
+        setDeploymentProgress((prev) => ({ ...prev, step: 2 }))
         // Show success after deployment completes
         setTimeout(() => {
           setDeploymentModalOpen(false)
@@ -121,22 +144,85 @@ export function DeploymentPanel() {
     }, 1000)
   }
 
+  const { toast } = useToast()
+
+  const demos = useDemosAvailable()
+  const demoXnode = demos.data?.find((x) => !x.reservation)
+  const reservedXnode = useDemoContext()
+  const setReservedXnode = useSetDemoContext()
+
+  const deployOnDemo = async () => {
+    const activeReservation =
+      reservedXnode.xnode?.reservation &&
+      reservedXnode.xnode.reservation.reserved_until > Date.now() / 1000
+    const xnode = activeReservation ? reservedXnode.xnode : demoXnode
+
+    if (!activeReservation && !demoXnode) {
+      const nextFreeXnode = demos.data
+        ?.map((x) => x.reservation?.reserved_until)
+        .sort()
+        .at(0)
+      toast({
+        title: 'Deployment failed',
+        description: `No demo xnodes available. ${nextFreeXnode ? `Next xnode will be free in ${Math.round((nextFreeXnode - Date.now() / 1000) / 60)} minutes.` : ''}`,
+        variant: 'destructive',
+      })
+      return
+    }
+
+    let { dismiss } = toast({
+      title: 'Deploying...',
+    })
+    try {
+      if (!activeReservation) {
+        await reserveDemo({ xnode_id: demoXnode.id }).then((xnode) =>
+          setReservedXnode({ xnode })
+        )
+      }
+      await deployModel({
+        xnode_id: xnode.id,
+        model: 'deepseek-r1:1.5b',
+        email: 'samuel.mens@openmesh.network',
+        password: 'password',
+      })
+    } catch (e) {
+      console.error(e)
+      dismiss()
+      toast({
+        title: 'Deployment failed',
+        description: e.message ?? 'An unknown error occurred.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    dismiss()
+    toast({
+      title: 'Deployed!',
+      description: 'Deployment on demo xnode has finished.',
+    })
+    setTimeout(
+      () => window.open(xnode.id.replace(':34391', ':8080'), '_blank'),
+      45_000 // takes some time for open-webui to be ready
+    )
+  }
+
   return (
     <>
       <div className="space-y-8">
         <h2 className="text-xl font-semibold">One Click Deployment</h2>
 
-        <div 
+        <div
           className={cn(
-            "relative cursor-pointer rounded-lg border",
-            currentStep > 0 && "border-primary bg-primary/5"
+            'relative cursor-pointer rounded-lg border',
+            currentStep > 0 && 'border-primary bg-primary/5'
           )}
           onClick={handleModelClick}
         >
-          <ModelSizeSelector 
+          <ModelSizeSelector
             selected={step.modelSize}
             showAll={currentStep === 0}
-            onSelect={handleModelSelect} 
+            onSelect={handleModelSelect}
           />
           {currentStep > 0 && step.modelSize && (
             <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
@@ -144,19 +230,19 @@ export function DeploymentPanel() {
             </div>
           )}
         </div>
-        
+
         {currentStep >= 1 && (
-          <div 
+          <div
             className={cn(
-              "relative cursor-pointer rounded-lg border",
-              currentStep > 1 && "border-primary bg-primary/5"
+              'relative cursor-pointer rounded-lg border',
+              currentStep > 1 && 'border-primary bg-primary/5'
             )}
             onClick={handleProviderClick}
           >
-            <ProviderSelector 
+            <ProviderSelector
               selected={step.provider}
               showAll={currentStep === 1}
-              onSelect={handleProviderSelect} 
+              onSelect={handleProviderSelect}
             />
             {currentStep > 1 && step.provider && (
               <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
@@ -165,19 +251,19 @@ export function DeploymentPanel() {
             )}
           </div>
         )}
-        
+
         {currentStep >= 2 && (
-          <div 
+          <div
             className={cn(
-              "relative cursor-pointer rounded-lg border",
-              currentStep > 2 && "border-primary bg-primary/5"
+              'relative cursor-pointer rounded-lg border',
+              currentStep > 2 && 'border-primary bg-primary/5'
             )}
             onClick={handleERCClick}
           >
-            <ERCOptions 
+            <ERCOptions
               selected={step.ercOption}
               showAll={currentStep === 2}
-              onSelect={handleERCSelect} 
+              onSelect={handleERCSelect}
             />
             {currentStep > 2 && step.ercOption && (
               <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
@@ -188,10 +274,10 @@ export function DeploymentPanel() {
         )}
 
         {currentStep >= 2 && (
-          <Button 
-            className="w-full" 
+          <Button
+            className="w-full"
             size="lg"
-            onClick={handleDeploy}
+            onClick={() => deployOnDemo().catch(console.error)}
           >
             One Click Deployment
           </Button>
@@ -205,34 +291,40 @@ export function DeploymentPanel() {
             {deploymentSteps.map((label, index) => (
               <div key={index} className="flex flex-1 items-center">
                 <div className="flex flex-col items-center">
-                  <div className={cn(
-                    "flex size-8 items-center justify-center rounded-full border-2",
-                    deploymentProgress.step >= index 
-                      ? "border-primary bg-primary text-white" 
-                      : "border-muted-foreground/25"
-                  )}>
+                  <div
+                    className={cn(
+                      'flex size-8 items-center justify-center rounded-full border-2',
+                      deploymentProgress.step >= index
+                        ? 'border-primary bg-primary text-white'
+                        : 'border-muted-foreground/25'
+                    )}
+                  >
                     {deploymentProgress.step > index ? (
                       <Check className="size-4" />
                     ) : (
                       <span>{index + 1}</span>
                     )}
                   </div>
-                  <span className={cn(
-                    "mt-2 text-center text-xs",
-                    deploymentProgress.step >= index 
-                      ? "text-primary" 
-                      : "text-muted-foreground"
-                  )}>
+                  <span
+                    className={cn(
+                      'mt-2 text-center text-xs',
+                      deploymentProgress.step >= index
+                        ? 'text-primary'
+                        : 'text-muted-foreground'
+                    )}
+                  >
                     {label}
                   </span>
                 </div>
                 {index < deploymentSteps.length - 1 && (
-                  <div className={cn(
-                    "h-[2px] flex-1 mx-4",
-                    deploymentProgress.step > index 
-                      ? "bg-primary" 
-                      : "bg-muted-foreground/25"
-                  )} />
+                  <div
+                    className={cn(
+                      'mx-4 h-[2px] flex-1',
+                      deploymentProgress.step > index
+                        ? 'bg-primary'
+                        : 'bg-muted-foreground/25'
+                    )}
+                  />
                 )}
               </div>
             ))}
@@ -241,13 +333,13 @@ export function DeploymentPanel() {
           <DialogHeader>
             <DialogTitle>Deploying</DialogTitle>
           </DialogHeader>
-          
+
           <div className="space-y-6 py-4">
             {deploymentProgress.status.map((status, index) => (
               <div key={status} className="flex items-center gap-3">
                 {deploymentProgress.step > index ? (
                   <div className="flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
-                    <Check className="size-4 text-white stroke-[3]" />
+                    <Check className="size-4 stroke-[3] text-white" />
                   </div>
                 ) : deploymentProgress.step === index ? (
                   <div className="flex size-5 items-center justify-center">
@@ -273,11 +365,11 @@ export function DeploymentPanel() {
       </Dialog>
 
       <Dialog open={successModalOpen} onOpenChange={setSuccessModalOpen}>
-        <DialogContent className="sm:max-w-[500px] text-center">
+        <DialogContent className="text-center sm:max-w-[500px]">
           <div className="my-6 flex justify-center">
             <div className="relative">
               <div className="size-24 rounded-full bg-primary">
-                <Check className="size-12 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white" />
+                <Check className="absolute left-1/2 top-1/2 size-12 -translate-x-1/2 -translate-y-1/2 text-white" />
               </div>
               <div className="absolute -inset-1">
                 <div className="size-26 animate-spin-slow rounded-full bg-primary/20" />
@@ -288,13 +380,14 @@ export function DeploymentPanel() {
           <DialogHeader>
             <DialogTitle className="text-center text-2xl">Success!</DialogTitle>
           </DialogHeader>
-          
+
           <div className="py-4">
             <p className="mb-4 text-lg">
               Your Ollama app is installed. You have 1 hour to use your model.
             </p>
             <p className="text-sm text-muted-foreground">
-              Auto redirect in {redirectCounter} seconds or view your deployments on{' '}
+              Auto redirect in {redirectCounter} seconds or view your
+              deployments on{' '}
               <Link href="/dashboard" className="text-primary hover:underline">
                 dashboard
               </Link>
