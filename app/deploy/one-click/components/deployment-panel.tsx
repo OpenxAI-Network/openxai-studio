@@ -189,6 +189,7 @@ export function DeploymentPanel() {
             email: 'samuel.mens@openmesh.network',
             password: 'password',
           })
+          break
         } catch (e) {
           console.warn(e)
           retry--
