@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
-const demo_url = 'http://74.50.118.150:35963'
+const demo_url = 'https://demo.openxai.org'
 
 export interface DemoXnode {
   id: string

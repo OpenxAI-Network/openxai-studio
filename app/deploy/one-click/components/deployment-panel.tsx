@@ -202,7 +202,7 @@ export function DeploymentPanel() {
       description: 'Deployment on demo xnode has finished.',
     })
     setTimeout(
-      () => window.open(xnode.id.replace(':34391', ':8080'), '_blank'),
+      () => window.open(xnode.id.replace(':34392', ''), '_blank'),
       45_000 // takes some time for open-webui to be ready
     )
   }
