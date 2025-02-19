@@ -213,6 +213,7 @@ export function DeploymentPanel() {
     toast({
       title: 'Deployed!',
       description: 'Deployment on demo xnode has finished.',
+      variant: 'success',
     })
     setTimeout(
       () => window.open(xnode.id.replace(':34392', ''), '_blank'),
