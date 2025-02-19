@@ -179,12 +179,24 @@ export function DeploymentPanel() {
           setReservedXnode({ xnode })
         )
       }
-      await deployModel({
-        xnode_id: xnode.id,
-        model: 'deepseek-r1:1.5b',
-        email: 'samuel.mens@openmesh.network',
-        password: 'password',
-      })
+
+      let retry = 1
+      while (true) {
+        try {
+          await deployModel({
+            xnode_id: xnode.id,
+            model: 'deepseek-r1:1.5b',
+            email: 'samuel.mens@openmesh.network',
+            password: 'password',
+          })
+        } catch (e) {
+          console.warn(e)
+          retry--
+          if (retry < 0) {
+            throw e
+          }
+        }
+      }
     } catch (e) {
       console.error(e)
       dismiss()
