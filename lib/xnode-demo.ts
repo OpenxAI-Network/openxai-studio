@@ -9,6 +9,13 @@ export interface DemoXnode {
     reserved_by: string
     reserved_until: number
   }
+  heartbeatData?: {
+    cpuPercent: number
+    ramMbUsed: number
+    ramMbTotal: number
+    storageMbUsed: number
+    storageMbTotal: number
+  }
 }
 
 export function useDemosAvailable() {

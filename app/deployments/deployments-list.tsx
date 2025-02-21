@@ -19,6 +19,7 @@ import {
 import { Icons } from '@/components/Icons'
 
 import { useXnodes } from '../dashboard/health-data'
+import { DemoPool } from './demo-pool'
 
 type DeploymentItemProps = {
   xNode: Xnode
@@ -124,21 +125,24 @@ export default function DeploymentsList({
   }, [isPending, xNodes])
 
   return (
-    <div className="flex flex-col gap-3">
-      {isPending
-        ? Array.from({ length: 8 }).map((_, index) => (
-            <Skeleton
-              key={`deployment-placeholder-${index}`}
-              className="h-16 border"
-            />
-          ))
-        : xNodes?.map((xNode) => (
-            <DeploymentItem
-              key={xNode.deploymentAuth}
-              xNode={xNode}
-              services={services.get(xNode.id) ?? []}
-            />
-          ))}
+    <div className="flex flex-col gap-6">
+      <DemoPool />
+      <div className="flex flex-col gap-3">
+        {isPending
+          ? Array.from({ length: 8 }).map((_, index) => (
+              <Skeleton
+                key={`deployment-placeholder-${index}`}
+                className="h-16 border"
+              />
+            ))
+          : xNodes?.map((xNode) => (
+              <DeploymentItem
+                key={xNode.deploymentAuth}
+                xNode={xNode}
+                services={services.get(xNode.id) ?? []}
+              />
+            ))}
+      </div>
     </div>
   )
 }
