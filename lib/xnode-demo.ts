@@ -3,18 +3,16 @@ import axios from 'axios'
 
 const demo_url = 'https://demo.openxai.org'
 
-export interface DemoXnode {
+export interface PublicDemoXnode {
   id: string
-  reservation?: {
-    reserved_by: string
+  reserved_until?: number
+}
+
+export interface ReservedDemoXnode {
+  id: string
+  reservation: {
+    secret: string
     reserved_until: number
-  }
-  heartbeatData?: {
-    cpuPercent: number
-    ramMbUsed: number
-    ramMbTotal: number
-    storageMbUsed: number
-    storageMbTotal: number
   }
 }
 
@@ -24,7 +22,111 @@ export function useDemosAvailable() {
     queryFn: async () => {
       return await axios
         .get(`${demo_url}/demo/xnodes`)
-        .then((res) => res.data as DemoXnode[])
+        .then((res) => res.data as PublicDemoXnode[])
+    },
+  })
+}
+
+export function useDemoCPUUsage({
+  xnode_id,
+  secret,
+}: {
+  xnode_id: string
+  secret: string
+}) {
+  return useQuery({
+    queryKey: ['demo-xnode', 'demo-cpu-usage', xnode_id],
+    refetchInterval: 1000, // 1 sec
+    queryFn: async () => {
+      return await axios
+        .post(`${demo_url}/demo/forward_request`, {
+          secret,
+          request: {
+            xnode_id,
+            request_type: {
+              Get: {
+                path: 'usage/cpu',
+              },
+            },
+          },
+        })
+        .then(
+          (res) =>
+            res.data as {
+              name: string
+              used: number
+              frequency: number
+            }[]
+        )
+    },
+  })
+}
+
+export function useDemoMemoryUsage({
+  xnode_id,
+  secret,
+}: {
+  xnode_id: string
+  secret: string
+}) {
+  return useQuery({
+    queryKey: ['demo-xnode', 'demo-memory-usage', xnode_id],
+    refetchInterval: 1000, // 1 sec
+    queryFn: async () => {
+      return await axios
+        .post(`${demo_url}/demo/forward_request`, {
+          secret,
+          request: {
+            xnode_id,
+            request_type: {
+              Get: {
+                path: 'usage/memory',
+              },
+            },
+          },
+        })
+        .then(
+          (res) =>
+            res.data as {
+              used: number
+              total: number
+            }
+        )
+    },
+  })
+}
+
+export function useDemoDiskUsage({
+  xnode_id,
+  secret,
+}: {
+  xnode_id: string
+  secret: string
+}) {
+  return useQuery({
+    queryKey: ['demo-xnode', 'demo-disk-usage', xnode_id],
+    refetchInterval: 10 * 1000, // 10 sec
+    queryFn: async () => {
+      return await axios
+        .post(`${demo_url}/demo/forward_request`, {
+          secret,
+          request: {
+            xnode_id,
+            request_type: {
+              Get: {
+                path: 'usage/disk',
+              },
+            },
+          },
+        })
+        .then(
+          (res) =>
+            res.data as {
+              name: string
+              used: number
+              total: number
+            }[]
+        )
     },
   })
 }
@@ -32,22 +134,25 @@ export function useDemosAvailable() {
 export async function reserveDemo({ xnode_id }: { xnode_id: string }) {
   return await axios
     .post(`${demo_url}/demo/reserve`, { xnode_id })
-    .then((res) => res.data as DemoXnode)
+    .then((res) => res.data as ReservedDemoXnode)
 }
 
 export async function deployModel({
   xnode_id,
+  secret,
   model,
   email,
   password,
 }: {
   xnode_id: string
+  secret: string
   model: string
   email: string
   password: string
 }) {
   return await axios.post(`${demo_url}/demo/set_app`, {
     xnode_id,
+    secret,
     flake: `
 {
   inputs = {

@@ -2,10 +2,10 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 
-import type { DemoXnode } from '@/lib/xnode-demo'
+import type { ReservedDemoXnode } from '@/lib/xnode-demo'
 
 export interface DemoContext {
-  xnode?: DemoXnode
+  xnode?: ReservedDemoXnode
 }
 const defaultContext: DemoContext = {}
 const DemoContext = createContext<DemoContext>(defaultContext)

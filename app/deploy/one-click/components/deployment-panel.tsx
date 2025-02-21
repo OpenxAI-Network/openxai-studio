@@ -10,7 +10,12 @@ import { format } from 'date-fns'
 import { Check, Clock, RefreshCcw, RotateCw } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { deployModel, reserveDemo, useDemosAvailable } from '@/lib/xnode-demo'
+import {
+  deployModel,
+  reserveDemo,
+  useDemosAvailable,
+  type ReservedDemoXnode,
+} from '@/lib/xnode-demo'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -147,19 +152,19 @@ export function DeploymentPanel() {
   const { toast } = useToast()
 
   const demos = useDemosAvailable()
-  const demoXnode = demos.data?.find((x) => !x.reservation)
+  const demoXnode = demos.data?.find((x) => !x.reserved_until)
   const reservedXnode = useDemoContext()
   const setReservedXnode = useSetDemoContext()
 
   const deployOnDemo = async () => {
     const activeReservation =
-      reservedXnode.xnode?.reservation &&
+      reservedXnode.xnode &&
       reservedXnode.xnode.reservation.reserved_until > Date.now() / 1000
-    const xnode = activeReservation ? reservedXnode.xnode : demoXnode
+    let deployOnXnode: ReservedDemoXnode
 
     if (!activeReservation && !demoXnode) {
       const nextFreeXnode = demos.data
-        ?.map((x) => x.reservation?.reserved_until)
+        ?.map((x) => x.reserved_until)
         .sort()
         .at(0)
       toast({
@@ -174,17 +179,19 @@ export function DeploymentPanel() {
       title: 'Deploying...',
     })
     try {
-      if (!activeReservation) {
-        await reserveDemo({ xnode_id: demoXnode.id }).then((xnode) =>
-          setReservedXnode({ xnode })
-        )
-      }
+      deployOnXnode = activeReservation
+        ? reservedXnode.xnode
+        : await reserveDemo({ xnode_id: demoXnode.id }).then((xnode) => {
+            setReservedXnode({ xnode })
+            return xnode
+          })
 
       let retry = 1
       while (true) {
         try {
           await deployModel({
-            xnode_id: xnode.id,
+            xnode_id: deployOnXnode.id,
+            secret: deployOnXnode.reservation.secret,
             model: 'deepseek-r1:1.5b',
             email: 'samuel.mens@openmesh.network',
             password: 'password',
@@ -216,7 +223,7 @@ export function DeploymentPanel() {
       variant: 'success',
     })
     setTimeout(
-      () => window.open(xnode.id.replace(':34392', ''), '_blank'),
+      () => window.open(deployOnXnode.id.replace(':34392', ''), '_blank'),
       45_000 // takes some time for open-webui to be ready
     )
   }

@@ -49,12 +49,6 @@ export const navItems: Record<NavCategory, NavItem[]> = {
     },
     {
       type: 'item',
-      name: 'Dashboard',
-      href: '/dashboard',
-      icon: Gauge,
-    },
-    {
-      type: 'item',
       name: 'Deployments',
       href: '/deployments',
       icon: Rocket,
@@ -83,5 +77,5 @@ export const navItems: Record<NavCategory, NavItem[]> = {
       href: 'https://community.openxai.org/',
       icon: Users,
     },
-  ]
+  ],
 }
