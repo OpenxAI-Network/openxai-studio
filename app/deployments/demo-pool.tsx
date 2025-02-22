@@ -10,7 +10,13 @@ import {
   HardDrive,
   Loader2,
   MemoryStick,
+  Key,
+  Eye,
+  EyeOff,
+  Copy,
 } from 'lucide-react'
+import { toast } from '@/components/ui/use-toast'
+import { useState } from 'react'
 
 import {
   useDemoCPUUsage,
@@ -28,6 +34,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { generateDemoCredentials } from '@/lib/demo-credentials'
 
 export function DemoPool() {
   const { data: demoXnodes, isLoading } = useDemosAvailable()
@@ -51,6 +59,7 @@ export function DemoPool() {
           <TableHead>Memory</TableHead>
           <TableHead>Storage</TableHead>
           <TableHead>Reserved Until</TableHead>
+          <TableHead>Credentials</TableHead>
           <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -64,6 +73,7 @@ export function DemoPool() {
 }
 
 function DemoXnodeListing(xnode: PublicDemoXnode) {
+  const [showPassword, setShowPassword] = useState(false)
   const isReserved = !!xnode.reserved_until
   const timeLeft = isReserved
     ? Math.round((xnode.reserved_until - Date.now() / 1000) / 60)
@@ -182,6 +192,55 @@ function DemoXnodeListing(xnode: PublicDemoXnode) {
           </span>
         ) : (
           <span className="text-muted-foreground">-</span>
+        )}
+      </TableCell>
+      <TableCell>
+        {reservedXnode && reservedXnode.id === xnode.id && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-sm text-muted-foreground">Username:</span>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="font-mono"
+                onClick={() => {
+                  const creds = generateDemoCredentials(xnode.id)
+                  navigator.clipboard.writeText(creds.email)
+                  toast({
+                    title: "Username copied",
+                    description: "Username has been copied to clipboard"
+                  })
+                }}
+              >
+                {generateDemoCredentials(xnode.id).email}
+              </Button>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-sm text-muted-foreground">Password:</span>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="font-mono"
+                onClick={() => {
+                  const creds = generateDemoCredentials(xnode.id)
+                  navigator.clipboard.writeText(creds.password)
+                  toast({
+                    title: "Password copied",
+                    description: "Password has been copied to clipboard"
+                  })
+                }}
+              >
+                {showPassword ? generateDemoCredentials(xnode.id).password : '••••••••'}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
+          </div>
         )}
       </TableCell>
       <TableCell>
