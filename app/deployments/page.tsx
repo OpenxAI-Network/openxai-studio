@@ -15,7 +15,7 @@ export default function DeploymentsPage() {
         <p className="mb-6 text-lg">
           During the <Link href="https://dashboard.openxai.org/genesis" className="font-bold underline">OpenxAI Genesis Event</Link>, 
           test your AI applications on our demo nodes. Each node is available for 1 hour - check out our{' '}
-          <Link href="/app-store" className="text-primary hover:underline" className="font-bold underline">AI App Store</Link> to get started.
+          <Link href="/app-store" className="text-primary hover:underline">AI App Store</Link> to get started.
         </p>
 
         <DemoPool />
