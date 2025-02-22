@@ -55,8 +55,8 @@ export const navItems: Record<NavCategory, NavItem[]> = {
     },
     {
       type: 'item',
-      name: 'Rewards',
-      href: '/rewards',
+      name: 'Claims',
+      href: 'https://dashboard.openxai.org/claims',
       icon: Star,
     },
     {

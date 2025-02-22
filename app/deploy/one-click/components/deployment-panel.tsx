@@ -38,6 +38,14 @@ import { ERCOptions } from './erc-options'
 import { ModelSizeSelector } from './model-size-selector'
 import { ProviderSelector } from './provider-selector'
 import { generateDemoCredentials } from '@/lib/demo-credentials'
+import ModelDefinitions from '@/utils/model-definitions.json'
+
+// Demo pool hardware specifications
+const DEMO_POOL_SPECS = {
+  cpuCores: 8,        // 2 CPU cores
+  memoryGB: 16,       // 16GB RAM
+  storageGB: 310,      // 310GB Storage
+} as const
 
 type DeploymentStep = {
   modelSize?: any
@@ -45,7 +53,11 @@ type DeploymentStep = {
   ercOption?: any
 }
 
-export function DeploymentPanel() {
+interface DeploymentPanelProps {
+  templateId?: string;
+}
+
+export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
   const router = useRouter()
   const [step, setStep] = useState<DeploymentStep>({})
   const [currentStep, setCurrentStep] = useState<number>(0)
@@ -189,11 +201,28 @@ export function DeploymentPanel() {
             return xnode
           })
 
+      console.log('Selected model:', step.modelSize)
+      
+      // Use templateId to find the correct model definition
+      const selectedModel = ModelDefinitions.find(m => m.nixName === templateId)
+      console.log('Found model definition:', selectedModel)
+      
+      // Get the selected size from the UI
+      const modelSize = step.modelSize?.name
+      console.log('Model size:', modelSize)
+      
+      const ollamaCommand = selectedModel?.options[0].requirements[modelSize]?.ollamaCommand
+      console.log('Ollama command:', ollamaCommand)
+
+      if (!ollamaCommand) {
+        throw new Error('Selected model configuration not found')
+      }
+
       const credentials = generateDemoCredentials(deployOnXnode.id)
       await deployModel({
         xnode_id: deployOnXnode.id,
         secret: deployOnXnode.reservation.secret,
-        model: 'deepseek-r1:1.5b',
+        model: ollamaCommand,
         ...credentials
       })
     } catch (e) {
@@ -219,6 +248,9 @@ export function DeploymentPanel() {
     )
   }
 
+  // Check if all selections are made
+  const isReadyToDeploy = step.modelSize && step.provider && step.ercOption
+
   return (
     <>
       <div className="space-y-8">
@@ -226,8 +258,8 @@ export function DeploymentPanel() {
 
         <div
           className={cn(
-            'relative cursor-pointer rounded-lg border',
-            currentStep > 0 && 'border-primary bg-primary/5'
+            'relative cursor-pointer rounded-lg',
+            currentStep > 0 && 'bg-primary/5'
           )}
           onClick={handleModelClick}
         >
@@ -235,6 +267,7 @@ export function DeploymentPanel() {
             selected={step.modelSize}
             showAll={currentStep === 0}
             onSelect={handleModelSelect}
+            hardware={DEMO_POOL_SPECS}
           />
           {currentStep > 0 && step.modelSize && (
             <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
@@ -246,8 +279,8 @@ export function DeploymentPanel() {
         {currentStep >= 1 && (
           <div
             className={cn(
-              'relative cursor-pointer rounded-lg border',
-              currentStep > 1 && 'border-primary bg-primary/5'
+              'relative cursor-pointer rounded-lg',
+              currentStep > 1 && 'bg-primary/5'
             )}
             onClick={handleProviderClick}
           >
@@ -267,8 +300,8 @@ export function DeploymentPanel() {
         {currentStep >= 2 && (
           <div
             className={cn(
-              'relative cursor-pointer rounded-lg border',
-              currentStep > 2 && 'border-primary bg-primary/5'
+              'relative cursor-pointer rounded-lg',
+              currentStep > 2 && 'bg-primary/5'
             )}
             onClick={handleERCClick}
           >
@@ -289,6 +322,7 @@ export function DeploymentPanel() {
           <Button
             className="w-full"
             size="lg"
+            disabled={!isReadyToDeploy}
             onClick={() => deployOnDemo().catch(console.error)}
           >
             One Click Deployment

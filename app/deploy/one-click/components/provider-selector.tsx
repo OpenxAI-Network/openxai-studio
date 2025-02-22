@@ -26,41 +26,36 @@ interface ProviderSelectorProps {
 
 export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelectorProps) {
   const [showExtendedOptions, setShowExtendedOptions] = useState(false)
-  const {provider} = useDeploymentContext();
 
   const providers: Provider[] = [
     {
-      name: 'Xnode (Decentrali..)',
-      features: ['Decentralized', 'Web3 Ready', 'No KYC'],
+      name: 'Xnode (Decentralized)',
+      features: ['Web3 Ready', 'No KYC'],
       action: { label: 'Try for Free' }
     },
     {
-      name: 'Xnode DVM (Decentrali..)',
-      features: ['Decentralized', 'Web3 Ready', 'No KYC'],
-      action: { label: '500 OPENX' }
+      name: 'Xnode DVM (Decentralized)',
+      features: ['Web3 Ready', 'No KYC'],
+      action: { label: '500 OPENX' },
+      disabled: true
     },
     {
-      name: 'Hivelocity (Decentrali..)',
-      features: ['Decentralized', 'Web3 Ready', 'No KYC'],
-      action: { label: '$15p/m', price: '$15' }
+      name: 'Hivelocity (Decentralized)',
+      features: ['Web3 Ready', 'No KYC'],
+      action: { label: '$15p/m' },
+      disabled: true
     },
     {
       name: 'AWS EC2 (HK)',
-      features: ['Decentralized', 'Web3 Ready', 'No KYC'],
-      action: { label: '$421p/m', price: '$421' },
+      features: ['Web3 Ready', 'No KYC'],
+      action: { label: '$421p/m' },
       disabled: true
     },
     {
       name: 'Google Cloud (NYC)',
-      features: ['Decentralized', 'Web3 Ready', 'No KYC'],
-      action: { label: '$745p/m', price: '$745' },
+      features: ['Web3 Ready', 'No KYC'],
+      action: { label: '$745p/m' },
       disabled: true
-    },
-    {
-      name: 'Xnode One (Decentrali..)',
-      features: ['Decentralized', 'Web3 Ready', 'No KYC'],
-      action: { label: '$0p/m', price: '$0' },
-      comingSoon: true
     }
   ]
 
@@ -72,35 +67,27 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
         {displayProviders.map((provider) => (
           <div
             key={provider.name}
-            onClick={() => !provider.disabled && !provider.comingSoon && onSelect(provider)}
+            onClick={() => !provider.disabled && onSelect(provider)}
             className={cn(
-              "relative flex cursor-pointer items-center justify-between rounded-lg border p-4 hover:border-primary/50",
+              "relative flex flex-col rounded-lg border p-4 hover:border-primary/50",
               selected?.name === provider.name && "border-primary bg-primary/5",
-              (provider.disabled || provider.comingSoon) && "cursor-not-allowed opacity-50"
+              provider.disabled && "cursor-not-allowed opacity-50"
             )}
           >
-            <div className="flex items-center gap-3">
-              <div>
-                <div className="font-medium">{provider.name}</div>
-                <div className="flex gap-4 text-sm text-muted-foreground">
-                  {provider.features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-1">
-                      {feature === 'Decentralized' || feature === 'Web3 Ready' || feature === 'No KYC' ? (
-                        <Check className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <X className="h-4 w-4 text-red-500" />
-                      )}
-                      {feature}
-                    </div>
-                  ))}
-                </div>
+            <div className="font-medium mb-3 w-full">{provider.name}</div>
+            
+            <div className="grid grid-cols-3 w-full items-center">
+              <div className="flex items-center gap-1">
+                <Check className="h-4 w-4 text-green-500" />
+                <span className="text-sm text-muted-foreground">Web3 Ready</span>
               </div>
-            </div>
-            <div className="text-sm">
-              {provider.comingSoon && (
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs">Coming soon</span>
-              )}
-              {!provider.comingSoon && provider.action.label}
+              <div className="flex items-center gap-1">
+                <Check className="h-4 w-4 text-green-500" />
+                <span className="text-sm text-muted-foreground">No KYC</span>
+              </div>
+              <div className="text-sm text-right">
+                {provider.action.label}
+              </div>
             </div>
           </div>
         ))}
@@ -115,14 +102,14 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
       <Dialog open={showExtendedOptions} onOpenChange={setShowExtendedOptions}>
         <DialogContent className="max-w-[1200px]">
           <DeploymentProvider 
-            onSelect={() => {
-              if (provider) {
+            onSelect={(selectedProvider) => {
+              if (selectedProvider) {
                 onSelect({
-                  name: provider.productName,
+                  name: selectedProvider.productName,
                   features: ['Decentralized', 'Web3 Ready', 'No KYC'],
                   action: { 
-                    label: `$${provider.price.monthly}p/m`,
-                    price: `$${provider.price.monthly}`
+                    label: `$${selectedProvider.price.monthly}p/m`,
+                    price: `$${selectedProvider.price.monthly}`
                   }
                 })
               }

@@ -1,6 +1,23 @@
 'use client'
 
 import { cn } from '@/lib/utils'
+import modelDefinitions from '@/utils/model-definitions.json'
+
+interface ModelOption {
+  name: string
+  desc: string
+  nixName: string
+  type: string
+  requirements: {
+    [key: string]: {
+      ram: number
+      storage: number
+      cpu: number
+      ollamaCommand: string
+    }
+  }
+  value?: string
+}
 
 type ModelSize = {
   name: string
@@ -13,83 +30,59 @@ type ModelSize = {
 interface ModelSizeSelectorProps {
   selected?: ModelSize
   showAll?: boolean
+  hardware?: {
+    memoryGB: number
+    storageGB: number
+    cpuCores: number
+  }
   onSelect: (size: ModelSize) => void
 }
 
-export function ModelSizeSelector({ selected, showAll, onSelect }: ModelSizeSelectorProps) {
-  const sizes: ModelSize[] = [
-        {
-          "name": "1.5b",
-          "ram": "8GB",
-          "storage": "10GB",
-          "cpu": "2 cores",
-          "size": "1.5B parameters"
-        },
-        {
-          "name": "7b",
-          "ram": "4GB",
-          "storage": "10GB",
-          "cpu": "2 cores",
-          "size": "7B parameters"
-        },
-        {
-          "name": "8b",
-          "ram": "8GB",
-          "storage": "10GB",
-          "cpu": "2 cores",
-          "size": "8B parameters"
-        },
-        {
-          "name": "14b",
-          "ram": "16GB",
-          "storage": "20GB",
-          "cpu": "4 cores",
-          "size": "14B parameters"
-        },
-        {
-          "name": "32b",
-          "ram": "24GB",
-          "storage": "40GB",
-          "cpu": "4 cores",
-          "size": "32B parameters"
-        },
-        {
-          "name": "70b",
-          "ram": "48GB",
-          "storage": "100GB",
-          "cpu": "8 cores",
-          "size": "70B parameters"
-        },
-        {
-          "name": "671b",
-          "ram": "512GB",
-          "storage": "700GB",
-          "cpu": "64 cores",
-          "size": "671B parameters"
-        }
-  ]
+export function ModelSizeSelector({ selected, showAll, hardware, onSelect }: ModelSizeSelectorProps) {
+  const deepseekModel = modelDefinitions.find(m => m.name === 'deepseek-r1')
+  const modelOption = deepseekModel?.options[0] as ModelOption
+  
+  const modelSizes = modelOption?.requirements || {}
+  const sizes = Object.entries(modelSizes).map(([name, specs]) => ({
+    name,
+    ram: `${specs.ram / 1000}GB`,
+    storage: `${specs.storage / 1000}GB`,
+    cpu: `${specs.cpu} cores`,
+    size: `${name} parameters`,
+    ollamaCommand: specs.ollamaCommand
+  }))
 
-  const displaySizes = showAll ? sizes : (selected ? [...sizes.filter(s => s.name === selected.name)] : sizes)
+  const displaySizes = showAll ? sizes : (selected ? [sizes.find(s => s.name === selected.name)!] : sizes)
 
   return (
     <div className="space-y-3">
-      {displaySizes.map((size) => (
-        <div
-          key={size.name}
-          onClick={() => onSelect(size)}
-          className={cn(
-            "flex cursor-pointer items-center justify-between rounded-lg border p-4 hover:border-primary/50",
-            selected?.name === size.name && "border-primary bg-primary/5"
-          )}
-        >
-          <div className="flex items-center gap-3">
-            <div className="font-medium">{size.name}</div>
+      {displaySizes.map((size) => {
+        const isAvailable = !hardware || (
+          modelSizes[size.name].ram <= hardware.memoryGB * 1000 &&
+          modelSizes[size.name].storage <= hardware.storageGB * 1000 &&
+          modelSizes[size.name].cpu <= hardware.cpuCores
+        )
+
+        return (
+          <div
+            key={size.name}
+            onClick={() => isAvailable && onSelect(size)}
+            className={cn(
+              "flex cursor-pointer items-center justify-between rounded-lg border p-4 hover:border-primary/50",
+              isAvailable 
+                ? "border-border"
+                : "cursor-not-allowed opacity-50",
+              selected?.name === size.name && "border-primary bg-primary/5"
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <div className="text-lg">{size.name}</div>
+            </div>
+            <div className="text-muted-foreground">
+              {size.ram} RAM • {size.storage} Storage
+            </div>
           </div>
-          <div className="text-sm text-muted-foreground">
-            {size.ram} RAM • {size.storage} Storage
-          </div>
-        </div>
-      ))}
+        )})}
     </div>
   )
-} 
+}

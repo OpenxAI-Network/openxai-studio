@@ -237,7 +237,7 @@ function DemoXnodeListing(xnode: PublicDemoXnode) {
                 size="sm"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </Button>
             </div>
           </div>
