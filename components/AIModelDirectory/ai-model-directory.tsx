@@ -11,6 +11,21 @@ import { SortDropdown } from './ai-model-dropdown'
 import { prefix } from '@/utils/prefix'
 import ModelDefinitions from '@/utils/model-definitions.json'
 
+interface ModelOption {
+  name: string
+  desc: string
+  nixName: string
+  type: string
+  requirements: {
+    [key: string]: {
+      ram: number
+      storage: number
+      cpu: number
+      ollamaCommand: string
+    }
+  }
+}
+
 type ModelData = {
   id: string
   name: string
@@ -112,7 +127,7 @@ export default function AIModelDirectory() {
 
   const initialModels = ModelDefinitions.map(model => ({
     ...model,
-    model_sizes: model.options?.find(opt => opt.name === "model_size")?.value || "7b",
+    model_sizes: Object.keys((model.options?.[0] as ModelOption)?.requirements || {}).join(','),
     type: model.tags[0] || "General"
   }))
 
