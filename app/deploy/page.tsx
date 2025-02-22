@@ -193,7 +193,7 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
 
           {/* Right Deployment Panel */}
           <div className="col-span-4">
-            <DeploymentPanel />
+            <DeploymentPanel templateId={templateId} />
           </div>
         </div>
       </div>

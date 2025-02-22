@@ -52,36 +52,37 @@ export function ModelSizeSelector({ selected, showAll, hardware, onSelect }: Mod
     ollamaCommand: specs.ollamaCommand
   }))
 
-  const availableSizes = hardware 
-    ? sizes.filter(size => {
-        const specs = modelSizes[size.name]
-        return specs.ram <= hardware.memoryGB * 1000 && 
-               specs.storage <= hardware.storageGB * 1000 &&
-               specs.cpu <= hardware.cpuCores
-      })
-    : sizes
-
-  const displaySizes = showAll ? availableSizes : (selected ? [...availableSizes.filter(s => s.name === selected.name)] : availableSizes)
+  const displaySizes = showAll ? sizes : (selected ? [sizes.find(s => s.name === selected.name)!] : sizes)
 
   return (
     <div className="space-y-3">
-      {displaySizes.map((size) => (
-        <div
-          key={size.name}
-          onClick={() => onSelect(size)}
-          className={cn(
-            "flex cursor-pointer items-center justify-between rounded-lg border p-4 hover:border-primary/50",
-            selected?.name === size.name && "border-primary bg-primary/5"
-          )}
-        >
-          <div className="flex items-center gap-3">
-            <div className="font-medium">{size.name}</div>
+      {displaySizes.map((size) => {
+        const isAvailable = !hardware || (
+          modelSizes[size.name].ram <= hardware.memoryGB * 1000 &&
+          modelSizes[size.name].storage <= hardware.storageGB * 1000 &&
+          modelSizes[size.name].cpu <= hardware.cpuCores
+        )
+
+        return (
+          <div
+            key={size.name}
+            onClick={() => isAvailable && onSelect(size)}
+            className={cn(
+              "flex cursor-pointer items-center justify-between rounded-lg border p-4 hover:border-primary/50",
+              isAvailable 
+                ? "border-border"
+                : "cursor-not-allowed opacity-50",
+              selected?.name === size.name && "border-primary bg-primary/5"
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <div className="text-lg">{size.name}</div>
+            </div>
+            <div className="text-muted-foreground">
+              {size.ram} RAM • {size.storage} Storage
+            </div>
           </div>
-          <div className="text-sm text-muted-foreground">
-            {size.ram} RAM • {size.storage} Storage
-          </div>
-        </div>
-      ))}
+        )})}
     </div>
   )
-} 
+}

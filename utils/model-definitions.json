@@ -19,13 +19,13 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "1.5b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "deepseek-coder:1.5b" },
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "deepseek-coder:7b" },
-          "8b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "deepseek-coder:8b" },
-          "14b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "deepseek-coder:14b" },
-          "32b": { "ram": 24000, "storage": 40000, "cpu": 4, "ollamaCommand": "deepseek-coder:32b" },
-          "70b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "deepseek-coder:70b" },
-          "671b": { "ram": 512000, "storage": 700000, "cpu": 64, "ollamaCommand": "deepseek-coder:671b" }
+          "1.5b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "deepseek-r1:1.5b" },
+          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "deepseek-r1:7b" },
+          "8b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "deepseek-r1:8b" },
+          "14b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "deepseek-r1:14b" },
+          "32b": { "ram": 24000, "storage": 40000, "cpu": 4, "ollamaCommand": "deepseek-r1:32b" },
+          "70b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "deepseek-r1:70b" },
+          "671b": { "ram": 512000, "storage": 700000, "cpu": 64, "ollamaCommand": "deepseek-r1:671b" }
         }
       }
     ]

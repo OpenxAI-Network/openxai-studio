@@ -2,9 +2,11 @@ const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange']
 const words = ['butterfly', 'dolphin', 'elephant', 'penguin', 'giraffe', 'kangaroo']
 
 export function generateDemoCredentials(nodeId: string) {
-  const existingCreds = localStorage.getItem(`demo-credentials-${nodeId}`)
-  if (existingCreds) {
-    return JSON.parse(existingCreds)
+  if (typeof window !== 'undefined') {
+    const existingCreds = localStorage.getItem(`demo-credentials-${nodeId}`)
+    if (existingCreds) {
+      return JSON.parse(existingCreds)
+    }
   }
 
   const color = colors[Math.floor(Math.random() * colors.length)]
@@ -16,6 +18,9 @@ export function generateDemoCredentials(nodeId: string) {
     password: `${word}${number}`
   }
 
-  localStorage.setItem(`demo-credentials-${nodeId}`, JSON.stringify(credentials))
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(`demo-credentials-${nodeId}`, JSON.stringify(credentials))
+  }
+  
   return credentials
 } 
