@@ -38,9 +38,15 @@ interface ModelSizeSelectorProps {
   onSelect: (size: ModelSize) => void
 }
 
-export function ModelSizeSelector({ selected, showAll, hardware, onSelect }: ModelSizeSelectorProps) {
-  const deepseekModel = modelDefinitions.find(m => m.name === 'deepseek-r1')
-  const modelOption = deepseekModel?.options[0] as ModelOption
+export function ModelSizeSelector({ selected, showAll, hardware, onSelect, templateId }: ModelSizeSelectorProps & { templateId?: string }) {
+  // Find the correct model definition based on templateId
+  const modelDefinition = modelDefinitions.find(m => m.nixName === templateId)
+  if (!modelDefinition) {
+    console.error(`Model definition not found for template: ${templateId}`)
+    return null
+  }
+  
+  const modelOption = modelDefinition.options[0] as ModelOption
   
   const modelSizes = modelOption?.requirements || {}
   const sizes = Object.entries(modelSizes).map(([name, specs]) => ({

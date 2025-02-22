@@ -266,8 +266,9 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
           <ModelSizeSelector
             selected={step.modelSize}
             showAll={currentStep === 0}
-            onSelect={handleModelSelect}
             hardware={DEMO_POOL_SPECS}
+            onSelect={handleModelSelect}
+            templateId={templateId}
           />
           {currentStep > 0 && step.modelSize && (
             <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
