@@ -70,11 +70,9 @@ function ModelCard({ data }: { data: ModelData }) {
   const sizes = data.model_sizes?.split(',') || ["7b"]
   const iconPath = data.logo
   
-  const isDeepseek = data.name === 'deepseek-r1'
   const cardContent = (
     <div className={cn(
-      "flex h-[200px] flex-col rounded-lg border p-4",
-      isDeepseek ? "cursor-pointer hover:bg-muted/50" : "cursor-not-allowed opacity-70"
+      "flex h-[200px] flex-col rounded-lg border p-4 hover:bg-muted/50 cursor-pointer"
     )}>
       <div className="flex items-start gap-4">
         <img 
@@ -109,15 +107,11 @@ function ModelCard({ data }: { data: ModelData }) {
     </div>
   )
 
-  if (isDeepseek) {
-    return (
-      <Link href="/deploy?templateId=deepseekr1">
-        {cardContent}
-      </Link>
-    )
-  }
-
-  return cardContent
+  return (
+    <Link href={`/deploy?templateId=${data.nixName}`}>
+      {cardContent}
+    </Link>
+  )
 }
 
 export default function AIModelDirectory() {
