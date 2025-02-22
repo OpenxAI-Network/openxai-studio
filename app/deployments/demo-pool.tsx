@@ -71,7 +71,7 @@ function DemoXnodeListing(xnode: PublicDemoXnode) {
   const isExpired = timeLeft < 0
 
   let { xnode: reservedXnode } = useDemoContext()
-  if (reservedXnode.reservation.reserved_until < Date.now() / 1000) {
+  if (reservedXnode?.reservation?.reserved_until < Date.now() / 1000) {
     reservedXnode = undefined
   }
 
