@@ -185,14 +185,24 @@ function DemoXnodeListing(xnode: PublicDemoXnode) {
         )}
       </TableCell>
       <TableCell>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={isReserved && !isExpired}
-          onClick={() => (window.location.href = '/app-store')}
-        >
-          {isReserved && !isExpired ? 'Reserved' : 'Deploy AI App'}
-        </Button>
+        {reservedXnode && reservedXnode.id === xnode.id ? (
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={() => window.open(xnode.id.replace(':34392', ''), '_blank')}
+          >
+            Launch
+          </Button>
+        ) : (
+          <Button 
+            variant="outline"
+            size="sm"
+            disabled={isReserved && !isExpired}
+            onClick={() => window.location.href = '/app-store'}
+          >
+            {isReserved && !isExpired ? 'Reserved' : 'Deploy AI App'}
+          </Button>
+        )}
       </TableCell>
     </TableRow>
   )
