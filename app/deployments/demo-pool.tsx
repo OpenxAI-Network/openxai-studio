@@ -47,7 +47,7 @@ export function DemoPool() {
         <TableRow className="bg-muted/50">
           <TableHead>Server ID</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead>CPU Usage</TableHead>
+          {/* <TableHead>CPU Usage</TableHead> */}
           <TableHead>Memory</TableHead>
           <TableHead>Storage</TableHead>
           <TableHead>Reserved Until</TableHead>
@@ -121,7 +121,7 @@ function DemoXnodeListing(xnode: PublicDemoXnode) {
           <span className="text-green-500">Available</span>
         )}
       </TableCell>
-      <TableCell>
+      {/* <TableCell>
         <div className="flex w-full items-center gap-2">
           <Cpu className="size-4 text-muted-foreground" />
           <div className="relative h-2 w-24 rounded bg-border">
@@ -136,7 +136,7 @@ function DemoXnodeListing(xnode: PublicDemoXnode) {
             {Math.round(cpuUsed ?? 0)}%
           </span>
         </div>
-      </TableCell>
+      </TableCell> */}
       <TableCell>
         <div className="flex w-full items-center gap-2">
           <MemoryStick className="size-4 text-muted-foreground" />
