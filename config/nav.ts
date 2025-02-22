@@ -53,12 +53,12 @@ export const navItems: Record<NavCategory, NavItem[]> = {
       href: '/deployments',
       icon: Rocket,
     },
-    {
-      type: 'item',
-      name: 'Rewards',
-      href: '/rewards',
-      icon: Star,
-    },
+    // {
+    //   type: 'item',
+    //   name: 'Rewards',
+    //   href: '/rewards',
+    //   icon: Star,
+    // },
     {
       type: 'item',
       name: 'Resources',

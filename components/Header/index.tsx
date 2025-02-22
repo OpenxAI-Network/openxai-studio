@@ -175,7 +175,7 @@ export default function Header({ sessionToken }: { sessionToken?: string }) {
               </sup>
             </div>
             <Popover>
-              <PopoverTrigger className="flex h-9 min-w-56 items-center justify-between rounded border border-background/15 bg-background/10 px-3 text-sm text-background max-hdplus:min-w-48 max-hdplus:text-xs">
+              {/*<PopoverTrigger className="flex h-9 min-w-56 items-center justify-between rounded border border-background/15 bg-background/10 px-3 text-sm text-background max-hdplus:min-w-48 max-hdplus:text-xs">
                 <span className="flex items-center gap-1.5">
                   <PanelLeft className="size-3.5" />
                   {selectedXNode
@@ -184,6 +184,7 @@ export default function Header({ sessionToken }: { sessionToken?: string }) {
                 </span>
                 <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
               </PopoverTrigger>
+              */}
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                 <Command>
                   {totalNodes > 4 ? (
