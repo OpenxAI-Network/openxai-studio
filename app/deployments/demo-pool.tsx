@@ -189,7 +189,7 @@ function DemoXnodeListing(xnode: PublicDemoXnode) {
           variant="outline"
           size="sm"
           disabled={isReserved && !isExpired}
-          onClick={() => (window.location.href = '/deploy/one-click')}
+          onClick={() => (window.location.href = '/app-store')}
         >
           {isReserved && !isExpired ? 'Reserved' : 'Deploy AI App'}
         </Button>
