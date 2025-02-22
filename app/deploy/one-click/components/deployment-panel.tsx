@@ -37,6 +37,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { ERCOptions } from './erc-options'
 import { ModelSizeSelector } from './model-size-selector'
 import { ProviderSelector } from './provider-selector'
+import { generateDemoCredentials } from '@/lib/demo-credentials'
 
 type DeploymentStep = {
   modelSize?: any
@@ -55,6 +56,7 @@ export function DeploymentPanel() {
     step: number
     status: string[]
   }>({ step: 0, status: [] })
+  const [deployedNodeId, setDeployedNodeId] = useState<string>('')
 
   const deploymentSteps = [
     'Model is selected',
@@ -183,28 +185,17 @@ export function DeploymentPanel() {
         ? reservedXnode.xnode
         : await reserveDemo({ xnode_id: demoXnode.id }).then((xnode) => {
             setReservedXnode({ xnode })
+            setDeployedNodeId(xnode.id)
             return xnode
           })
 
-      let retry = 1
-      while (true) {
-        try {
-          await deployModel({
-            xnode_id: deployOnXnode.id,
-            secret: deployOnXnode.reservation.secret,
-            model: 'deepseek-r1:1.5b',
-            email: 'samuel.mens@openmesh.network',
-            password: 'password',
-          })
-          break
-        } catch (e) {
-          console.warn(e)
-          retry--
-          if (retry < 0) {
-            throw e
-          }
-        }
-      }
+      const credentials = generateDemoCredentials(deployOnXnode.id)
+      await deployModel({
+        xnode_id: deployOnXnode.id,
+        secret: deployOnXnode.reservation.secret,
+        model: 'deepseek-r1:1.5b',
+        ...credentials
+      })
     } catch (e) {
       console.error(e)
       dismiss()
@@ -404,8 +395,13 @@ export function DeploymentPanel() {
 
           <div className="py-4">
             <p className="mb-4 text-lg">
-              Your Ollama app is installed. You have 1 hour to use your model.
+              Your AI App is installed. You have 1 hour to use your model.
             </p>
+            <div className="mb-4 rounded border p-3 text-left">
+              <p className="font-bold">Your Login Credentials:</p>
+              <p className="font-mono text-sm">Email: {generateDemoCredentials(deployedNodeId).email}</p>
+              <p className="font-mono text-sm">Password: {generateDemoCredentials(deployedNodeId).password}</p>
+            </div>
             <p className="text-sm text-muted-foreground">
               Auto redirect in {redirectCounter} seconds or view your
               deployments on{' '}
