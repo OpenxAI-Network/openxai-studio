@@ -102,14 +102,14 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
       <Dialog open={showExtendedOptions} onOpenChange={setShowExtendedOptions}>
         <DialogContent className="max-w-[1200px]">
           <DeploymentProvider 
-            onSelect={() => {
-              if (provider) {
+            onSelect={(selectedProvider) => {
+              if (selectedProvider) {
                 onSelect({
-                  name: provider.productName,
+                  name: selectedProvider.productName,
                   features: ['Decentralized', 'Web3 Ready', 'No KYC'],
                   action: { 
-                    label: `$${provider.price.monthly}p/m`,
-                    price: `$${provider.price.monthly}`
+                    label: `$${selectedProvider.price.monthly}p/m`,
+                    price: `$${selectedProvider.price.monthly}`
                   }
                 })
               }

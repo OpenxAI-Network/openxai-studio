@@ -49,7 +49,7 @@ const PRICE_MAX = 10000
 
 type DeploymentProviderProps = {
   specs?: Specs
-  onSelect: () => void
+  onSelect: (selectedProvider: HardwareProduct) => void
 }
 export default function DeploymentProvider({
   specs,
@@ -326,7 +326,7 @@ export default function DeploymentProvider({
               location: selectedProduct.location!,
               isUnit: false,
             }))
-            onSelect()
+            onSelect(selectedProduct)
           }}
         />
       )
