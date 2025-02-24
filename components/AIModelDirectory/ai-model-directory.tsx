@@ -72,7 +72,7 @@ function ModelCard({ data }: { data: ModelData }) {
   
   const cardContent = (
     <div className={cn(
-      "flex h-[200px] flex-col rounded-lg border p-4 hover:bg-muted/50 cursor-pointer"
+      "flex h-[200px] cursor-pointer flex-col rounded-lg border p-4 hover:bg-muted/50"
     )}>
       <div className="flex items-start gap-4">
         <img 
