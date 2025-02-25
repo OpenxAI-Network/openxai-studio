@@ -124,20 +124,21 @@ function formatStorageSize(sizeInGb: number): string {
   }
 }
 
-type ResourcesTableProps = {
-  onSearchChange?: Dispatch<SetStateAction<string>>; // Made optional to handle undefined cases
-  onFiltersChange?: Dispatch<SetStateAction<{
+interface ResourcesTableProps {
+  providers: any[];
+  onSearchChange: (value: string) => void;
+  onFiltersChange: (filters: any) => void;
+  searchQuery: string;
+  filters: {
     provider: string;
     minStorage: number;
     minRAM: number;
     minGPUs: number;
     minBandwidth: number;
-    minPrice?: number;
-    maxPrice?: number;
-  }>>; // Made optional to handle undefined cases
-};
+  };
+}
 
-export default function ResourcesTable({ onSearchChange, onFiltersChange }: ResourcesTableProps) {
+export default function ResourcesTable({ providers, onSearchChange, onFiltersChange }: ResourcesTableProps) {
   const [page, setPage] = useState(0);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pageSize, setPageSize] = useState(20);

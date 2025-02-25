@@ -1,99 +1,69 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { type Provider } from '@/db/schema';
-
+import MapComponent from './map-client-component';
 import ResourcesTable from './resources-table';
-import MapVisualization from './map-visualization';
 import locations from './locations.json';
 
-// Add the Stats interface here
-interface Stats {
-  countries: number;
-  providers: number;
-  regions: number;
-  storage: number;
-  ram: number;
-  gpus: number;
-  bandwidth: number;
-}
-
-let unplottableLocations: string[] = [];
-
-type StatsItemProps = {
-  title: string
-  value: string | number
-  unit?: string
-  }
-
-  function StatsItem({ title, value, unit }: StatsItemProps) {
-    return (
-      <div className="flex flex-col gap-1 text-center">
-        <h1 className="text-xl font-medium text-darkGray">{title}</h1>
-        <p className="font-bold text-primary">
-          <span className="text-4xl">{value}</span>
-          <span className="text-xl">{unit}</span>
-        </p>
-      </div>
-    )
-  }
-
-function getCoordinates(location: string | null | undefined) {
-  if (!location) {
-    console.log(`[Location Processing] Location is null, defaulting to U.S. centroid.`);
-    return { latitude: 37.0902, longitude: -95.7129 };
-  }
-
-  const originalLocation = location;
-  // Improve location normalization
-  const normalizedLocation = location
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    // Remove trailing spaces and commas
-    .replace(/[\s,]+$/, '')
-    // Remove state/country codes
-    .replace(/, [a-z]{2}$/i, '');
-
-  console.log(`[Location Processing] Normalizing location: "${originalLocation}" to "${normalizedLocation}"`);
-  
-  // Try exact match first
-  let coords = locations[normalizedLocation as keyof typeof locations];
-  
-  // If no exact match, try to find partial match
-  if (!coords) {
-    const locationKey = Object.keys(locations).find(key => 
-      key.toLowerCase().includes(normalizedLocation) || 
-      normalizedLocation.includes(key.toLowerCase())
-    );
-    if (locationKey) {
-      coords = locations[locationKey as keyof typeof locations];
-      console.log(`[Location Processing] Found partial match: "${locationKey}" for "${normalizedLocation}"`);
+async function fetchProviders() {
+  try {
+    console.log('[ResourcesPage] Fetching providers from API');
+    // Increase the limit to fetch more providers (if the API supports pagination)
+    const response = await fetch('/api/providers?limit=1000');
+    if (!response.ok) {
+      throw new Error(`Failed to fetch providers: ${response.status} ${response.statusText}`);
     }
+    const result = await response.json();
+    
+    // Handle both array responses and paginated responses with data property
+    const providers = Array.isArray(result) ? result : (result.data || []);
+    
+    console.log(`[ResourcesPage] Successfully fetched ${providers.length} providers from API`);
+    return providers;
+  } catch (error) {
+    console.error('Error fetching providers:', error);
+    return [];
   }
-
-  if (coords) {
-    console.log(`[Location Processing] Successfully mapped "${originalLocation}" to coordinates: [${coords.latitude}, ${coords.longitude}]`);
-    return {
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-    };
-  }
-
-  unplottableLocations.push(normalizedLocation);
-  console.warn(`[Location Processing] Location "${originalLocation}" (normalized to "${normalizedLocation}") is unplottable. Please update locations.json.`);
-  return { latitude: 37.0902, longitude: -95.7129 }; // Default to US centroid instead of 0,0
 }
 
-interface ProviderWithCoordinates extends Provider {
-  longitude: number;
-  latitude: number;
+// Simple function to get coordinates from locations.json
+function getCoordinatesForLocation(location: string | undefined): [number, number] | null {
+  if (!location) {
+    console.log('[Map] No location provided for provider');
+    return null;
+  }
+  
+  // Clean up the location string
+  const cleanLocation = location.trim();
+  
+  // Check for exact match first
+  if (locations[cleanLocation as keyof typeof locations]) {
+    console.log(`[Map] Found exact match for "${cleanLocation}"`);
+    const locationData = locations[cleanLocation as keyof typeof locations];
+    // Explicitly create a tuple from the object properties
+    return [locationData.latitude, locationData.longitude];
+  }
+  
+  // Check for partial matches
+  const partialMatch = Object.keys(locations).find(city => 
+    cleanLocation.toLowerCase().includes(city.toLowerCase()) || 
+    city.toLowerCase().includes(cleanLocation.toLowerCase()));
+  
+  if (partialMatch) {
+    console.log(`[Map] Found partial match for "${cleanLocation}" -> "${partialMatch}"`);
+    const locationData = locations[partialMatch as keyof typeof locations];
+    // Explicitly create a tuple from the object properties
+    return [locationData.latitude, locationData.longitude];
+  }
+  
+  console.log(`[Map] ⚠️ No match found for "${cleanLocation}"`);
+  return null;
 }
 
 export default function ResourcesPage() {
   console.log('ResourcesPage component is rendering');
-
+  
+  const [providers, setProviders] = useState<any[]>([]);
   const [searchInput, setSearchInput] = useState('');
   const [activeFilters, setActiveFilters] = useState({
     provider: '',
@@ -101,129 +71,132 @@ export default function ResourcesPage() {
     minRAM: 0,
     minGPUs: 0,
     minBandwidth: 0,
-    minPrice: undefined,
-    maxPrice: undefined,
   });
-
-  const { data: providersResponse = { data: [], stats: {} as Stats }, isLoading, error } = useQuery({
-    queryKey: ['providers', 'stats'],
-    queryFn: async () => {
-      if (typeof window === 'undefined') {
-        return { data: [], stats: {} as Stats };
-      }
-
-      try {
-        const res = await fetch('/api/providers?includeStats=true');
-        if (!res.ok) {
-          console.error('[Simulated Backend] Failed to fetch providers:', res.status, await res.text());
-          throw new Error('Network response was not ok');
-        }
-        const response = await res.json();
-        console.log('[Simulated Backend] Raw API response:', response);
-        const { data, stats } = response;
-
-        if (data.length === 0) {
-          console.warn('[Simulated Backend] No data received from API');
-        }
-
-        const providersWithCoords = data.map((provider: Provider) => {
-          const coords = getCoordinates(provider.location);
-          console.log(`[Simulated Backend] Processing provider ${provider.id} -> Coordinates: [${coords.latitude}, ${coords.longitude}]`);
-          return {
-            ...provider,
-            longitude: coords.longitude,
-            latitude: coords.latitude,
-          };
-        });
-
-        console.log('[Simulated Backend] Providers with coordinates:', providersWithCoords);
-        if (providersWithCoords.length === 0) {
-          console.warn('[Simulated Backend] No providers with valid coordinates');
-        }
-
-        return { data: providersWithCoords, stats: stats || {} as Stats };
-      } catch (error) {
-        console.error('[Simulated Backend] Error fetching providers:', error);
-        return { data: [], stats: {} as Stats };
-      }
-    },
-    placeholderData: {
-      data: [],
-      stats: {
-        countries: 172,
-        providers: 32,
-        regions: 482,
-        storage: 900,
-        ram: 26,
-        gpus: 335,
-        bandwidth: 900,
-      },
-    },
-    enabled: typeof window !== 'undefined',
-  });
-
-  const { data: providers, stats } = providersResponse;
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    if (error) {
-      console.error('[Simulated Backend] Query error:', error);
+    async function loadProviders() {
+      try {
+        const data = await fetchProviders();
+        
+        if (!Array.isArray(data)) {
+          console.error('[ResourcesPage] API returned non-array data:', data);
+          return;
+        }
+        
+        console.log(`[ResourcesPage] Processing ${data.length} providers for map visualization`);
+        
+        // Create a map to track unique provider+location combinations
+        const uniqueProviderLocations = new Map();
+        
+        // Process providers and deduplicate based on provider name and location
+        const providersWithCoordinates = data.map((provider: any) => {
+          // Try to get location from various fields
+          let location = provider.location || provider.region;
+          
+          // If location is still undefined, try to extract from other fields
+          if (!location) {
+            if (provider.country) {
+              location = provider.country;
+            } else if (provider.provider) {
+              location = provider.provider;
+            } else if (provider.providerName) {
+              location = provider.providerName;
+            }
+          }
+          
+          // Create a unique key for this provider+location
+          const providerName = provider.providerName || provider.name || provider.provider;
+          const uniqueKey = `${providerName}:${location}`;
+          
+          // Skip logging for duplicates to reduce console noise
+          if (!uniqueProviderLocations.has(uniqueKey)) {
+            console.log(`[ResourcesPage] Processing provider: ${providerName} at location: ${location}`);
+            uniqueProviderLocations.set(uniqueKey, true);
+          }
+          
+          const coordinates = getCoordinatesForLocation(location);
+          if (coordinates) {
+            // Only log for unique provider+location combinations
+            if (uniqueProviderLocations.get(uniqueKey) === true) {
+              console.log(`[ResourcesPage] Found coordinates for ${location}: [${coordinates[0]}, ${coordinates[1]}]`);
+              uniqueProviderLocations.set(uniqueKey, coordinates);
+            }
+          } else {
+            // If no coordinates found, try using the country as fallback
+            if (provider.country && provider.country !== location) {
+              const countryCoordinates = getCoordinatesForLocation(provider.country);
+              if (countryCoordinates) {
+                if (uniqueProviderLocations.get(uniqueKey) === true) {
+                  console.log(`[ResourcesPage] Found fallback coordinates for country ${provider.country}: [${countryCoordinates[0]}, ${countryCoordinates[1]}]`);
+                  uniqueProviderLocations.set(uniqueKey, countryCoordinates);
+                }
+                return {
+                  ...provider,
+                  coordinates: countryCoordinates
+                };
+              }
+            }
+            if (uniqueProviderLocations.get(uniqueKey) === true) {
+              console.log(`[ResourcesPage] ⚠️ No coordinates found for ${location}`);
+            }
+          }
+          
+          return {
+            ...provider,
+            coordinates
+          };
+        });
+        
+        const validCoordinatesCount = providersWithCoordinates.filter(p => p.coordinates).length;
+        const uniqueLocationsCount = new Set(
+          providersWithCoordinates
+            .filter(p => p.coordinates)
+            .map(p => `${p.coordinates[0]},${p.coordinates[1]}`)
+        ).size;
+        
+        console.log(`[ResourcesPage] Total providers: ${providersWithCoordinates.length}, With valid coordinates: ${validCoordinatesCount}, Unique locations: ${uniqueLocationsCount}`);
+        
+        setProviders(providersWithCoordinates);
+      } catch (error) {
+        console.error('Error loading providers:', error);
+      }
     }
+    
+    loadProviders();
+  }, []);
 
-    const uniqueUnplottable = [...new Set(unplottableLocations.filter(l => l !== null))];
-    if (uniqueUnplottable.length > 0) {
-      console.warn(`[Simulated Backend] Unplottable locations detected (not in locations.json). Please update locations.json to include: ${uniqueUnplottable.join(', ')}`);
-    }
-    unplottableLocations = [];
-  }, [providers, error]);
+  const handleSearchChange = (value: string) => {
+    console.log(`[ResourcesPage] Search changed to: "${value}"`);
+    setSearchInput(value);
+  };
 
-  const safeStats: Stats = stats || {
-    countries: 0,
-    providers: 0,
-    regions: 0,
-    storage: 0,
-    ram: 0,
-    gpus: 0,
-    bandwidth: 0,
+  const handleFiltersChange = (filters: any) => {
+    console.log('[ResourcesPage] Filters changed:', filters);
+    setActiveFilters(filters);
   };
 
   return (
-    <div className="container mt-12 p-2">
-      <section className="flex flex-col justify-center gap-4 text-center">
-        <h1 className="text-4xl font-semibold text-black">
-          A large network of data centres, all around the world
-        </h1>
-        <div className="h-[600px] w-full overflow-hidden rounded-lg">
-        {isLoading ? (
-          <div>Loading map...</div>
-        ) : (
-          <>
-            <MapVisualization
-              data={providers}
-              searchQuery={searchInput}
-              filters={activeFilters}
-            />
-            {console.log('Data passed to MapVisualization:', providers)}
-          </>
-        )}
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="mb-8 text-3xl font-bold">Compute Resources</h1>
+      <div className="mb-8">
+        <h2 className="mb-4 text-xl font-semibold">Provider Locations</h2>
+          <MapComponent 
+            providers={providers} 
+            searchQuery={searchInput}
+            filters={activeFilters}
+          />
         </div>
-      </section>
-      <section className="mt-10 grid grid-cols-7 gap-6 rounded p-6 shadow-[0_0.75rem_1rem_hsl(0_0_0/0.05)]">
-        <StatsItem title="Countries" value={safeStats.countries} />
-        <StatsItem title="Providers" value={safeStats.providers} />
-        <StatsItem title="Regions" value={safeStats.regions} />
-        <StatsItem title="Storage" value={safeStats.storage} unit="PB" />
-        <StatsItem title="GPUs" value={safeStats.gpus} unit="GF" />
-        <StatsItem title="RAM" value={safeStats.ram} unit="PB" />
-        <StatsItem title="Bandwidth" value={safeStats.bandwidth} unit="PB" />
-      </section>
-      <section className="my-12">
-        <ResourcesTable
-          onSearchChange={setSearchInput}
-          onFiltersChange={setActiveFilters}
+      
+      <div>
+        <h2 className="mb-4 text-xl font-semibold">Available Resources</h2>
+        <ResourcesTable 
+          providers={providers}
+          onSearchChange={handleSearchChange}
+          onFiltersChange={handleFiltersChange}
+          searchQuery={searchInput}
+          filters={activeFilters}
         />
-      </section>
+      </div>
     </div>
   );
 }
