@@ -1,9 +1,15 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import MapComponent from './map-client-component';
+import dynamic from 'next/dynamic';
 import ResourcesTable from './resources-table';
 import locations from './locations.json';
+
+// Dynamically import the MapComponent with no SSR
+const MapComponent = dynamic(() => import('./map-client-component'), {
+  ssr: false,
+  loading: () => <div className="flex h-96 w-full items-center justify-center bg-gray-100">Loading map...</div>
+});
 
 async function fetchProviders() {
   try {
