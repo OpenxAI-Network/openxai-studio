@@ -8,8 +8,8 @@ import locations from './locations.json';
 async function fetchProviders() {
   try {
     console.log('[ResourcesPage] Fetching providers from API');
-    // Increase the limit to fetch more providers (if the API supports pagination)
-    const response = await fetch('/api/providers?limit=1000');
+    // Reduce the limit to improve performance
+    const response = await fetch('/api/providers?limit=20000');
     if (!response.ok) {
       throw new Error(`Failed to fetch providers: ${response.status} ${response.statusText}`);
     }
@@ -26,22 +26,28 @@ async function fetchProviders() {
   }
 }
 
-// Simple function to get coordinates from locations.json
+// Create a cache for location lookups to avoid repeated processing
+const locationCache = new Map<string, [number, number] | null>();
+
 function getCoordinatesForLocation(location: string | undefined): [number, number] | null {
   if (!location) {
-    console.log('[Map] No location provided for provider');
     return null;
   }
   
   // Clean up the location string
   const cleanLocation = location.trim();
   
+  // Check cache first
+  if (locationCache.has(cleanLocation)) {
+    return locationCache.get(cleanLocation);
+  }
+  
   // Check for exact match first
   if (locations[cleanLocation as keyof typeof locations]) {
-    console.log(`[Map] Found exact match for "${cleanLocation}"`);
     const locationData = locations[cleanLocation as keyof typeof locations];
-    // Explicitly create a tuple from the object properties
-    return [locationData.latitude, locationData.longitude];
+    const coordinates: [number, number] = [locationData.latitude, locationData.longitude];
+    locationCache.set(cleanLocation, coordinates);
+    return coordinates;
   }
   
   // Check for partial matches
@@ -50,13 +56,14 @@ function getCoordinatesForLocation(location: string | undefined): [number, numbe
     city.toLowerCase().includes(cleanLocation.toLowerCase()));
   
   if (partialMatch) {
-    console.log(`[Map] Found partial match for "${cleanLocation}" -> "${partialMatch}"`);
     const locationData = locations[partialMatch as keyof typeof locations];
-    // Explicitly create a tuple from the object properties
-    return [locationData.latitude, locationData.longitude];
+    const coordinates: [number, number] = [locationData.latitude, locationData.longitude];
+    locationCache.set(cleanLocation, coordinates);
+    return coordinates;
   }
   
-  console.log(`[Map] ⚠️ No match found for "${cleanLocation}"`);
+  // No match found
+  locationCache.set(cleanLocation, null);
   return null;
 }
 
@@ -108,42 +115,45 @@ export default function ResourcesPage() {
           const providerName = provider.providerName || provider.name || provider.provider;
           const uniqueKey = `${providerName}:${location}`;
           
-          // Skip logging for duplicates to reduce console noise
-          if (!uniqueProviderLocations.has(uniqueKey)) {
-            console.log(`[ResourcesPage] Processing provider: ${providerName} at location: ${location}`);
-            uniqueProviderLocations.set(uniqueKey, true);
+          // Skip processing if we've already seen this provider+location
+          if (uniqueProviderLocations.has(uniqueKey)) {
+            return {
+              ...provider,
+              coordinates: uniqueProviderLocations.get(uniqueKey)
+            };
           }
+          
+          // Only log once at the beginning of processing
+          if (uniqueProviderLocations.size === 0) {
+            console.log(`[ResourcesPage] Processing provider sample: ${providerName} at location: ${location}`);
+          }
+          
+          uniqueProviderLocations.set(uniqueKey, true);
           
           const coordinates = getCoordinatesForLocation(location);
           if (coordinates) {
-            // Only log for unique provider+location combinations
-            if (uniqueProviderLocations.get(uniqueKey) === true) {
-              console.log(`[ResourcesPage] Found coordinates for ${location}: [${coordinates[0]}, ${coordinates[1]}]`);
-              uniqueProviderLocations.set(uniqueKey, coordinates);
-            }
+            uniqueProviderLocations.set(uniqueKey, coordinates);
+            return {
+              ...provider,
+              coordinates
+            };
           } else {
             // If no coordinates found, try using the country as fallback
             if (provider.country && provider.country !== location) {
               const countryCoordinates = getCoordinatesForLocation(provider.country);
               if (countryCoordinates) {
-                if (uniqueProviderLocations.get(uniqueKey) === true) {
-                  console.log(`[ResourcesPage] Found fallback coordinates for country ${provider.country}: [${countryCoordinates[0]}, ${countryCoordinates[1]}]`);
-                  uniqueProviderLocations.set(uniqueKey, countryCoordinates);
-                }
+                uniqueProviderLocations.set(uniqueKey, countryCoordinates);
                 return {
                   ...provider,
                   coordinates: countryCoordinates
                 };
               }
             }
-            if (uniqueProviderLocations.get(uniqueKey) === true) {
-              console.log(`[ResourcesPage] ⚠️ No coordinates found for ${location}`);
-            }
           }
           
           return {
             ...provider,
-            coordinates
+            coordinates: null
           };
         });
         

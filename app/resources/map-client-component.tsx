@@ -39,6 +39,14 @@ const MapComponent: React.FC<MapClientComponentProps> = ({ providers, searchQuer
     gpus: 0
   });
   
+  // Log only once when providers are initially received
+  useEffect(() => {
+    const validCoordinatesCount = providers.filter(p => p.coordinates).length;
+    console.log(`MapComponent: Processing ${providers.length} providers (${validCoordinatesCount} with valid coordinates)`);
+    
+    // Rest of your initialization code...
+  }, [providers]); // Changed from providers.length to providers
+  
   // Filter providers based on search query and filters
   const filteredProviders = useMemo(() => {
     return providers.filter(provider => {
@@ -109,22 +117,20 @@ const MapComponent: React.FC<MapClientComponentProps> = ({ providers, searchQuer
     // Filter providers with valid coordinates
     const validProviders = filteredProviders.filter(p => p.coordinates && p.coordinates.length === 2);
     
-    // Animate adding providers
+    console.log(`MapComponent: Starting to add ${validProviders.length} valid providers to map`);
+    
+    // For better performance, add providers in larger batches
+    const BATCH_SIZE = 500; // Increased batch size
     let currentIndex = 0;
-    const interval = setInterval(() => {
-      if (currentIndex >= validProviders.length) {
-        clearInterval(interval);
-        // Set final stats when complete
-        setStats(finalStats);
-        return;
-      }
+    
+    const addBatch = () => {
+      const endIndex = Math.min(currentIndex + BATCH_SIZE, validProviders.length);
+      const batch = validProviders.slice(currentIndex, endIndex);
       
-      // Add next provider
-      const nextProvider = validProviders[currentIndex];
-      setVisibleProviders(prev => [...prev, nextProvider]);
+      setVisibleProviders(prev => [...prev, ...batch]);
       
       // Update stats with percentage of completion
-      const progress = (currentIndex + 1) / validProviders.length;
+      const progress = endIndex / validProviders.length;
       setStats({
         countries: Math.floor(finalStats.countries * progress),
         providers: Math.floor(finalStats.providers * progress),
@@ -135,10 +141,34 @@ const MapComponent: React.FC<MapClientComponentProps> = ({ providers, searchQuer
         gpus: Math.floor(finalStats.gpus * progress)
       });
       
-      currentIndex++;
-    }, 5); // Faster animation (5ms instead of 10ms)
+      currentIndex = endIndex;
+      
+      // Log progress at 25%, 50%, 75% and 100%
+      const progressPercent = Math.round((endIndex / validProviders.length) * 100);
+      if (progressPercent === 25 || progressPercent === 50 || 
+          progressPercent === 75 || progressPercent === 100) {
+        console.log(`MapComponent: Loaded ${progressPercent}% of providers (${endIndex}/${validProviders.length})`);
+      }
+      
+      if (currentIndex < validProviders.length) {
+        setTimeout(addBatch, 100); // Increased delay between batches
+      } else {
+        // Set final stats when complete
+        setStats(finalStats);
+        console.log(`MapComponent: Finished loading all ${validProviders.length} providers`);
+      }
+    };
     
-    return () => clearInterval(interval);
+    // Start adding batches
+    if (validProviders.length > 0) {
+      addBatch();
+    } else {
+      setStats(finalStats);
+    }
+    
+    return () => {
+      // No need to clear interval as we're using setTimeout
+    };
   }, [providers, searchQuery, filters, filteredProviders, finalStats]);
   
   useEffect(() => {
@@ -188,11 +218,20 @@ const MapComponent: React.FC<MapClientComponentProps> = ({ providers, searchQuer
         .addTo(markersLayer.current!);
     });
     
-    const validCoordinatesCount = visibleProviders.filter(p => p.coordinates).length;
-    console.log(`Providers with valid coordinates: ${validCoordinatesCount}`);
-    console.log(`Sample providers:`, visibleProviders.slice(0, 3));
+    // Log only when markers are first added or when the count changes significantly
+    const markerCount = Object.keys(locationGroups).length;
+    if (markerCount > 0 && 
+        (prevMarkerCountRef.current === 0 || 
+         Math.abs(markerCount - prevMarkerCountRef.current) > 10 ||
+         markerCount === visibleProviders.length)) {
+      console.log(`MapComponent: Added ${markerCount} markers to the map (${Math.round(markerCount/providers.length*100)}% of total)`);
+      prevMarkerCountRef.current = markerCount;
+    }
     
-  }, [visibleProviders]);
+  }, [visibleProviders, providers.length]);
+  
+  // Add this ref to track previous marker count
+  const prevMarkerCountRef = useRef(0);
   
   return (
     <div className="flex flex-col gap-6">
@@ -214,9 +253,9 @@ const MapComponent: React.FC<MapClientComponentProps> = ({ providers, searchQuer
 
 function StatCard({ title, value, isText = false }: { title: string; value: number | string; isText?: boolean }) {
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border shadow-sm">
+    <div className="rounded-lg border bg-white p-4 shadow-sm dark:bg-gray-800">
       <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</h3>
-      <p className="text-2xl font-bold mt-1">
+      <p className="mt-1 text-2xl font-bold">
         {isText ? value : (value as number).toLocaleString()}
       </p>
     </div>
