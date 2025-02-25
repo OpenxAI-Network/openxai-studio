@@ -35,7 +35,8 @@ const MapComponent: React.FC<MapClientComponentProps> = ({ providers, searchQuer
     regions: 0,
     storage: 0,
     ram: 0,
-    bandwidth: 0
+    bandwidth: 0,
+    gpus: 0
   });
   
   // Filter providers based on search query and filters
@@ -68,15 +69,16 @@ const MapComponent: React.FC<MapClientComponentProps> = ({ providers, searchQuer
     });
   }, [providers, searchQuery, filters]);
 
-  // Calculate final stats with useMemo
+  // Calculate final stats with real world values
   const finalStats = useMemo(() => ({
-    countries: new Set(filteredProviders.map(p => p.country)).size,
-    providers: new Set(filteredProviders.map(p => p.providerName || p.name)).size,
-    regions: new Set(filteredProviders.map(p => p.location)).size,
-    storage: filteredProviders.reduce((sum, p) => sum + (Number(p.storageTotal) || Number(p.storage) || 0), 0),
-    ram: filteredProviders.reduce((sum, p) => sum + (Number(p.ram) || 0), 0),
-    bandwidth: filteredProviders.reduce((sum, p) => sum + (Number(p.bandwidthNetwork) || Number(p.bandwidth) || 0), 0)
-  }), [filteredProviders]);
+    countries: 172, // Total countries
+    providers: 32,  // Total bare metal providers
+    regions: 482,   // Total regions
+    storage: 900 * 1024 * 1024, // 900PB in TB
+    ram: 26 * 1024 * 1024,      // 26PB in GB
+    bandwidth: 900 * 1024 * 1024, // 900PB in Gbps
+    gpus: 335
+  }), []);
 
   console.log(`MapComponent received ${providers.length} providers`);
   
@@ -100,7 +102,8 @@ const MapComponent: React.FC<MapClientComponentProps> = ({ providers, searchQuer
       regions: 0,
       storage: 0,
       ram: 0,
-      bandwidth: 0
+      bandwidth: 0,
+      gpus: 0
     });
     
     // Filter providers with valid coordinates
@@ -128,7 +131,8 @@ const MapComponent: React.FC<MapClientComponentProps> = ({ providers, searchQuer
         regions: Math.floor(finalStats.regions * progress),
         storage: Math.floor(finalStats.storage * progress),
         ram: Math.floor(finalStats.ram * progress),
-        bandwidth: Math.floor(finalStats.bandwidth * progress)
+        bandwidth: Math.floor(finalStats.bandwidth * progress),
+        gpus: Math.floor(finalStats.gpus * progress)
       });
       
       currentIndex++;
@@ -160,8 +164,20 @@ const MapComponent: React.FC<MapClientComponentProps> = ({ providers, searchQuer
     Object.entries(locationGroups).forEach(([key, providersAtLocation]) => {
       const [lat, lng] = key.split(',').map(Number);
       
-      // Create popup content with all providers at this location
-      const popupContent = providersAtLocation.map(provider => 
+      // De-duplicate providers by provider name + location
+      const uniqueProviders = new Map();
+      providersAtLocation.forEach(provider => {
+        const providerName = provider.providerName || provider.name || provider.provider || 'Unknown Provider';
+        const location = provider.location || provider.region || 'Unknown Location';
+        const uniqueKey = `${providerName}:${location}`;
+        
+        if (!uniqueProviders.has(uniqueKey)) {
+          uniqueProviders.set(uniqueKey, provider);
+        }
+      });
+      
+      // Create popup content with unique providers at this location
+      const popupContent = Array.from(uniqueProviders.values()).map(provider => 
         `<strong>${provider.providerName || provider.name || provider.provider || 'Unknown Provider'}</strong><br>
          Location: ${provider.location || provider.region || 'Unknown Location'}<br>
          ${provider.description ? `Description: ${provider.description}<br>` : ''}`
@@ -183,23 +199,26 @@ const MapComponent: React.FC<MapClientComponentProps> = ({ providers, searchQuer
       <div ref={mapRef} style={{ height: '600px', width: '100%' }} />
       
       {/* Stats Section */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-7">
         <StatCard title="Countries" value={stats.countries} />
         <StatCard title="Providers" value={stats.providers} />
         <StatCard title="Regions" value={stats.regions} />
-        <StatCard title="Storage (TB)" value={Math.floor(stats.storage / 1024)} />
-        <StatCard title="RAM (GB)" value={Math.floor(stats.ram)} />
-        <StatCard title="Bandwidth (Gbps)" value={Math.floor(stats.bandwidth)} />
+        <StatCard title="Storage" value={`${Math.floor(stats.storage / (1024 * 1024))}PB`} isText />
+        <StatCard title="GPUs" value={`${stats.gpus}G/F`} isText />
+        <StatCard title="Memory" value={`${Math.floor(stats.ram / (1024 * 1024))}PB`} isText />
+        <StatCard title="Bandwidth" value={`${Math.floor(stats.bandwidth / (1024 * 1024))}PB`} isText />
       </div>
     </div>
   );
 };
 
-function StatCard({ title, value }: { title: string; value: number }) {
+function StatCard({ title, value, isText = false }: { title: string; value: number | string; isText?: boolean }) {
   return (
-    <div className="rounded-lg border bg-white p-4 shadow-sm dark:bg-gray-800">
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border shadow-sm">
       <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</h3>
-      <p className="mt-1 text-2xl font-bold">{value.toLocaleString()}</p>
+      <p className="text-2xl font-bold mt-1">
+        {isText ? value : (value as number).toLocaleString()}
+      </p>
     </div>
   );
 }
