@@ -90,7 +90,7 @@ export function ModelSizeSelector({ selected, showAll, hardware, onSelect, templ
                 <div className="text-lg font-medium">{size.name}</div>
               </div>
               <div className="text-right text-lg font-medium">
-                {(parseInt(size.name) / 1000).toFixed(1)}GB
+                {modelDefinition.name}
               </div>
             </div>
             
