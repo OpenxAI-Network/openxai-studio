@@ -47,6 +47,25 @@ createWeb3Modal({
   },
 })
 
+const disconnectWallet = async () => {
+  try {
+    // Get the current connector from wagmiConfig
+    const connector = wagmiConfig.state.connections.values().next().value?.connector;
+    
+    if (connector && typeof connector.disconnect === 'function') {
+      await connector.disconnect();
+    } else if (connector?.provider && typeof connector.provider.disconnect === 'function') {
+      await connector.provider.disconnect();
+    } else {
+      // Fallback: just reset the connection state without calling disconnect
+      console.warn('WalletConnect disconnect method not available, using fallback');
+      // Add any state reset logic here
+    }
+  } catch (error) {
+    console.error('Error disconnecting wallet:', error);
+  }
+};
+
 export function Providers({
   children,
   initialState,
