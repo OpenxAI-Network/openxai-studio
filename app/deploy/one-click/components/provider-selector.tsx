@@ -90,7 +90,7 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
             key={provider.name}
             onClick={() => !provider.disabled && onSelect(provider)}
             className={cn(
-              "relative flex flex-col rounded-lg border p-6 hover:border-primary/50",
+              "relative flex h-[128px] cursor-pointer flex-col rounded-lg border p-6 hover:border-primary/50",
               selected?.name === provider.name && "border-primary bg-primary/5",
               provider.disabled && "cursor-not-allowed opacity-50"
             )}

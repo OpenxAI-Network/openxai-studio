@@ -7,7 +7,7 @@ import { useDemoContext, useSetDemoContext } from '@/contexts/XnodeDemoContext'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { format } from 'date-fns'
-import { Check, Clock, RefreshCcw, RotateCw } from 'lucide-react'
+import { Check, Clock, RefreshCcw, RotateCw, Loader2 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import {
@@ -69,6 +69,7 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
     status: string[]
   }>({ step: 0, status: [] })
   const [deployedNodeId, setDeployedNodeId] = useState<string>('')
+  const [deploymentStatus, setDeploymentStatus] = useState<'initial' | 'deploying' | 'ongoing' | 'deployed'>('initial')
 
   const deploymentSteps = [
     'Model is selected',
@@ -171,6 +172,8 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
   const setReservedXnode = useSetDemoContext()
 
   const deployOnDemo = async () => {
+    setDeploymentStatus('deploying')
+    
     const activeReservation =
       reservedXnode.xnode &&
       reservedXnode.xnode.reservation.reserved_until > Date.now() / 1000
@@ -186,6 +189,7 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
         description: `No demo xnodes available. ${nextFreeXnode ? `Next xnode will be free in ${Math.round((nextFreeXnode - Date.now() / 1000) / 60)} minutes.` : ''}`,
         variant: 'destructive',
       })
+      setDeploymentStatus('initial')
       return
     }
 
@@ -219,6 +223,17 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
       }
 
       const credentials = generateDemoCredentials(deployOnXnode.id)
+      
+      // After 10 seconds, update the status to 'ongoing'
+      setTimeout(() => {
+        setDeploymentStatus('ongoing')
+        
+        // After 5 minutes total, update to 'deployed'
+        setTimeout(() => {
+          setDeploymentStatus('deployed')
+        }, 290000) // 5 minutes total (10 + 290 seconds)
+      }, 10000)
+      
       await deployModel({
         xnode_id: deployOnXnode.id,
         secret: deployOnXnode.reservation.secret,
@@ -233,6 +248,7 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
         description: e.message ?? 'An unknown error occurred.',
         variant: 'destructive',
       })
+      setDeploymentStatus('initial')
       return
     }
 
@@ -244,7 +260,7 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
     })
     setTimeout(
       () => window.open(deployOnXnode.id.replace(':34392', ''), '_blank'),
-      45_000 // takes some time for open-webui to be ready
+      300_000 // takes some time for open-webui to be ready (5 minutes)
     )
   }
 
@@ -320,14 +336,53 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
         )}
 
         {currentStep >= 2 && (
-          <Button
-            className="w-full"
-            size="lg"
-            disabled={!isReadyToDeploy}
-            onClick={() => deployOnDemo().catch(console.error)}
-          >
-            One Click Deployment
-          </Button>
+          <>
+            <Button
+              className="w-full"
+              size="lg"
+              disabled={!isReadyToDeploy || deploymentStatus !== 'initial'}
+              onClick={() => deployOnDemo().catch(console.error)}
+            >
+              One Click Deployment
+            </Button>
+            
+            {deploymentStatus === 'deploying' && (
+              <div className="flex items-center justify-center gap-2 rounded-md bg-primary/5 p-4 text-center">
+                <Loader2 className="size-5 animate-spin text-primary" />
+                <span>Deploying to bare metal demo pool...</span>
+              </div>
+            )}
+            
+            {deploymentStatus === 'ongoing' && (
+              <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-primary/5 p-4 text-center">
+                <div className="flex items-center gap-2">
+                  <Loader2 className="size-5 animate-spin text-primary" />
+                  <span>Deployment ongoing... may take up to 5 minutes</span>
+                </div>
+                <Link 
+                  href="/deployments" 
+                  className="text-sm text-primary underline hover:text-primary/80"
+                >
+                  View your deployments
+                </Link>
+              </div>
+            )}
+            
+            {deploymentStatus === 'deployed' && (
+              <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-green-50 p-4 text-center">
+                <div className="flex items-center gap-2">
+                  <Check className="size-5 text-green-500" />
+                  <span className="font-medium text-green-700">Deployed!</span>
+                </div>
+                <Link 
+                  href="/deployments" 
+                  className="text-sm text-primary underline hover:text-primary/80"
+                >
+                  View your deployments
+                </Link>
+              </div>
+            )}
+          </>
         )}
       </div>
 
