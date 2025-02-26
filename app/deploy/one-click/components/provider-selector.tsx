@@ -31,15 +31,15 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
 
   const providers: Provider[] = [
     {
-      name: 'Xnode (Decentralized)',
-      icon: '/icons/xnode-logo.svg',
+      name: 'Xnode',
+      icon: '/images/xnode-logo/xnode-cube.png',
       features: ['Web3 Ready', 'No KYC'],
       action: { label: 'Try for Free' },
       isDecentralized: true
     },
     {
-      name: 'Xnode DVM (Decentralized)',
-      icon: '/icons/xnode-dvm.svg',
+      name: 'Xnode DVM',
+      icon: '/images/xnode-card/silvercard-front.webp',
       features: ['Web3 Ready', 'No KYC'],
       action: { label: '500 OPENX' },
       disabled: true,
@@ -47,7 +47,7 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
     },
     {
       name: 'Vultr (Washington)',
-      icon: '/icons/vultr-logo.svg',
+      icon: '/images/providers/vultr.svg',
       features: ['Web3 Ready', 'No KYC'],
       action: { label: '$655p/m' },
       disabled: true,
@@ -55,7 +55,7 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
     },
     {
       name: 'AWS EC2 (HK)',
-      icon: '/icons/aws-logo.svg',
+      icon: '/images/cloudLogo/aws.png',
       features: ['Web3 Ready', 'No KYC'],
       action: { label: '$1,321p/m' },
       disabled: true,
@@ -63,7 +63,7 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
     },
     {
       name: 'Google Cloud (NYC)',
-      icon: '/icons/google-cloud-logo.svg',
+      icon: '/images/cloudLogo/google-cloud.png',
       features: ['Web3 Ready', 'No KYC'],
       action: { label: '$1,745p/m' },
       disabled: true,
@@ -71,7 +71,7 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
     },
     {
       name: 'Xnode One (Hardware)',
-      icon: '/icons/xnode-one.svg',
+      icon: '/images/xnode-one/back.png',
       features: ['Web3 Ready', 'No KYC'],
       action: { label: '$0p/m' },
       disabled: true,
@@ -90,20 +90,20 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
             key={provider.name}
             onClick={() => !provider.disabled && onSelect(provider)}
             className={cn(
-              "relative flex flex-col rounded-lg border p-4 hover:border-primary/50",
+              "relative flex flex-col rounded-lg border p-6 hover:border-primary/50",
               selected?.name === provider.name && "border-primary bg-primary/5",
               provider.disabled && "cursor-not-allowed opacity-50"
             )}
           >
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className={cn(
-                  "w-3 h-3 rounded-full",
+                  "size-3 rounded-full",
                   selected?.name === provider.name ? "bg-primary" : "border border-muted-foreground"
                 )}></div>
                 <div className="flex items-center gap-2">
                   {provider.icon && (
-                    <div className="w-6 h-6 relative">
+                    <div className="relative flex size-6 items-center justify-center">
                       <Image 
                         src={provider.icon} 
                         alt={provider.name} 
@@ -121,32 +121,32 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
               </div>
             </div>
             
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-1">
                   {provider.isDecentralized ? (
-                    <Check className="h-4 w-4 text-green-500" />
+                    <Check className="size-4 text-green-500" />
                   ) : (
-                    <X className="h-4 w-4 text-red-500" />
+                    <X className="size-4 text-red-500" />
                   )}
                   <span className="text-sm text-gray-400">Decentralized</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Check className="h-4 w-4 text-green-500" />
+                  <Check className="size-4 text-green-500" />
                   <span className="text-sm text-gray-400">Web3 Ready</span>
                 </div>
                 <div className="flex items-center gap-1">
                   {provider.features.includes('No KYC') ? (
-                    <Check className="h-4 w-4 text-green-500" />
+                    <Check className="size-4 text-green-500" />
                   ) : (
-                    <X className="h-4 w-4 text-red-500" />
+                    <X className="size-4 text-red-500" />
                   )}
                   <span className="text-sm text-gray-400">No KYC</span>
                 </div>
               </div>
               
               {provider.comingSoon && (
-                <div className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                <div className="rounded bg-green-100 px-2 py-1 text-xs text-green-800">
                   Coming soon
                 </div>
               )}

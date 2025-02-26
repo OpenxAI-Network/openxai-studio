@@ -96,7 +96,7 @@ export function ModelSizeSelector({ selected, showAll, hardware, onSelect, templ
             
             <div className="flex justify-between gap-4">
               <div className="flex items-center gap-2">
-                <div className="text-gray-400 flex-shrink-0">
+                <div className="shrink-0 text-gray-400">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
                     <line x1="7" y1="2" x2="7" y2="22"></line>
@@ -115,7 +115,7 @@ export function ModelSizeSelector({ selected, showAll, hardware, onSelect, templ
               </div>
               
               <div className="flex items-center gap-2">
-                <div className="text-gray-400 flex-shrink-0">
+                <div className="shrink-0 text-gray-400">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5z"></path>
                     <path d="M8 10h8"></path>
@@ -130,7 +130,7 @@ export function ModelSizeSelector({ selected, showAll, hardware, onSelect, templ
               </div>
               
               <div className="flex items-center gap-2">
-                <div className="text-gray-400 flex-shrink-0">
+                <div className="shrink-0 text-gray-400">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
                     <rect x="9" y="9" width="6" height="6"></rect>
