@@ -74,7 +74,7 @@ export function ModelSizeSelector({ selected, showAll, hardware, onSelect, templ
             key={size.name}
             onClick={() => isAvailable && onSelect(size)}
             className={cn(
-              "flex cursor-pointer flex-col rounded-lg border p-4 hover:border-primary/50",
+              "flex h-[128px] cursor-pointer flex-col rounded-lg border p-6 hover:border-primary/50",
               isAvailable 
                 ? "border-border"
                 : "cursor-not-allowed opacity-50",
