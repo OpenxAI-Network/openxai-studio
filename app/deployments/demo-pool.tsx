@@ -1,23 +1,25 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import { useDemoDeploymentContext } from '@/contexts/DemoDeploymentContext'
 import { useDemoContext } from '@/contexts/XnodeDemoContext'
+import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import {
   Check,
   Clock,
+  Copy,
   Cpu,
-  HardDrive,
-  Loader2,
-  MemoryStick,
-  Key,
   Eye,
   EyeOff,
-  Copy,
+  HardDrive,
+  Key,
+  Loader2,
+  MemoryStick,
 } from 'lucide-react'
-import { toast } from '@/components/ui/use-toast'
-import { useState } from 'react'
 
+import { generateDemoCredentials } from '@/lib/demo-credentials'
 import {
   useDemoCPUUsage,
   useDemoDiskUsage,
@@ -34,8 +36,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { generateDemoCredentials } from '@/lib/demo-credentials'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { toast } from '@/components/ui/use-toast'
+import Loading from '@/components/Loading'
 
 export function DemoPool() {
   const { data: demoXnodes, isLoading } = useDemosAvailable()
@@ -85,10 +92,6 @@ function DemoXnodeListing(xnode: PublicDemoXnode) {
     reservedXnode = undefined
   }
 
-  const { data: cpu } = useDemoCPUUsage({
-    xnode_id: xnode.id,
-    secret: '',
-  })
   const { data: memory } = useDemoMemoryUsage({
     xnode_id: xnode.id,
     secret: '',
@@ -98,10 +101,6 @@ function DemoXnodeListing(xnode: PublicDemoXnode) {
     secret: '',
   })
 
-  console.log(cpu)
-
-  const cpuUsed = cpu?.reduce((prev, cur) => prev + cur.used / cpu.length, 0)
-
   const memoryUsed = memory?.used
   const memoryTotal = memory?.total
 
@@ -110,6 +109,21 @@ function DemoXnodeListing(xnode: PublicDemoXnode) {
   )
   const diskUsed = diskUnique?.reduce((prev, cur) => prev + cur.used, 0)
   const diskTotal = diskUnique?.reduce((prev, cur) => prev + cur.total, 0)
+
+  const { deployed } = useDemoDeploymentContext()
+  const { data: ready } = useQuery({
+    initialData: false,
+    queryKey: ['demoXnodeReady', xnode.id, reservedXnode?.id ?? ''],
+    refetchInterval: 10_000, // 10 sec
+    queryFn: async () => {
+      try {
+        return await fetch(xnode.id.replace(':34392', '')).then((res) => res.ok)
+      } catch (e) {
+        return false
+      }
+    },
+    enabled: !!reservedXnode && xnode.id === reservedXnode.id,
+  })
 
   return (
     <TableRow>
@@ -198,17 +212,19 @@ function DemoXnodeListing(xnode: PublicDemoXnode) {
         {reservedXnode && reservedXnode.id === xnode.id && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-sm text-muted-foreground">Username:</span>
-              <Button 
-                variant="ghost" 
+              <span className="font-mono text-sm text-muted-foreground">
+                Username:
+              </span>
+              <Button
+                variant="ghost"
                 size="sm"
                 className="font-mono"
                 onClick={() => {
                   const creds = generateDemoCredentials(xnode.id)
                   navigator.clipboard.writeText(creds.email)
                   toast({
-                    title: "Username copied",
-                    description: "Username has been copied to clipboard"
+                    title: 'Username copied',
+                    description: 'Username has been copied to clipboard',
                   })
                 }}
               >
@@ -216,28 +232,36 @@ function DemoXnodeListing(xnode: PublicDemoXnode) {
               </Button>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-sm text-muted-foreground">Password:</span>
-              <Button 
-                variant="ghost" 
+              <span className="font-mono text-sm text-muted-foreground">
+                Password:
+              </span>
+              <Button
+                variant="ghost"
                 size="sm"
                 className="font-mono"
                 onClick={() => {
                   const creds = generateDemoCredentials(xnode.id)
                   navigator.clipboard.writeText(creds.password)
                   toast({
-                    title: "Password copied",
-                    description: "Password has been copied to clipboard"
+                    title: 'Password copied',
+                    description: 'Password has been copied to clipboard',
                   })
                 }}
               >
-                {showPassword ? generateDemoCredentials(xnode.id).password : '••••••••'}
+                {showPassword
+                  ? generateDemoCredentials(xnode.id).password
+                  : '••••••••'}
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {showPassword ? (
+                  <EyeOff className="size-4" />
+                ) : (
+                  <Eye className="size-4" />
+                )}
               </Button>
             </div>
           </div>
@@ -245,21 +269,37 @@ function DemoXnodeListing(xnode: PublicDemoXnode) {
       </TableCell>
       <TableCell>
         {reservedXnode && reservedXnode.id === xnode.id ? (
-          <Button 
-            variant="outline"
-            size="sm"
-            onClick={() => window.open(xnode.id.replace(':34392', ''), '_blank')}
-          >
-            Launch
-          </Button>
+          !deployed ? (
+            <Button className="flex gap-2" variant="outline" size="sm" disabled>
+              <div className="flex size-full place-items-center justify-center">
+                <div className="size-4 animate-spin rounded-full border-b-2 border-[#0354EC]"></div>
+              </div>
+              <span>Deploying...</span>
+            </Button>
+          ) : !ready ? (
+            <Button className="flex gap-2" variant="outline" size="sm" disabled>
+              <div className="flex size-full place-items-center justify-center">
+                <div className="size-4 animate-spin rounded-full border-b-2 border-orange-400"></div>
+              </div>
+              <span>Preparing...</span>
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" asChild>
+              <Link href={xnode.id.replace(':34392', '')} target="_blank">
+                Launch
+              </Link>
+            </Button>
+          )
         ) : (
-          <Button 
+          <Button
             variant="outline"
             size="sm"
             disabled={isReserved && !isExpired}
-            onClick={() => window.location.href = '/app-store'}
+            asChild
           >
-            {isReserved && !isExpired ? 'Reserved' : 'Deploy AI App'}
+            <Link href="/app-store" target="_blank">
+              {isReserved && !isExpired ? 'Reserved' : 'Deploy AI App'}
+            </Link>
           </Button>
         )}
       </TableCell>

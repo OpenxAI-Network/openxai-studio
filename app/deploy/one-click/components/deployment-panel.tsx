@@ -3,12 +3,16 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import {
+  useDemoDeploymentContext,
+  useSetDemoDeploymentContext,
+} from '@/contexts/DemoDeploymentContext'
 import { useDemoContext, useSetDemoContext } from '@/contexts/XnodeDemoContext'
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
+import ModelDefinitions from '@/utils/model-definitions.json'
 import { format } from 'date-fns'
-import { Check, Clock, RefreshCcw, RotateCw, Loader2 } from 'lucide-react'
+import { Check, Clock, Loader2, RotateCw } from 'lucide-react'
 
+import { generateDemoCredentials } from '@/lib/demo-credentials'
 import { cn } from '@/lib/utils'
 import {
   deployModel,
@@ -20,31 +24,20 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { useToast } from '@/components/ui/use-toast'
 
 import { ERCOptions } from './erc-options'
 import { ModelSizeSelector } from './model-size-selector'
 import { ProviderSelector } from './provider-selector'
-import { generateDemoCredentials } from '@/lib/demo-credentials'
-import ModelDefinitions from '@/utils/model-definitions.json'
 
 // Demo pool hardware specifications
 const DEMO_POOL_SPECS = {
-  cpuCores: 8,        // 2 CPU cores
-  memoryGB: 16,       // 16GB RAM
-  storageGB: 310,      // 310GB Storage
+  cpuCores: 8, // 2 CPU cores
+  memoryGB: 16, // 16GB RAM
+  storageGB: 310, // 310GB Storage
 } as const
 
 type DeploymentStep = {
@@ -54,7 +47,7 @@ type DeploymentStep = {
 }
 
 interface DeploymentPanelProps {
-  templateId?: string;
+  templateId?: string
 }
 
 export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
@@ -69,7 +62,9 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
     status: string[]
   }>({ step: 0, status: [] })
   const [deployedNodeId, setDeployedNodeId] = useState<string>('')
-  const [deploymentStatus, setDeploymentStatus] = useState<'initial' | 'deploying' | 'ongoing' | 'deployed'>('initial')
+  const [deploymentStatus, setDeploymentStatus] = useState<
+    'initial' | 'deploying' | 'deployed'
+  >('initial')
 
   const deploymentSteps = [
     'Model is selected',
@@ -171,9 +166,11 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
   const reservedXnode = useDemoContext()
   const setReservedXnode = useSetDemoContext()
 
+  const setDemoDeployment = useSetDemoDeploymentContext()
+
   const deployOnDemo = async () => {
     setDeploymentStatus('deploying')
-    
+
     const activeReservation =
       reservedXnode.xnode &&
       reservedXnode.xnode.reservation.reserved_until > Date.now() / 1000
@@ -193,6 +190,7 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
       return
     }
 
+    setDemoDeployment({ deployed: false })
     let { dismiss } = toast({
       title: 'Deploying...',
     })
@@ -206,16 +204,19 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
           })
 
       console.log('Selected model:', step.modelSize)
-      
+
       // Use templateId to find the correct model definition
-      const selectedModel = ModelDefinitions.find(m => m.nixName === templateId)
+      const selectedModel = ModelDefinitions.find(
+        (m) => m.nixName === templateId
+      )
       console.log('Found model definition:', selectedModel)
-      
+
       // Get the selected size from the UI
       const modelSize = step.modelSize?.name
       console.log('Model size:', modelSize)
-      
-      const ollamaCommand = selectedModel?.options[0].requirements[modelSize]?.ollamaCommand
+
+      const ollamaCommand =
+        selectedModel?.options[0].requirements[modelSize]?.ollamaCommand
       console.log('Ollama command:', ollamaCommand)
 
       if (!ollamaCommand) {
@@ -223,22 +224,12 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
       }
 
       const credentials = generateDemoCredentials(deployOnXnode.id)
-      
-      // After 10 seconds, update the status to 'ongoing'
-      setTimeout(() => {
-        setDeploymentStatus('ongoing')
-        
-        // After 5 minutes total, update to 'deployed'
-        setTimeout(() => {
-          setDeploymentStatus('deployed')
-        }, 290000) // 5 minutes total (10 + 290 seconds)
-      }, 10000)
-      
+
       await deployModel({
         xnode_id: deployOnXnode.id,
         secret: deployOnXnode.reservation.secret,
         model: ollamaCommand,
-        ...credentials
+        ...credentials,
       })
     } catch (e) {
       console.error(e)
@@ -252,16 +243,14 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
       return
     }
 
+    setDemoDeployment({ deployed: true })
+    setDeploymentStatus('deployed')
     dismiss()
     toast({
       title: 'Deployed!',
       description: 'Deployment on demo xnode has finished.',
       variant: 'success',
     })
-    setTimeout(
-      () => window.open(deployOnXnode.id.replace(':34392', ''), '_blank'),
-      300_000 // takes some time for open-webui to be ready (5 minutes)
-    )
   }
 
   // Check if all selections are made
@@ -345,37 +334,33 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
             >
               One Click Deployment
             </Button>
-            
+
             {deploymentStatus === 'deploying' && (
-              <div className="flex items-center justify-center gap-2 rounded-md bg-primary/5 p-4 text-center">
-                <Loader2 className="size-5 animate-spin text-primary" />
-                <span>Deploying to bare metal demo pool...</span>
-              </div>
-            )}
-            
-            {deploymentStatus === 'ongoing' && (
               <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-primary/5 p-4 text-center">
                 <div className="flex items-center gap-2">
                   <Loader2 className="size-5 animate-spin text-primary" />
-                  <span>Deployment ongoing... may take up to 5 minutes</span>
+                  <span>
+                    Deploying to bare metal demo pool... may take up to 5
+                    minutes
+                  </span>
                 </div>
-                <Link 
-                  href="/deployments" 
+                <Link
+                  href="/deployments"
                   className="text-sm text-primary underline hover:text-primary/80"
                 >
                   View your deployments
                 </Link>
               </div>
             )}
-            
+
             {deploymentStatus === 'deployed' && (
               <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-green-50 p-4 text-center">
                 <div className="flex items-center gap-2">
                   <Check className="size-5 text-green-500" />
                   <span className="font-medium text-green-700">Deployed!</span>
                 </div>
-                <Link 
-                  href="/deployments" 
+                <Link
+                  href="/deployments"
                   className="text-sm text-primary underline hover:text-primary/80"
                 >
                   View your deployments
@@ -489,8 +474,12 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
             </p>
             <div className="mb-4 rounded border p-3 text-left">
               <p className="font-bold">Your Login Credentials:</p>
-              <p className="font-mono text-sm">Email: {generateDemoCredentials(deployedNodeId).email}</p>
-              <p className="font-mono text-sm">Password: {generateDemoCredentials(deployedNodeId).password}</p>
+              <p className="font-mono text-sm">
+                Email: {generateDemoCredentials(deployedNodeId).email}
+              </p>
+              <p className="font-mono text-sm">
+                Password: {generateDemoCredentials(deployedNodeId).password}
+              </p>
             </div>
             <p className="text-sm text-muted-foreground">
               Auto redirect in {redirectCounter} seconds or view your
