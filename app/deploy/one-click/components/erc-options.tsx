@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils'
 import { Info, Fuel } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useState } from 'react'
 
 type ERCOption = {
   id: string
@@ -19,6 +20,15 @@ interface ERCOptionsProps {
 }
 
 export function ERCOptions({ selected, showAll, onSelect }: ERCOptionsProps) {
+  const [openTooltips, setOpenTooltips] = useState<Record<string, boolean>>({})
+
+  const toggleTooltip = (id: string, isOpen: boolean) => {
+    setOpenTooltips(prev => ({
+      ...prev,
+      [id]: isOpen
+    }))
+  }
+
   const options: ERCOption[] = [
     {
       id: 'decide-later',
@@ -67,7 +77,7 @@ export function ERCOptions({ selected, showAll, onSelect }: ERCOptionsProps) {
               selected?.id === option.id ? "bg-primary" : "border border-muted-foreground"
             )}></div>
             <div className="flex flex-col pr-20">
-              <div className="flex items-center gap-2">
+              <div className="mb-1 flex items-center gap-2">
                 <div className="font-medium">{option.title}</div>
               </div>
               <div className="text-sm text-muted-foreground">{option.description}</div>
@@ -77,11 +87,22 @@ export function ERCOptions({ selected, showAll, onSelect }: ERCOptionsProps) {
           <div className="flex items-start">
             {option.tooltip && (
               <TooltipProvider>
-                <Tooltip>
+                <Tooltip 
+                  open={openTooltips[option.id]} 
+                  onOpenChange={(open) => toggleTooltip(option.id, open)}
+                >
                   <TooltipTrigger asChild>
-                    <Info className="size-5 text-gray-400" />
+                    <div 
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent the parent onClick from firing
+                        toggleTooltip(option.id, !openTooltips[option.id]);
+                      }}
+                      className="relative z-10 cursor-pointer p-1"
+                    >
+                      <Info className="size-5 text-gray-400" />
+                    </div>
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent side="top" className="z-50">
                     <p>{option.tooltip}</p>
                   </TooltipContent>
                 </Tooltip>
