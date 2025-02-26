@@ -117,10 +117,33 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
                 </div>
               </div>
               <div className="text-right">
-                {provider.action.label}
+                {provider.name === 'Xnode' ? (
+                  <div className="inline-flex overflow-hidden rounded-md">
+                    <div style={{ 
+                      padding: '1px', 
+                      background: 'linear-gradient(to right, #ef4444, #eab308)'
+                    }}>
+                      <div className="rounded-[0.3rem] bg-white px-3 py-1 dark:bg-black">
+                        <span className="font-medium text-green-500">{provider.action.label}</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : provider.name === 'Xnode DVM' ? (
+                  <div className="rounded-md px-3 py-1 font-medium text-black" style={{ background: 'linear-gradient(to right, #bef264, #22c55e)' }}>
+                    {provider.action.label}
+                  </div>
+                ) : (
+                  <span>{provider.action.label}</span>
+                )}
               </div>
             </div>
             
+            {provider.comingSoon && (
+              <div className="absolute left-0 top-0 rounded-br-md rounded-tl-md bg-green-500 px-2 py-1 text-[10px] font-medium text-white">
+                Coming soon
+              </div>
+            )}
+
             <div className="flex items-center justify-between">
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-1">
@@ -144,12 +167,6 @@ export function ProviderSelector({ selected, showAll, onSelect }: ProviderSelect
                   <span className="text-sm text-gray-400">No KYC</span>
                 </div>
               </div>
-              
-              {provider.comingSoon && (
-                <div className="rounded bg-green-100 px-2 py-1 text-xs text-green-800">
-                  Coming soon
-                </div>
-              )}
             </div>
           </div>
         ))}
