@@ -156,7 +156,7 @@ export async function deployModel({
     flake: `
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/172b7298869362d6f58dbf19976ff2241d9eacee";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
     xnode-ai-chat = {
       url = "github:OpenxAI-Network/xnode-ai-chat";
