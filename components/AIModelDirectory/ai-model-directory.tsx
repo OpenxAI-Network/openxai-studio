@@ -8,8 +8,24 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { SortDropdown } from './ai-model-dropdown'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { prefix } from '@/utils/prefix'
 import ModelDefinitions from '@/utils/model-definitions.json'
+
+// Define the fetch.ai agent
+export const agentDefinitions = [
+  {
+    id: "fetch-ai",
+    name: "Fetch.ai uAgents",
+    desc: "A lightweight library by Fetch.ai to build decentralized agents that can communicate, search, and transact in dynamic markets.",
+    type: "Agent",
+    nixName: "fetch-ai-uagents",
+    last_updated: "1 day ago",
+    logo: "/images/agents/fetch-logo-only.svg",
+    tags: ["Agent"],
+    model_sizes: "0.21.0"
+  }
+]
 
 interface ModelOption {
   name: string
@@ -45,6 +61,7 @@ const sortOptions = [
 ]
 
 const modelTypes = ['General', 'Vision', 'Embedding', 'Code']
+const agentTypes = ['Agent']
 
 function parseRelativeTime(timeString: string): number {
   const [amount, unit] = timeString.split(' ')
@@ -114,10 +131,11 @@ function ModelCard({ data }: { data: ModelData }) {
   )
 }
 
-export default function AIModelDirectory() {
+export default function AppDirectory() {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('most-popular')
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
+  const [activeTab, setActiveTab] = useState('models')
 
   const initialModels = ModelDefinitions.map(model => ({
     ...model,
@@ -125,44 +143,44 @@ export default function AIModelDirectory() {
     type: model.tags[0] || "General"
   }))
 
-  const filteredAndSortedModels = useMemo(() => {
-    let models = [...initialModels]
+  const filteredAndSortedItems = useMemo(() => {
+    let items = activeTab === 'models' ? [...initialModels] : [...agentDefinitions]
     
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      models = models.filter(model => 
-        model.name.toLowerCase().includes(query)
+      items = items.filter(item => 
+        item.name.toLowerCase().includes(query)
       )
     }
     
     // Apply type filters
     if (selectedTypes.length > 0) {
-      models = models.filter(model => selectedTypes.includes(model.type))
+      items = items.filter(item => selectedTypes.includes(item.type))
     }
     
     // Apply sorting
     switch (sortBy) {
       case 'most-popular':
-        models.sort((a, b) => (b.model_sizes?.split(',').length || 0) - (a.model_sizes?.split(',').length || 0))
+        items.sort((a, b) => (b.model_sizes?.split(',').length || 0) - (a.model_sizes?.split(',').length || 0))
         break
       case 'recently-updated':
-        models.sort((a, b) => {
+        items.sort((a, b) => {
           const dateA = parseRelativeTime(a.last_updated || "")
           const dateB = parseRelativeTime(b.last_updated || "")
           return dateB - dateA
         })
         break
       case 'name-asc':
-        models.sort((a, b) => a.name.localeCompare(b.name))
+        items.sort((a, b) => a.name.localeCompare(b.name))
         break
       case 'name-desc':
-        models.sort((a, b) => b.name.localeCompare(a.name))
+        items.sort((a, b) => b.name.localeCompare(a.name))
         break
     }
     
-    return models
-  }, [initialModels, sortBy, selectedTypes, searchQuery])
+    return items
+  }, [initialModels, sortBy, selectedTypes, searchQuery, activeTab])
 
   const toggleType = (type: string) => {
     setSelectedTypes(prev => 
@@ -171,6 +189,13 @@ export default function AIModelDirectory() {
         : [...prev, type]
     )
   }
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value)
+    setSelectedTypes([]) // Reset type filters when switching tabs
+  }
+
+  const typeOptions = activeTab === 'models' ? modelTypes : agentTypes
 
   return (
     <div className="container py-8">
@@ -181,7 +206,7 @@ export default function AIModelDirectory() {
             App Store
           </Link>
           <span>/</span>
-          <span className="text-foreground">AI model directory</span>
+          <span className="text-foreground">App Directory</span>
         </div>
 
         {/* Search and Filters Container */}
@@ -190,7 +215,7 @@ export default function AIModelDirectory() {
           <div className="relative w-full lg:w-[300px]">
             <Search className="absolute left-2 top-2.5 size-4 text-muted-foreground" />
             <Input
-              placeholder="Search models..."
+              placeholder={`Search ${activeTab}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-8"
@@ -199,7 +224,7 @@ export default function AIModelDirectory() {
 
           {/* Type Filter Tags */}
           <div className="flex flex-wrap justify-center gap-2 lg:flex-1">
-            {modelTypes.map((type) => (
+            {typeOptions.map((type) => (
               <Button
                 key={type}
                 variant="outline"
@@ -226,9 +251,17 @@ export default function AIModelDirectory() {
         </div>
       </div>
 
+      {/* Tab navigation for Models vs Agents */}
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-6">
+        <TabsList className="grid w-[400px] grid-cols-2">
+          <TabsTrigger value="models">AI Models</TabsTrigger>
+          <TabsTrigger value="agents">Agents</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filteredAndSortedModels.map((model) => (
-          <ModelCard key={model.id} data={model} />
+        {filteredAndSortedItems.map((item) => (
+          <ModelCard key={item.id} data={item} />
         ))}
       </div>
     </div>
