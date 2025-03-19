@@ -11,21 +11,7 @@ import { SortDropdown } from './ai-model-dropdown'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { prefix } from '@/utils/prefix'
 import ModelDefinitions from '@/utils/model-definitions.json'
-
-// Define the fetch.ai agent
-export const agentDefinitions = [
-  {
-    id: "fetch-ai",
-    name: "Fetch.ai uAgents",
-    desc: "A lightweight library by Fetch.ai to build decentralized agents that can communicate, search, and transact in dynamic markets.",
-    type: "Agent",
-    nixName: "fetch-ai-uagents",
-    last_updated: "1 day ago",
-    logo: "/images/agents/fetch-logo-only.svg",
-    tags: ["Agent"],
-    model_sizes: "0.21.0"
-  }
-]
+import AgentDefinitions from '@/utils/agent-definitions.json'
 
 interface ModelOption {
   name: string
@@ -125,7 +111,10 @@ function ModelCard({ data }: { data: ModelData }) {
   )
 
   return (
-    <Link href={`/deploy?templateId=${data.nixName}`}>
+    <Link href={data.type === 'Agent' 
+      ? `/deploy?agentId=${data.nixName}`
+      : `/deploy?templateId=${data.nixName}`
+    }>
       {cardContent}
     </Link>
   )
@@ -144,7 +133,7 @@ export default function AppDirectory() {
   }))
 
   const filteredAndSortedItems = useMemo(() => {
-    let items = activeTab === 'models' ? [...initialModels] : [...agentDefinitions]
+    let items = activeTab === 'models' ? [...initialModels] : [...AgentDefinitions]
     
     // Apply search filter
     if (searchQuery) {

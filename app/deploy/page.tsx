@@ -6,6 +6,7 @@ import { AppWindow } from 'lucide-react'
 import { remark } from 'remark'
 import html from 'remark-html'
 import { z } from 'zod'
+import { Suspense } from 'react'
 
 import {
   getSpecsByTemplate,
@@ -21,12 +22,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import { DeploymentContextProvider } from './deployment-context'
 import { DeploymentPanel } from './one-click/components/deployment-panel'
+import AgentDefinitions from '@/utils/agent-definitions.json'
+import AgentDeployment from '@/components/AgentDeployment/agent-deployment'
 
 type DeployPageProps = {
   searchParams: {
     templateId?: string
     useCaseId?: string
     advanced?: string
+    agentId?: string
   }
 }
 
@@ -34,6 +38,66 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
   const templateId = z.string().optional().parse(searchParams.templateId)
   const useCaseId = z.string().optional().parse(searchParams.useCaseId)
   const advanced = z.string().optional().parse(searchParams.advanced)
+  const agentId = z.string().optional().parse(searchParams.agentId)
+
+  if (agentId) {
+    const agent = AgentDefinitions.find(a => a.nixName === agentId)
+    if (!agent) redirect('/app-store')
+
+    const expandedDescription = `
+      A lightweight framework by Fetch.ai for building decentralized AI agents that can communicate and transact with each other. Each agent:
+
+      • Has a unique identity from its seed phrase
+      • Can communicate with other agents locally or remotely
+      • Can perform scheduled tasks and respond to messages
+      • Can be discovered through the Almanac network
+
+      Multiple agents can form a network, exchanging messages in real-time and operating independently with their own personalities and behaviors. Built on Python 3.8+, the system requires minimal setup for local deployment.
+    `
+
+    return (
+      <div className="container my-8">
+        <div className="flex items-center gap-2 text-muted-foreground/75">
+          <Link href="/app-store">App Store</Link>
+          <span>/</span>
+          <span className="text-primary/75">{agent.name}</span>
+        </div>
+        
+        <div className="mt-8 grid grid-cols-12 gap-8">
+          {/* Left Content Panel */}
+          <div className="col-span-8">
+            <div className="flex flex-1 flex-col rounded border p-6">
+              <div className="flex flex-1 items-start gap-3">
+                {agent.logo && agent.logo !== '' ? (
+                  <img
+                    src={agent.logo.startsWith('https://') ? agent.logo : `${prefix}${agent.logo}`}
+                    alt={`${agent.name} logo`}
+                    width={48}
+                    height={48}
+                  />
+                ) : (
+                  <AppWindow className="size-12 text-muted-foreground" strokeWidth={1.5} />
+                )}
+                <div>
+                  <h2 className="text-xl font-bold text-primary">{agent.name}</h2>
+                  <div className="mt-4 prose prose-sm text-muted-foreground">
+                    {expandedDescription.split('\n').map((paragraph, i) => (
+                      <p key={i} className="mt-2">{paragraph.trim()}</p>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Configuration Panel */}
+          <div className="col-span-4">
+            <AgentDeployment agent={agent} />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const sessionCookie = cookies().get('userSessionToken')
   const sessionToken = sessionCookie?.value || 'demo-token'
@@ -193,7 +257,13 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
 
           {/* Right Deployment Panel */}
           <div className="col-span-4">
-            <DeploymentPanel templateId={templateId} />
+            <Suspense fallback={<div>Loading...</div>}>
+              {templateId === 'fetch-ai-uagents' ? (
+                <AgentDeployment agent={AgentDefinitions[0]} />
+              ) : (
+                <DeploymentPanel templateId={templateId} />
+              )}
+            </Suspense>
           </div>
         </div>
       </div>
