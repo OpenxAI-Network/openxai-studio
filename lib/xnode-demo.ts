@@ -156,19 +156,14 @@ export async function deployModel({
     flake: `
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/172b7298869362d6f58dbf19976ff2241d9eacee";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
-    xnode-ai-chat = {
-      url = "github:OpenxAI-Network/xnode-ai-chat";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.nixpkgs-stable.follows = "nixpkgs-stable";
-    };
+    xnode-ai-chat.url = "github:OpenxAI-Network/xnode-ai-chat";
+    nixpkgs.follows = "xnode-ai-chat/nixpkgs";
   };
 
   outputs =
     {
       self,
-      nixpkgs-stable,
+      nixpkgs,
       xnode-ai-chat,
       ...
     }:
@@ -176,14 +171,14 @@ export async function deployModel({
       system = "x86_64-linux";
     in
     {
-      nixosConfigurations.container = nixpkgs-stable.lib.nixosSystem {
+      nixosConfigurations.container = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {
           inherit xnode-ai-chat;
         };
         modules = [
           (
-            { xnode-ai-chat, ... }:
+            { xnode-ai-chat, lib, ... }:
             {
               imports = [
                 xnode-ai-chat.nixosModules.default
@@ -200,12 +195,13 @@ export async function deployModel({
                   password = "${password}";
                 };
               };
+              services.open-webui.environment.WEBUI_URL = lib.mkForce "http://localhost:8080";
 
               networking = {
                 firewall.allowedTCPPorts = [ 8080 ];
               };
 
-              system.stateVersion = "24.11";
+              system.stateVersion = "25.11";
             }
           )
         ];
