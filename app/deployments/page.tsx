@@ -1,6 +1,8 @@
 import { cookies } from 'next/headers'
-import { DemoPool } from './demo-pool'
 import Link from 'next/link'
+
+import { DemoPool } from './demo-pool'
+
 // import DeploymentsList from './deployments-list'
 
 export default function DeploymentsPage() {
@@ -9,13 +11,23 @@ export default function DeploymentsPage() {
   return (
     <div className="container my-12 max-w-none">
       {/* Demo Pool */}
-      <div className="mb-12">
+      <div>
         <h1 className="mb-6 text-3xl font-bold">OpenxAI Launch Demo Pool</h1>
 
-        <p className="mb-6 text-lg">
-          During the <Link href="https://dashboard.openxai.org/genesis" className="font-bold underline">OpenxAI Genesis Event</Link>, 
-          test your AI applications on our demo nodes. Each node is available for 1 hour - check out our{' '}
-          <Link href="/app-store" className="text-primary hover:underline">AI App Store</Link> to get started.
+        <p className="mb-3 text-lg">
+          During the{' '}
+          <Link
+            href="https://dashboard.openxai.org/genesis"
+            className="font-bold underline"
+          >
+            OpenxAI Genesis Event
+          </Link>
+          , test your AI applications on our demo nodes. Each node is available
+          for 30 minutes - check out our{' '}
+          <Link href="/app-store" className="text-primary hover:underline">
+            AI App Store
+          </Link>{' '}
+          to get started.
         </p>
 
         <DemoPool />

@@ -1,11 +1,14 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
+import type { xnode } from '@openmesh-network/xnode-manager-sdk'
 
-import type { ReservedDemoXnode } from '@/lib/xnode-demo'
+import type { DemoXnode } from '@/lib/xnode-demo'
 
 export interface DemoContext {
-  xnode?: ReservedDemoXnode
+  xnode?: DemoXnode
+  deploymentId?: xnode.request.RequestId
+  processes?: string[]
 }
 const defaultContext: DemoContext = {}
 const DemoContext = createContext<DemoContext>(defaultContext)

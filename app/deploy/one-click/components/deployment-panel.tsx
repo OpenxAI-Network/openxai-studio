@@ -1,32 +1,21 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import {
-  useDemoDeploymentContext,
-  useSetDemoDeploymentContext,
-} from '@/contexts/DemoDeploymentContext'
 import { useDemoContext, useSetDemoContext } from '@/contexts/XnodeDemoContext'
 import ModelDefinitions from '@/utils/model-definitions.json'
-import { format } from 'date-fns'
-import { Check, Clock, Loader2, RotateCw } from 'lucide-react'
+import { xnode } from '@openmesh-network/xnode-manager-sdk'
+import { Check } from 'lucide-react'
 
-import { generateDemoCredentials } from '@/lib/demo-credentials'
 import { cn } from '@/lib/utils'
 import {
-  deployModel,
+  demoSession,
   reserveDemo,
   useDemosAvailable,
-  type ReservedDemoXnode,
+  useDeployModel,
+  type DemoXnode,
 } from '@/lib/xnode-demo'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import { useToast } from '@/components/ui/use-toast'
 
 import { ERCOptions } from './erc-options'
@@ -54,23 +43,7 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
   const router = useRouter()
   const [step, setStep] = useState<DeploymentStep>({})
   const [currentStep, setCurrentStep] = useState<number>(0)
-  const [deploymentModalOpen, setDeploymentModalOpen] = useState(false)
-  const [successModalOpen, setSuccessModalOpen] = useState(false)
-  const [redirectCounter, setRedirectCounter] = useState(30)
-  const [deploymentProgress, setDeploymentProgress] = useState<{
-    step: number
-    status: string[]
-  }>({ step: 0, status: [] })
-  const [deployedNodeId, setDeployedNodeId] = useState<string>('')
-  const [deploymentStatus, setDeploymentStatus] = useState<
-    'initial' | 'deploying' | 'deployed'
-  >('initial')
-
-  const deploymentSteps = [
-    'Model is selected',
-    'Infrastructure activated',
-    'Deploying your service',
-  ]
+  const [deploying, setDeploying] = useState<boolean>(false)
 
   const handleModelClick = () => {
     if (currentStep > 0) {
@@ -120,65 +93,23 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
     setCurrentStep(3)
   }
 
-  const handleDeploy = async () => {
-    setDeploymentModalOpen(true)
-    setDeploymentProgress({
-      step: 0,
-      status: [
-        'Preparing to deploy on XnodeG 001',
-        'Installing Ollama 3.1',
-        'Installing WebUI...',
-      ],
-    })
-
-    // Simulate deployment progress
-    setTimeout(() => {
-      setDeploymentProgress((prev) => ({ ...prev, step: 1 }))
-      setTimeout(() => {
-        setDeploymentProgress((prev) => ({ ...prev, step: 2 }))
-        // Show success after deployment completes
-        setTimeout(() => {
-          setDeploymentModalOpen(false)
-          setSuccessModalOpen(true)
-          startRedirectCountdown()
-        }, 2000)
-      }, 2000)
-    }, 2000)
-  }
-
-  const startRedirectCountdown = () => {
-    const interval = setInterval(() => {
-      setRedirectCounter((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval)
-          router.push('/dashboard')
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-  }
-
   const { toast } = useToast()
 
   const demos = useDemosAvailable()
-  const demoXnode = demos.data?.find((x) => !x.reserved_until)
+  const demoXnode = demos.data?.find((x) => !x.reservation)
   const reservedXnode = useDemoContext()
   const setReservedXnode = useSetDemoContext()
-
-  const setDemoDeployment = useSetDemoDeploymentContext()
+  const deployModel = useDeployModel()
 
   const deployOnDemo = async () => {
-    setDeploymentStatus('deploying')
-
     const activeReservation =
       reservedXnode.xnode &&
       reservedXnode.xnode.reservation.reserved_until > Date.now() / 1000
-    let deployOnXnode: ReservedDemoXnode
+    let deployOnXnode: DemoXnode
 
     if (!activeReservation && !demoXnode) {
       const nextFreeXnode = demos.data
-        ?.map((x) => x.reserved_until)
+        ?.map((x) => x.reservation.reserved_until)
         .sort()
         .at(0)
       toast({
@@ -186,22 +117,21 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
         description: `No demo xnodes available. ${nextFreeXnode ? `Next xnode will be free in ${Math.round((nextFreeXnode - Date.now() / 1000) / 60)} minutes.` : ''}`,
         variant: 'destructive',
       })
-      setDeploymentStatus('initial')
       return
     }
 
-    setDemoDeployment({ deployed: false })
-    let { dismiss } = toast({
-      title: 'Deploying...',
-    })
+    let dismiss = () => {}
     try {
-      deployOnXnode = activeReservation
-        ? reservedXnode.xnode
-        : await reserveDemo({ xnode_id: demoXnode.id }).then((xnode) => {
-            setReservedXnode({ xnode })
-            setDeployedNodeId(xnode.id)
-            return xnode
-          })
+      if (activeReservation) {
+        deployOnXnode = reservedXnode.xnode
+      } else {
+        dismiss = toast({
+          title: 'Reserving Xnode...',
+          description: 'This can take up to 1 minute..',
+          duration: 60_000,
+        }).dismiss
+        deployOnXnode = await reserveDemo({ xnode_id: demoXnode.id })
+      }
 
       console.log('Selected model:', step.modelSize)
 
@@ -223,34 +153,39 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
         throw new Error('Selected model configuration not found')
       }
 
-      const credentials = generateDemoCredentials(deployOnXnode.id)
+      const session = demoSession({ xnode_id: deployOnXnode.id })
+      while (true) {
+        // Wait until access is granted
+        try {
+          await xnode.usage.cpu({
+            session,
+            path: {
+              scope: 'host',
+            },
+          })
+          break
+        } catch (e) {
+          console.log('waiting for Xnode access...')
+          await new Promise((resolve) => setTimeout(resolve, 1000))
+        }
+      }
 
-      await deployModel({
-        xnode_id: deployOnXnode.id,
-        secret: deployOnXnode.reservation.secret,
+      const deploymentId = await deployModel({
+        session,
         model: ollamaCommand,
-        ...credentials,
+      }).then((data) => data.request_id)
+      setReservedXnode({
+        xnode: deployOnXnode,
+        deploymentId,
+        processes: ['open-webui', 'ollama', 'ollama-model-loader'],
       })
+
+      router.push('/deployments')
     } catch (e) {
       console.error(e)
+    } finally {
       dismiss()
-      toast({
-        title: 'Deployment failed',
-        description: e.message ?? 'An unknown error occurred.',
-        variant: 'destructive',
-      })
-      setDeploymentStatus('initial')
-      return
     }
-
-    setDemoDeployment({ deployed: true })
-    setDeploymentStatus('deployed')
-    dismiss()
-    toast({
-      title: 'Deployed!',
-      description: 'Deployment on demo xnode has finished.',
-      variant: 'success',
-    })
   }
 
   // Check if all selections are made
@@ -329,168 +264,19 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
             <Button
               className="w-full"
               size="lg"
-              disabled={!isReadyToDeploy || deploymentStatus !== 'initial'}
-              onClick={() => deployOnDemo().catch(console.error)}
+              disabled={!isReadyToDeploy || deploying}
+              onClick={() => {
+                setDeploying(true)
+                deployOnDemo()
+                  .catch(console.error)
+                  .finally(() => setDeploying(false))
+              }}
             >
               One Click Deployment
             </Button>
-
-            {deploymentStatus === 'deploying' && (
-              <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-primary/5 p-4 text-center">
-                <div className="flex items-center gap-2">
-                  <Loader2 className="size-5 animate-spin text-primary" />
-                  <span>
-                    Deploying to bare metal demo pool... may take up to 5
-                    minutes
-                  </span>
-                </div>
-                <Link
-                  href="/deployments"
-                  className="text-sm text-primary underline hover:text-primary/80"
-                >
-                  View your deployments
-                </Link>
-              </div>
-            )}
-
-            {deploymentStatus === 'deployed' && (
-              <div className="flex flex-col items-center justify-center gap-2 rounded-md bg-green-50 p-4 text-center">
-                <div className="flex items-center gap-2">
-                  <Check className="size-5 text-green-500" />
-                  <span className="font-medium text-green-700">Deployed!</span>
-                </div>
-                <Link
-                  href="/deployments"
-                  className="text-sm text-primary underline hover:text-primary/80"
-                >
-                  View your deployments
-                </Link>
-              </div>
-            )}
           </>
         )}
       </div>
-
-      <Dialog open={deploymentModalOpen} onOpenChange={setDeploymentModalOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          {/* Progress Steps */}
-          <div className="mb-8 flex items-center justify-between">
-            {deploymentSteps.map((label, index) => (
-              <div key={index} className="flex flex-1 items-center">
-                <div className="flex flex-col items-center">
-                  <div
-                    className={cn(
-                      'flex size-8 items-center justify-center rounded-full border-2',
-                      deploymentProgress.step >= index
-                        ? 'border-primary bg-primary text-white'
-                        : 'border-muted-foreground/25'
-                    )}
-                  >
-                    {deploymentProgress.step > index ? (
-                      <Check className="size-4" />
-                    ) : (
-                      <span>{index + 1}</span>
-                    )}
-                  </div>
-                  <span
-                    className={cn(
-                      'mt-2 text-center text-xs',
-                      deploymentProgress.step >= index
-                        ? 'text-primary'
-                        : 'text-muted-foreground'
-                    )}
-                  >
-                    {label}
-                  </span>
-                </div>
-                {index < deploymentSteps.length - 1 && (
-                  <div
-                    className={cn(
-                      'mx-4 h-[2px] flex-1',
-                      deploymentProgress.step > index
-                        ? 'bg-primary'
-                        : 'bg-muted-foreground/25'
-                    )}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-
-          <DialogHeader>
-            <DialogTitle>Deploying</DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-6 py-4">
-            {deploymentProgress.status.map((status, index) => (
-              <div key={status} className="flex items-center gap-3">
-                {deploymentProgress.step > index ? (
-                  <div className="flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
-                    <Check className="size-4 stroke-[3] text-white" />
-                  </div>
-                ) : deploymentProgress.step === index ? (
-                  <div className="flex size-5 items-center justify-center">
-                    <RotateCw className="size-4 animate-spin text-primary" />
-                  </div>
-                ) : (
-                  <div className="size-5" />
-                )}
-                <span className="font-mono text-sm">
-                  {format(new Date(), 'HH:mm:ss')} {status}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-4 rounded border bg-muted p-4 text-sm">
-            <div className="flex items-center justify-center gap-2">
-              <Clock className="size-4 text-primary" />
-              <span>Estimated time: 10 minutes</span>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={successModalOpen} onOpenChange={setSuccessModalOpen}>
-        <DialogContent className="text-center sm:max-w-[500px]">
-          <div className="my-6 flex justify-center">
-            <div className="relative">
-              <div className="size-24 rounded-full bg-primary">
-                <Check className="absolute left-1/2 top-1/2 size-12 -translate-x-1/2 -translate-y-1/2 text-white" />
-              </div>
-              <div className="absolute -inset-1">
-                <div className="size-26 animate-spin-slow rounded-full bg-primary/20" />
-              </div>
-            </div>
-          </div>
-
-          <DialogHeader>
-            <DialogTitle className="text-center text-2xl">Success!</DialogTitle>
-          </DialogHeader>
-
-          <div className="py-4">
-            <p className="mb-4 text-lg">
-              Your AI App is installed. You have 1 hour to use your model.
-            </p>
-            <div className="mb-4 rounded border p-3 text-left">
-              <p className="font-bold">Your Login Credentials:</p>
-              <p className="font-mono text-sm">
-                Email: {generateDemoCredentials(deployedNodeId).email}
-              </p>
-              <p className="font-mono text-sm">
-                Password: {generateDemoCredentials(deployedNodeId).password}
-              </p>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Auto redirect in {redirectCounter} seconds or view your
-              deployments on{' '}
-              <Link href="/dashboard" className="text-primary hover:underline">
-                dashboard
-              </Link>
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   )
 }

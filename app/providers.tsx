@@ -1,7 +1,6 @@
 'use client'
 
 import AccountContextProvider from '@/contexts/AccountContext'
-import { DemoDeploymentContextProvider } from '@/contexts/DemoDeploymentContext'
 import { DemoContextProvider } from '@/contexts/XnodeDemoContext'
 import { chain } from '@/utils/chain'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -88,13 +87,11 @@ export function Providers({
             <DemoModeProvider>
               <SelectedXnodeProvider>
                 <DemoContextProvider>
-                  <DemoDeploymentContextProvider>
-                    <ScreenProvider>
-                      {children}
-                      <ToastContainer />
-                      <Toaster />
-                    </ScreenProvider>
-                  </DemoDeploymentContextProvider>
+                  <ScreenProvider>
+                    {children}
+                    <ToastContainer />
+                    <Toaster />
+                  </ScreenProvider>
                 </DemoContextProvider>
               </SelectedXnodeProvider>
             </DemoModeProvider>
