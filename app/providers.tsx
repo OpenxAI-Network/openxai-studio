@@ -33,6 +33,10 @@ export const wagmiConfig = defaultWagmiConfig({
   projectId,
   metadata,
   ssr: true,
+  auth: {
+    email: false,
+    socials: [],
+  },
 })
 
 createWeb3Modal({
@@ -45,6 +49,9 @@ createWeb3Modal({
     '--w3m-border-radius-master': '0.375px',
     '--w3m-accent': 'hsl(var(--primary))',
   },
+  featuredWalletIds: [
+    'a797aa35c0fadbfc1a53e7f675162ed5226968b44a19ee3d24385c64d1d3c393',
+  ],
 })
 
 const disconnectWallet = async () => {

@@ -46,7 +46,7 @@
     "@tanstack/react-table": "^8.17.3",
     "@types/react-google-recaptcha": "^2.1.9",
     "@uidotdev/usehooks": "^2.4.1",
-    "@web3modal/wagmi": "^4.2.3",
+    "@web3modal/wagmi": "^5.1.11",
     "anser": "^2.3.2",
     "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
