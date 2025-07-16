@@ -141,7 +141,7 @@ function ReservedDemoXnodeReady({
 
   return (
     <div className="flex flex-col gap-1">
-      <Button variant="outlinePrimary" className="max-w-32">
+      <Button variant="outlinePrimary" className="max-w-32" asChild>
         <Link href={session.baseUrl.replace('manager.', '')} target="_blank">
           Go To App
         </Link>
