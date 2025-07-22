@@ -35,7 +35,7 @@ export function useDeployDemo() {
               flake: `{
   inputs = {
     xnode-manager.url = "github:Openmesh-Network/xnode-manager";
-    ${name}.url = "github:OpenxAI-Network/global-accelerator-2025/use-template?dir=${subdir}";
+    ${name}.url = "github:OpenxAI-Network/global-accelerator-2025?dir=${subdir}";
     nixpkgs.follows = "${name}/nixpkgs";
   };
 
