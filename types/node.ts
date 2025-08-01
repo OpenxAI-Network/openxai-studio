@@ -39,4 +39,8 @@ export type Xnode = {
   location: string
   createdAt: Date
   updatedAt: Date
+  cores: number
+  ram: number 
+  storage: number 
+  gpu: string
 }

@@ -75,6 +75,7 @@ export type Specs = {
 export type ServiceData = {
   name: string
   tags: string[]
+  version?: string
   specs?: Specs
   desc: string
   longDesc?: string

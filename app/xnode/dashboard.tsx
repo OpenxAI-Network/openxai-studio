@@ -10,6 +10,8 @@ import { useDebounce } from '@uidotdev/usehooks'
 import axios, { AxiosError } from 'axios'
 import { addYears, formatDistanceToNowStrict } from 'date-fns'
 import { useUser } from 'hooks/useUser'
+import { useAccount } from 'wagmi'
+
 import {
   Copy,
   Edit3,
@@ -53,6 +55,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Processes } from './process'
 import {
   Table,
   TableBody,
@@ -74,17 +77,24 @@ import Signup from '@/components/Signup'
 
 import { HealthChartItem } from '../dashboard/health-data'
 import { ServiceOptionRow } from './service-options'
+import { AppEdit } from './edit'
+
 
 type XnodePageProps = {
   xNodeId: string
 }
 
 export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
+  const { address } = useAccount()
   const { demoMode } = useDemoModeContext()
   const testXNode = useMemo<Xnode | null>(() => {
     if (!demoMode) return null
     return mockXNodes.find((node) => node.id === xNodeId) ?? null
   }, [demoMode, xNodeId])
+  const [processesOpen, setProcessesOpen] = useState(false);
+  const [appEditOpen, setAppEditOpen] = useState(false);
+  const [currentContainer, setCurrentContainer] = useState('');
+
 
   const [user] = useUser()
   const { toast } = useToast()
@@ -423,7 +433,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                   err.status.toString().startsWith('2') ||
                   err.status === 409 /*Device already cancelled*/ ||
                   err.response?.data?.error ===
-                    'Response constructor: Invalid response status code 204' ||
+                  'Response constructor: Invalid response status code 204' ||
                   err.response?.data?.error?.at(0) === 'Resource not Found.' // Already deleted
                 ) {
                   return
@@ -448,7 +458,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                 if (
                   err.status.toString().startsWith('2') ||
                   err.response?.data?.error ===
-                    'Response constructor: Invalid response status code 204'
+                  'Response constructor: Invalid response status code 204'
                 ) {
                   return
                 }
@@ -522,9 +532,12 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
     },
     [demoMode, refetch, user?.sessionToken, xNodeData]
   )
+  console.log('xNodeData', xNode)
+  console.log('services', services)
+  console.log('User session:', user?.session);
 
   return (
-    <div className="container my-12 max-w-none">
+    <div className="container max-w-[1920px] my-12  mx-auto">
       {isLoading && !demoMode ? (
         <div>
           <Skeleton className="h-5 w-28" />
@@ -663,11 +676,11 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                                     opt.nixName
                                   )
                                     ? {
-                                        ...opt,
-                                        value: defaultOptions.get(
-                                          `${serviceInEdit.nixName}_${opt.nixName}`
-                                        ),
-                                      }
+                                      ...opt,
+                                      value: defaultOptions.get(
+                                        `${serviceInEdit.nixName}_${opt.nixName}`
+                                      ),
+                                    }
                                     : opt
                                 })
                               }
@@ -696,14 +709,14 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                         value={(nixName, parentOption) => {
                           return parentOption
                             ? serviceChanges
-                                .get(serviceInEdit.nixName)
-                                ?.find((opt) => opt.nixName === parentOption)
-                                ?.options?.find(
-                                  (opt) => opt.nixName === nixName
-                                )?.value
+                              .get(serviceInEdit.nixName)
+                              ?.find((opt) => opt.nixName === parentOption)
+                              ?.options?.find(
+                                (opt) => opt.nixName === nixName
+                              )?.value
                             : serviceChanges
-                                .get(serviceInEdit.nixName)
-                                ?.find((opt) => opt.nixName === nixName)?.value
+                              .get(serviceInEdit.nixName)
+                              ?.find((opt) => opt.nixName === nixName)?.value
                         }}
                         onUpdate={(newVal, currentOption, parentOption) => {
                           setServiceChanges((prev) => {
@@ -752,11 +765,11 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                                   opt.options = opt.options.map((subOpt) =>
                                     subOpt.nixName === option
                                       ? {
-                                          ...subOpt,
-                                          value: defaultOptions.get(
-                                            `${serviceInEdit.nixName}_${option}`
-                                          ),
-                                        }
+                                        ...subOpt,
+                                        value: defaultOptions.get(
+                                          `${serviceInEdit.nixName}_${option}`
+                                        ),
+                                      }
                                       : subOpt
                                   )
                                 } else {
@@ -934,8 +947,8 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
             </DialogContent>
           </Dialog>
           {xNode.heartbeatData?.wantUpdate &&
-          xNode.updateGenerationHave == xNode.updateGenerationWant &&
-          xNode.status === 'online' ? (
+            xNode.updateGenerationHave == xNode.updateGenerationWant &&
+            xNode.status === 'online' ? (
             <div className="fixed inset-x-0 bottom-8 z-30 flex justify-center">
               <div className="flex flex-wrap items-center justify-between gap-12 rounded border border-primary bg-[color-mix(in_srgb,hsl(var(--background)),hsl(var(--primary))_5%)] px-6 py-4 shadow-xl">
                 <div>
@@ -955,7 +968,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
               </div>
             </div>
           ) : null}
-          <TooltipProvider>
+          {/* <TooltipProvider>
             <Tooltip open={!xNode.isUnit ? false : undefined}>
               <TooltipTrigger className="flex items-start gap-0.5 font-medium text-muted-foreground">
                 {formatXNodeName(xNode)}
@@ -968,16 +981,72 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                 </p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
-          <Button
+          </TooltipProvider> */}
+          {/* <Button
             className="size-auto gap-x-2 bg-transparent p-0 hover:bg-transparent"
             onClick={() => setEditName(xNode.name)}
           >
             <h1 className="text-4xl font-bold text-black">{xNode.name}</h1>
+            
             <Edit3 className="size-7 text-muted-foreground" />
-          </Button>
+          </Button> */}
+          <div className="bg-white py-6  max-w-2xl w-full flex flex-col gap-6">
+
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-xl font-semibold flex items-center gap-2 text-[#000000]">
+                  {xNode.name}
+
+                  <img src="/images/viewDeployment/ollama.svg" alt="" />
+                </h2>
+                <p className="text-sm text-[#8F8F8F]">
+                  {xNode?.cores} cores,{' '}
+                  {xNode?.ram ? Math.round(xNode.ram / 1024 ** 3) : 0}GB RAM,{' '}
+                  {xNode?.storage
+                    ? xNode.storage >= 1024 ** 4
+                      ? `${(xNode.storage / 1024 ** 4).toFixed(1)}PB`
+                      : xNode.storage >= 1024 ** 3
+                        ? `${(xNode.storage / 1024 ** 3).toFixed(0)}TB`
+                        : `${(xNode.storage / 1024 ** 2).toFixed(0)}GB`
+                    : '0GB'}{' '}
+                  Storage, {xNode?.gpu} GPU
+                </p>
+
+              </div>
+              <button className="bg-[#0059FF] text-white px-4 py-2 rounded-md text-sm font-[400]">
+                Push to Marketplace
+              </button>
+            </div>
+
+
+            <div className="flex flex-col gap-4 max-w-[70%]">
+
+              <div className="flex items-center justify-between">
+                <span className="text-[#1B1A1E] truncate max-w-[65px] font-medium">{address}</span>
+                <button className="bg-[#0059FF] text-white px-4 py-2 rounded-md text-sm w-[140px] font-[400]">
+                  Transfer
+                </button>
+              </div>
+
+              {xNode.isUnit && (
+                <div className="flex items-center justify-between ">
+                  {/* <span className="text-[#1B1A1E] font-semibold">Paid for 295 days</span> */}
+                  <span className='text-[#1B1A1E] font-medium'> Paid For {""}
+                    {formatDistanceToNowStrict(addYears(xNode.unitClaimTime, 1), {
+                      unit: 'day',
+                    })}
+                  </span>
+                  <button className="bg-[#0059FF] text-white px-4 py-2 rounded-md text-sm w-[140px] font-[400]">
+                    Extend / Renew
+                  </button>
+
+                </div>
+
+              )}
+            </div>
+          </div>
           <div className="mt-2 flex items-center gap-3">
-            <span
+            {/* <span
               className={cn(
                 'rounded border border-orange-500/25 bg-orange-500/10 px-2.5 py-1 text-sm font-medium capitalize text-orange-500',
                 xNode.status === 'online' &&
@@ -1022,20 +1091,20 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                   </Button>
                 </SimpleTooltip>
               </div>
-            )}
-            {xNode.isUnit && (
-              <div className="flex gap-1.5 rounded border px-2.5 py-1 text-sm font-medium text-muted-foreground">
-                <span>Remaining Xnode Time</span>
-                <div className="my-0.5">
-                  <Separator orientation="vertical" />
-                </div>
+            )} */}
+            {/* {xNode.isUnit && (
+              <div className="flex gap-1.5  px-2.5 py-1 text-sm font-medium text-muted-foreground">
+                <span>Paid for</span>
+                 <div className="my-0.5">
+                   <Separator orientation="vertical" />
+                </div> 
                 <span>
                   {formatDistanceToNowStrict(addYears(xNode.unitClaimTime, 1), {
                     unit: 'day',
                   })}
                 </span>
               </div>
-            )}
+            )} */}
           </div>
           <div className="mt-6 rounded border px-6 py-4">
             <div className="flex items-center justify-between gap-4">
@@ -1119,20 +1188,20 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <Button
+                {/* <Button
                   disabled={isFetching}
                   variant="outlinePrimary"
                   onClick={() => setResetMachineOpen(true)}
                 >
                   {xNode.isUnit ? 'Reset' : 'Delete'}
-                </Button>
-                <Button
+                </Button> */}
+                {/* <Button
                   disabled={isFetching}
                   variant="outlinePrimary"
                   onClick={() => updateXNode()}
                 >
                   Force Update
-                </Button>
+                </Button> */}
                 <Link href="/app-store">
                   <Button variant="outlinePrimary">Add App</Button>
                 </Link>
@@ -1146,8 +1215,8 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                     <span className="sr-only">Open</span>
                   </TableHead>
                   <TableHead className="h-8">Name</TableHead>
-                  <TableHead className="h-8">Description</TableHead>
-                  <TableHead className="h-8">Tags</TableHead>
+                  <TableHead className="h-8">Version</TableHead>
+                  {/* <TableHead className="h-8">Tags</TableHead> */}
                   <TableHead className="h-8">
                     <span className="sr-only">Actions</span>
                   </TableHead>
@@ -1206,12 +1275,12 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                           {service.name ?? service.nixName}
                         </span>
                       </TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         <span className="block max-w-96 truncate">
                           {service.desc ?? '-'}
                         </span>
-                      </TableCell>
-                      <TableCell className="min-w-56">
+                      </TableCell> */}
+                      {/* <TableCell className="min-w-56">
                         <span className="inline-flex items-center gap-1">
                           {service.tags?.map((tag) => (
                             <span
@@ -1222,10 +1291,13 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                             </span>
                           ))}
                         </span>
+                      </TableCell> */}
+                      <TableCell>
+                        {service?.version}
                       </TableCell>
                       <TableCell>
                         <span className="flex items-center justify-end gap-2">
-                          <Button
+                          {/* <Button
                             size="iconSm"
                             variant="outline"
                             disabled={!service.options}
@@ -1233,7 +1305,41 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                           >
                             <Pencil className="size-4" />
                             <span className="sr-only">Edit</span>
-                          </Button>
+                          </Button> */}
+                          {/* <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md">Processes</button> */}
+                          <button
+                            className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md"
+                            onClick={() => setProcessesOpen(true)}
+                          >
+                            Processes
+                          </button>
+
+                          <Processes
+                            session={user?.sessionToken}
+                            scope={xNodeId}
+                            open={processesOpen}
+                            setOpen={setProcessesOpen}
+                          />
+                          <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md">File Explorer</button>
+                          {/* <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md">Edit</button> */}
+                          <button
+                            className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md"
+                            onClick={() => {
+                              setCurrentContainer(service.nixName);
+                              setAppEditOpen(true);
+                            }}
+                          >
+                            Edit
+                          </button>
+
+                          <AppEdit
+                            session={user?.session}
+                            container={currentContainer}
+                            open={appEditOpen}
+                            setOpen={setAppEditOpen}
+                          />
+                          <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md">Update</button>
+
                           <Button
                             size="iconSm"
                             variant="outline"
