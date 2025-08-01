@@ -17,10 +17,10 @@ export default function DeploymentsPage() {
         <p className="mb-3 text-lg">
           During the{' '}
           <Link
-            href="https://dashboard.openxai.org/genesis"
+            href="https://studio.openxai.org/global-accelerator-2025"
             className="font-bold underline"
           >
-            OpenxAI Genesis Event
+            OpenxAI Deployable Demo App
           </Link>
           , test your AI applications on our demo nodes. Each node is available
           for 30 minutes - check out our{' '}
