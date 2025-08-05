@@ -7,12 +7,16 @@
   "nixName": "ollama",
   "specs": {
     "ram": 2000,
-    "storage": 12000
+    "storage": 12000,
+    "cup":2
   },
   "tags": ["LLM", "AI"],
   "website": "https://github.com/ollama/ollama",
+  "version":"deepseek-r-1 : 1.5b",
   "implemented": true,
   "logo": "https://avatars.githubusercontent.com/u/151674099",
+  "app_logo":"images/service_ollama.svg",
+  "version_logo":"images/version_logo.svg",
   "options": [
     {
       "name": "acceleration",

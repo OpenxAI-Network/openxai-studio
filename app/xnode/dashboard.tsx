@@ -11,6 +11,7 @@ import axios, { AxiosError } from 'axios'
 import { addYears, formatDistanceToNowStrict } from 'date-fns'
 import { useUser } from 'hooks/useUser'
 import { useAccount } from 'wagmi'
+import Deployed_Apps from './deployed-apps'
 
 import {
   Copy,
@@ -77,7 +78,7 @@ import Signup from '@/components/Signup'
 
 import { HealthChartItem } from '../dashboard/health-data'
 import { ServiceOptionRow } from './service-options'
-import { AppEdit } from './edit'
+import Resources from './resources'
 
 
 type XnodePageProps = {
@@ -282,6 +283,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
     user?.sessionToken,
     xNodeId,
   ])
+
 
   const deleteService = useCallback(async () => {
     if (demoMode) return
@@ -532,9 +534,9 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
     },
     [demoMode, refetch, user?.sessionToken, xNodeData]
   )
-  console.log('xNodeData', xNode)
-  console.log('services', services)
-  console.log('User session:', user?.session);
+
+  console.log("Xnode ==>",xNode)
+  
 
   return (
     <div className="container max-w-[1920px] my-12  mx-auto">
@@ -1106,7 +1108,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
               </div>
             )} */}
           </div>
-          <div className="mt-6 rounded border px-6 py-4">
+          {/* <div className="mt-6 rounded border px-6 py-4">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-bold">Resources</h2>
@@ -1178,8 +1180,9 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                 />
               </div>
             </div>
-          </div>
-          <div className="mt-6 rounded border px-6 py-4">
+          </div> */}
+          <Resources xNode={xNode} lastUpdated={lastUpdated}/>
+          {/* <div className="mt-6 rounded border px-6 py-4">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-bold">Apps</h2>
@@ -1188,26 +1191,26 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                {/* <Button
+                <Button
                   disabled={isFetching}
                   variant="outlinePrimary"
                   onClick={() => setResetMachineOpen(true)}
                 >
                   {xNode.isUnit ? 'Reset' : 'Delete'}
-                </Button> */}
-                {/* <Button
+                </Button>
+                <Button
                   disabled={isFetching}
                   variant="outlinePrimary"
                   onClick={() => updateXNode()}
                 >
                   Force Update
-                </Button> */}
+                </Button>
                 <Link href="/app-store">
                   <Button variant="outlinePrimary">Add App</Button>
                 </Link>
               </div>
             </div>
-            {/* eslint-disable-next-line tailwindcss/migration-from-tailwind-2 */}
+            
             <Table className="mt-4 w-full overflow-clip rounded">
               <TableHeader className="bg-muted">
                 <TableRow>
@@ -1216,7 +1219,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                   </TableHead>
                   <TableHead className="h-8">Name</TableHead>
                   <TableHead className="h-8">Version</TableHead>
-                  {/* <TableHead className="h-8">Tags</TableHead> */}
+                  <TableHead className="h-8">Tags</TableHead>
                   <TableHead className="h-8">
                     <span className="sr-only">Actions</span>
                   </TableHead>
@@ -1275,12 +1278,12 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                           {service.name ?? service.nixName}
                         </span>
                       </TableCell>
-                      {/* <TableCell>
+                      <TableCell>
                         <span className="block max-w-96 truncate">
                           {service.desc ?? '-'}
                         </span>
-                      </TableCell> */}
-                      {/* <TableCell className="min-w-56">
+                      </TableCell>
+                      <TableCell className="min-w-56">
                         <span className="inline-flex items-center gap-1">
                           {service.tags?.map((tag) => (
                             <span
@@ -1291,13 +1294,13 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                             </span>
                           ))}
                         </span>
-                      </TableCell> */}
+                      </TableCell>
                       <TableCell>
                         {service?.version}
                       </TableCell>
                       <TableCell>
                         <span className="flex items-center justify-end gap-2">
-                          {/* <Button
+                          <Button
                             size="iconSm"
                             variant="outline"
                             disabled={!service.options}
@@ -1305,8 +1308,8 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                           >
                             <Pencil className="size-4" />
                             <span className="sr-only">Edit</span>
-                          </Button> */}
-                          {/* <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md">Processes</button> */}
+                          </Button>
+                          <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md">Processes</button>
                           <button
                             className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md"
                             onClick={() => setProcessesOpen(true)}
@@ -1321,7 +1324,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                             setOpen={setProcessesOpen}
                           />
                           <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md">File Explorer</button>
-                          {/* <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md">Edit</button> */}
+                          <button className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md">Edit</button>
                           <button
                             className="bg-[#1A1A1A] text-white px-4 py-2 rounded-md"
                             onClick={() => {
@@ -1357,7 +1360,9 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                 })}
               </TableBody>
             </Table>
-          </div>
+          </div> */}
+          <Deployed_Apps services={services?.services} setDeleteServiceOpen={setDeleteServiceOpen}/>
+
         </>
       ) : null}
       {!isFetching && !isSuccess && !demoMode ? <Signup /> : null}

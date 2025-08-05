@@ -7,11 +7,15 @@
   "nixName": "deepseekr1",
   "specs": {
     "ram": 16000,
-    "storage": 50000
+    "storage": 50000,
+    "cpu":2
   },
   "tags": ["AI", "Language Model", "NLP"],
   "website": "https://deepseek.ai",
   "implemented": true,
+  "version":"deepseekr1:1.5b",
+  "app_logo":"images/service_ollama.svg",
+  "version_logo":"images/version_logo.svg",
   "logo": "/images/models/deepseek.png",
   "options": [
     {
