@@ -9,6 +9,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useDebounce } from '@uidotdev/usehooks'
 import axios, { AxiosError } from 'axios'
 import { addYears, formatDistanceToNowStrict } from 'date-fns'
+
+
 import { useUser } from 'hooks/useUser'
 import { useAccount } from 'wagmi'
 import Deployed_Apps from './deployed-apps'
@@ -56,7 +58,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Processes } from './process'
+
 import {
   Table,
   TableBody,
@@ -75,10 +77,10 @@ import { useToast } from '@/components/ui/use-toast'
 import { SimpleTooltip } from '@/components/Common/SimpleTooltip'
 import { useDemoModeContext } from '@/components/demo-mode'
 import Signup from '@/components/Signup'
-
-import { HealthChartItem } from '../dashboard/health-data'
-import { ServiceOptionRow } from './service-options'
+import PlanManagement from './planManagement'
 import Resources from './resources'
+import { ServiceOptionRow } from './service-options'
+
 
 
 type XnodePageProps = {
@@ -539,7 +541,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
   
 
   return (
-    <div className="container max-w-[1920px] my-12  mx-auto">
+    <div className="container max-w-[1920px] my-12  mx-auto ">
       {isLoading && !demoMode ? (
         <div>
           <Skeleton className="h-5 w-28" />
@@ -992,36 +994,47 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
             
             <Edit3 className="size-7 text-muted-foreground" />
           </Button> */}
-          <div className="bg-white py-6  max-w-2xl w-full flex flex-col gap-6">
+          <div className="bg-white py-6  w-full flex flex-col gap-6 ">
 
-            <div className="flex justify-between items-start">
-              <div>
-                <h2 className="text-xl font-semibold flex items-center gap-2 text-[#000000]">
-                  {xNode.name}
+            {/* <div className="flex justify-between items-start">
 
-                  <img src="/images/viewDeployment/ollama.svg" alt="" />
-                </h2>
-                <p className="text-sm text-[#8F8F8F]">
-                  {xNode?.cores} cores,{' '}
-                  {xNode?.ram ? Math.round(xNode.ram / 1024 ** 3) : 0}GB RAM,{' '}
-                  {xNode?.storage
-                    ? xNode.storage >= 1024 ** 4
-                      ? `${(xNode.storage / 1024 ** 4).toFixed(1)}PB`
-                      : xNode.storage >= 1024 ** 3
-                        ? `${(xNode.storage / 1024 ** 3).toFixed(0)}TB`
-                        : `${(xNode.storage / 1024 ** 2).toFixed(0)}GB`
-                    : '0GB'}{' '}
-                  Storage, {xNode?.gpu} GPU
-                </p>
+              <div className="flex items-center gap-3">
 
+                <img src="/images/viewDeployment/xnode.svg" alt="XNode" className="w-14 h-14" />
+
+
+                <div>
+                  <div className="flex items-center gap-1">
+                    <h2 className="text-xl font-semibold flex items-center gap-2 text-[#000000]">
+                      {xNode.name}
+
+                      <img src="/images/viewDeployment/ollama.svg" alt="" />
+                    </h2>
+                  </div>
+                  <p className="text-sm text-[#8F8F8F]">
+                    {xNode?.cores} cores,{' '}
+                    {xNode?.ram ? Math.round(xNode.ram / 1024 ** 3) : 0}GB RAM,{' '}
+                    {xNode?.storage
+                      ? xNode.storage >= 1024 ** 4
+                        ? `${(xNode.storage / 1024 ** 4).toFixed(1)}PB`
+                        : xNode.storage >= 1024 ** 3
+                          ? `${(xNode.storage / 1024 ** 3).toFixed(0)}TB`
+                          : `${(xNode.storage / 1024 ** 2).toFixed(0)}GB`
+                      : '0GB'}{' '}
+                    Storage, {xNode?.gpu} GPU
+                  </p>
+                </div>
               </div>
-              <button className="bg-[#0059FF] text-white px-4 py-2 rounded-md text-sm font-[400]">
+
+              <button className="flex items-center bg-[#0059FF] text-white px-4 py-2 rounded-md text-sm font-[400]">
                 Push to Marketplace
+                <ArrowUpRight className="ml-2" />
               </button>
-            </div>
 
+            </div> */}
 
-            <div className="flex flex-col gap-4 max-w-[70%]">
+            <PlanManagement xnode={xNode} />
+            {/* <div className="flex flex-col gap-4 max-w-[70%]">
 
               <div className="flex items-center justify-between">
                 <span className="text-[#1B1A1E] truncate max-w-[65px] font-medium">{address}</span>
@@ -1032,7 +1045,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
 
               {xNode.isUnit && (
                 <div className="flex items-center justify-between ">
-                  {/* <span className="text-[#1B1A1E] font-semibold">Paid for 295 days</span> */}
+              
                   <span className='text-[#1B1A1E] font-medium'> Paid For {""}
                     {formatDistanceToNowStrict(addYears(xNode.unitClaimTime, 1), {
                       unit: 'day',
@@ -1045,7 +1058,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                 </div>
 
               )}
-            </div>
+            </div> */}
           </div>
           <div className="mt-2 flex items-center gap-3">
             {/* <span
