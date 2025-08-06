@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import PlanDetails from './planDetails';
 import TransferNFT from './transferNft';
-import planData from './plan-data.json';
+import planData from '../../utils/plan-data.json';
 import { type Xnode } from '@/types/node'
 import { ArrowUpRight } from 'lucide-react';
 interface PlanManagementProps {
@@ -13,8 +13,7 @@ export default function PlanManagement({ xnode }: PlanManagementProps) {
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
     const handleTransfer = (recipientAddress: string) => {
-       
-        // console.log('Transferring NFT to:', recipientAddress);
+
         setShowSuccessMessage(true);
 
         setTimeout(() => {
@@ -54,11 +53,14 @@ export default function PlanManagement({ xnode }: PlanManagementProps) {
                             </p>
                         </div>
                     </div>
-
-                    <button className="flex items-center bg-[#0059FF] text-white px-4 py-2 rounded-md text-sm font-[500]">
+                    <button
+                        className="flex items-center bg-[#0059FF] text-white px-4 py-2 rounded-md text-sm font-[500] opacity-50 cursor-not-allowed"
+                        disabled
+                    >
                         Push to Marketplace
                         <ArrowUpRight className="ml-2" />
                     </button>
+
 
                 </div>
 

@@ -12,7 +12,7 @@ interface PlanDetailsProps {
         associatedApp: string;
         renewalCost: string;
         gasFee: string;
-        totalCost: string;
+        totalCost?: string;
     };
 }
 
@@ -26,6 +26,27 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
     });
     const [contentHeight, setContentHeight] = useState(0);
     const contentRef = useRef<HTMLDivElement>(null);
+    const [renewalDays, setRenewalDays] = useState('');
+    const [totalCost, setTotalCost] = useState("0.00");
+    const [calculatedRenewalCost, setCalculatedRenewalCost] = useState("0.00");
+
+
+    useEffect(() => {
+        const perDayCost = parseFloat(planData.renewalCost) || 0;
+        const gasFee = parseFloat(planData.gasFee) || 0;
+        const days = parseInt(renewalDays) || 0;
+
+        if (days > 0) {
+            const cost = days * perDayCost;
+            setCalculatedRenewalCost(cost.toFixed(2));
+            setTotalCost((cost + gasFee).toFixed(2));
+        } else {
+            setCalculatedRenewalCost('0.00');
+            setTotalCost('0.00');
+        }
+    }, [renewalDays, planData.renewalCost, planData.gasFee]);
+
+
 
 
     useEffect(() => {
@@ -48,7 +69,7 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                 setTimeRemaining({ days, hours, minutes, seconds });
             } else {
 
-                setTimeRemaining({ days: 2, hours: 12, minutes: 37, seconds: 40 });
+                setTimeRemaining({ days: 20, hours: 12, minutes: 37, seconds: 40 });
             }
         };
 
@@ -83,16 +104,19 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                 className="overflow-hidden transition-all duration-500 ease-in-out"
             >
                 <div ref={contentRef} className="px-4 pb-4">
-                    <div className="bg-[#F6DFDF] text-[#C73A3A] px-4 py-3 border-[#F6DFDF] border border-solid rounded-md mb-4">
-                        <p className="text-sm font-semibold">
-                            Your plan expires in {daysUntilExpiration} days. <br />
-                            <span className="font-normal">Renew now to prevent permanent data loss!</span>
-                        </p>
-                    </div>
+                    {daysUntilExpiration < 30 && (
+                        <div className="bg-[#F6DFDF] text-[#C73A3A] px-4 py-3 border-[#F6DFDF] border border-solid rounded-md mb-4">
+                            <p className="text-sm font-semibold">
+                                Your plan expires in {daysUntilExpiration} days. <br />
+                                <span className="font-normal">Renew now to prevent permanent data loss!</span>
+                            </p>
+                        </div>
+                    )}
+
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         <div className="space-y-8">
-                            <h3 className=" font-mediun text-[#141414] text-[16px] bg-[#F5F5F5] py-4 pl-4 border-1 border-[#F0F0F0] rounded-[12px]">
+                            <h3 className=" font-mediun text-[#141414] text-[16px] bg-[#F5F5F5] py-4 pl-4 border border-[#F0F0F0] rounded-[12px]">
                                 Current Plan
                             </h3>
                             <div className="space-y-6 px-4">
@@ -109,11 +133,8 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                                 <div className="flex justify-between">
                                     <span className="text-[#525252] font-[400]">Expiring Date:</span>
                                     <span className="font-medium text-[#3D3D3D]">
-                                        {new Date(planData.expiringDate).toLocaleDateString('en-GB', {
-                                            day: 'numeric',
-                                            month: 'long',
-                                            year: '2-digit',
-                                        })}
+                                        {planData.expiringDate}
+
                                     </span>
                                 </div>
                                 <hr />
@@ -132,65 +153,107 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                                     <span className="font-medium">{planData.associatedApp}</span>
                                 </div>
                             </div>
-                            <div className="bg-[#F6DFDF] text-[#C73A3A] px-4 py-3 border border-[#F6DFDF] rounded-md">
+
+                            <div
+                                className={`px-4 py-3 border rounded-md ${timeRemaining.days > 30
+                                    ? 'bg-[#DFF6DF] text-[#0F7B0F] border-[#DFF6DF]'
+                                    : 'bg-[#F6DFDF] text-[#C73A3A] border-[#F6DFDF]'
+                                    }`}
+                            >
                                 <div className="flex justify-between text-sm font-semibold">
                                     <span>Time Remaining</span>
                                     <span>
-                                        {timeRemaining.days} days, {timeRemaining.hours} hours, {timeRemaining.minutes}{' '}
-                                        minutes, {timeRemaining.seconds} seconds
+                                        {timeRemaining.days} days, {timeRemaining.hours} hours, {timeRemaining.minutes} minutes,{' '}
+                                        {timeRemaining.seconds} seconds
                                     </span>
                                 </div>
                             </div>
+
                         </div>
 
                         <div className="space-y-8">
-                            <h3 className=" font-mediun text-[#141414] text-[16px] bg-[#F5F5F5] py-4 pl-4 border-1 border-[#F0F0F0] rounded-[12px]">
+                            <h3 className="font-medium text-[#141414] text-[16px] bg-[#F5F5F5] py-4 pl-4 border border-[#F0F0F0] rounded-[12px]">
                                 Manage your Plan
                             </h3>
+
                             <div className="space-y-8 px-4">
+
                                 <div className="flex items-center justify-between w-full">
-                                    <label className="text-sm font-medium text-[#525252]">
-                                        Renewal Time Period
-                                    </label>
+                                    <label className="text-sm font-medium text-[#525252]">Renewal Time Period</label>
                                     <input
                                         type="number"
                                         placeholder="Number of days of renewal"
+                                        value={renewalDays}
+                                        onChange={(e) => setRenewalDays(e.target.value)}
                                         className="w-[50%] px-3 py-2 border border-gray-300 rounded-md"
+                                        min={1}
                                     />
+
                                 </div>
+
                                 <hr />
+
                                 <div className="flex justify-between">
                                     <span className="text-[#525252] font-[400]">Renewal Cost:</span>
                                     <span className="font-medium flex items-center">
-                                        {planData.renewalCost}{' '}
-                                        <span className="text-[#525252] font-semibold">OPENX</span>
+                                        {calculatedRenewalCost}{' '}
+                                        <span className="text-[#525252] font-semibold ml-1">OPENX</span>
                                         <div className="ml-1 w-4 h-4 flex items-center justify-center">
                                             <img src="/images/viewDeployment/ollama.svg" alt="" />
                                         </div>
                                     </span>
                                 </div>
+
                                 <hr />
+
+
                                 <div className="flex justify-between">
                                     <span className="text-[#525252] font-[400]">Gas fee:</span>
                                     <span className="font-medium">{planData.gasFee}</span>
                                 </div>
+
                                 <hr className="text-[#CCCCCC] h-4" />
+
                                 <div className="flex justify-between">
                                     <span className="text-[#525252] font-[400]">Total Cost:</span>
                                     <span className="font-medium flex items-center">
                                         <span className="text-[#0040B8] text-lg font-bold">
-                                            {planData.totalCost} <span className="font-semibold">OPENX /mo</span>
+                                            {parseFloat(totalCost) === 0 ? '0.00' : totalCost}
+                                            <span className="font-semibold"> OPENX /mo</span>
                                         </span>
                                         <div className="ml-1 w-4 h-4 flex items-center justify-center">
                                             <img src="/images/viewDeployment/ollama.svg" alt="" />
                                         </div>
                                     </span>
                                 </div>
-                                <button className="w-full bg-[#99BDFF] text-white py-2 px-4 rounded-md hover:bg-blue-400 transition-colors font-medium">
+
+
+
+
+                                <button
+                                    onClick={() => {
+                                        if (parseInt(renewalDays) > 0) {
+
+                                            setRenewalDays('');
+                                        }
+                                    }}
+                                    className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${parseInt(renewalDays) > 0
+                                        ? 'bg-[#0059FF] text-white hover:bg-blue-400 cursor-pointer'
+                                        : 'bg-[#99BDFF] text-white cursor-not-allowed'
+                                        }`}
+                                    disabled={!renewalDays || parseInt(renewalDays) <= 0}
+                                >
                                     Renew
                                 </button>
+
+
+
+
+
                             </div>
                         </div>
+
+
                     </div>
                 </div>
             </div>

@@ -2,11 +2,11 @@
   "planDetails": {
     "serverPlan": "AI Compute",
     "startingDate": "2 July '25",
-    "expiringDate": "2025-08-04T23:59:59Z",
+    "expiringDate": "5 August '25",
     "price": "123.45 OPENX",
     "associatedApp": "Ollama, Open Web UI",
     "renewalCost": "123.45 ",
-    "gasFee": "--",
-    "totalCost": "456.78 "
+    "gasFee": "45.67"
+  
   }
 }
