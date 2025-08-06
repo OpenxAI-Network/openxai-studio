@@ -116,7 +116,7 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         <div className="space-y-8">
-                            <h3 className=" font-mediun text-[#141414] text-[16px] bg-[#F5F5F5] py-4 pl-4 border border-[#F0F0F0] rounded-[12px]">
+                            <h3 className=" font-medium text-[#141414] text-[16px] bg-[#F5F5F5] py-4 pl-4 border border-[#F0F0F0] rounded-[12px]">
                                 Current Plan
                             </h3>
                             <div className="space-y-6 px-4">
