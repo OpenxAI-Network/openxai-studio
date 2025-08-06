@@ -80,6 +80,8 @@ import Signup from '@/components/Signup'
 import PlanManagement from './planManagement'
 import Resources from './resources'
 import { ServiceOptionRow } from './service-options'
+import { ChevronRight } from 'lucide-react';
+
 
 
 
@@ -537,8 +539,8 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
     [demoMode, refetch, user?.sessionToken, xNodeData]
   )
 
-  console.log("Xnode ==>",xNode)
-  
+  console.log("Xnode ==>", xNode)
+
 
   return (
     <div className="container max-w-[1920px] my-12  mx-auto ">
@@ -1032,7 +1034,13 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
               </button>
 
             </div> */}
-
+            <div className="flex items-center space-x-2 mb-4">
+              <span className="text-[#8F8F8F] text-lg">Deployment</span>
+              <ChevronRight size={20} className="text-[#9B9B9B]" />
+              <span className="text-[#525252] font-medium text-lg">
+                {xNode.name}
+              </span>
+            </div>
             <PlanManagement xnode={xNode} />
             {/* <div className="flex flex-col gap-4 max-w-[70%]">
 
@@ -1194,7 +1202,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
               </div>
             </div>
           </div> */}
-          <Resources xNode={xNode} lastUpdated={lastUpdated}/>
+          <Resources xNode={xNode} lastUpdated={lastUpdated} />
           {/* <div className="mt-6 rounded border px-6 py-4">
             <div className="flex items-center justify-between gap-4">
               <div>
@@ -1374,7 +1382,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
               </TableBody>
             </Table>
           </div> */}
-          <Deployed_Apps services={services?.services} setDeleteServiceOpen={setDeleteServiceOpen}/>
+          <Deployed_Apps services={services?.services} setDeleteServiceOpen={setDeleteServiceOpen} />
 
         </>
       ) : null}
