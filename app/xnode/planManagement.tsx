@@ -1,76 +1,83 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useMemo } from 'react';
+import Image from 'next/image';
+import { ArrowUpRight } from 'lucide-react';
+
 import PlanDetails from './planDetails';
 import TransferNFT from './transferNft';
 import planData from '../../utils/plan-data.json';
-import { type Xnode } from '@/types/node'
-import { ArrowUpRight } from 'lucide-react';
+import { type Xnode } from '@/types/node';
+
 interface PlanManagementProps {
-    xnode: Xnode;
+  xnode: Xnode;
 }
+
+const formatStorage = (bytes: number): string => {
+  if (bytes >= 1024 ** 4) return `${(bytes / 1024 ** 4).toFixed(1)}PB`;
+  if (bytes >= 1024 ** 3) return `${(bytes / 1024 ** 3).toFixed(0)}TB`;
+  return `${(bytes / 1024 ** 2).toFixed(0)}GB`;
+};
+
 export default function PlanManagement({ xnode }: PlanManagementProps) {
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const { name, cores, ram = 0, storage = 0, gpu = 0 } = xnode;
 
-    const handleTransfer = (recipientAddress: string) => {
+  const formattedSpecs = useMemo(() => {
+    const ramGB = Math.round(ram / 1024 ** 3);
+    const storageStr = formatStorage(storage);
+    return `${cores} cores, ${ramGB}GB RAM, ${storageStr} Storage, ${gpu} GPU`;
+  }, [cores, ram, storage, gpu]);
 
-        setShowSuccessMessage(true);
+  const handleTransfer = useCallback((recipientAddress: string) => {
+    
+    console.log('Transfer NFT to:', recipientAddress);
+  }, []);
 
-        setTimeout(() => {
-            setShowSuccessMessage(false);
-        }, 3000);
-    };
+  return (
+    <div className="">
+     
+      <div className="mb-10 flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <Image
+            src="/images/viewDeployment/xnode.svg"
+            alt="XNode"
+            width={56}
+            height={56}
+          />
 
-    return (
-        <div className="">
-            <div className="mx-auto ">
-                <div className="flex justify-between items-start">
-
-                    <div className="flex items-center gap-3 mb-10">
-
-                        <img src="/images/viewDeployment/xnode.svg" alt="XNode" className="w-14 h-14" />
-
-
-                        <div>
-                            <div className="flex items-center gap-1">
-                                <h2 className="text-xl font-semibold flex items-center gap-2 text-[#000000]">
-                                    {xnode.name}
-
-                                    <img src="/images/viewDeployment/ollama.svg" alt="" />
-                                </h2>
-                            </div>
-                            <p className="text-sm text-[#8F8F8F]">
-                                {xnode?.cores} cores,{' '}
-                                {xnode?.ram ? Math.round(xnode.ram / 1024 ** 3) : 0}GB RAM,{' '}
-                                {xnode?.storage
-                                    ? xnode.storage >= 1024 ** 4
-                                        ? `${(xnode.storage / 1024 ** 4).toFixed(1)}PB`
-                                        : xnode.storage >= 1024 ** 3
-                                            ? `${(xnode.storage / 1024 ** 3).toFixed(0)}TB`
-                                            : `${(xnode.storage / 1024 ** 2).toFixed(0)}GB`
-                                    : '0GB'}{' '}
-                                Storage, {xnode?.gpu} GPU
-                            </p>
-                        </div>
-                    </div>
-                    <button
-                        className="flex items-center bg-[#0059FF] text-white px-4 py-2 rounded-md text-sm font-[500] opacity-50 cursor-not-allowed"
-                        disabled
-                    >
-                        Push to Marketplace
-                        <ArrowUpRight className="ml-2" />
-                    </button>
-
-
-                </div>
-
-
-
-                <div className="space-y-6">
-                    <PlanDetails planData={planData.planDetails} />
-                    <TransferNFT onTransfer={handleTransfer} currentWalletAddress={planData.planDetails.currentWalletAddress} />
-                </div>
+          <div>
+            <div className="flex items-center gap-1">
+              <h2 className="flex items-center gap-2 text-xl font-semibold text-[#000000]">
+                {name}
+                <Image
+                  src="/images/viewDeployment/ollama.svg"
+                  alt="Ollama"
+                  width={24}
+                  height={24}
+                />
+              </h2>
             </div>
+            <p className="text-sm text-[#8F8F8F]">{formattedSpecs}</p>
+          </div>
         </div>
-    );
-} 
+
+        <button
+          className="flex cursor-not-allowed items-center rounded-md bg-blue500 px-4 py-2 text-sm font-[500] text-white opacity-50"
+          disabled
+        >
+          Push to Marketplace
+          <ArrowUpRight className="ml-2" />
+        </button>
+      </div>
+
+      
+      <div className="space-y-6">
+        <PlanDetails planData={planData.planDetails} />
+        <TransferNFT
+          onTransfer={handleTransfer}
+          currentWalletAddress={planData.planDetails.currentWalletAddress}
+        />
+      </div>
+    </div>
+  );
+}

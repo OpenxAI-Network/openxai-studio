@@ -19,7 +19,7 @@ interface PlanDetailsProps {
 }
 
 export default function PlanDetails({ planData }: PlanDetailsProps) {
-    const [isExpanded, setIsExpanded] = useState(false);
+   const [isExpanded, setIsExpanded] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState({
         days: 0,
         hours: 0,
@@ -29,35 +29,14 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
     const [contentHeight, setContentHeight] = useState(0);
     const contentRef = useRef<HTMLDivElement>(null);
     const [renewalMonths, setRenewalMonths] = useState('');
-    const [totalCost, setTotalCost] = useState("0.00");
-    const [calculatedRenewalCost, setCalculatedRenewalCost] = useState("0.00");
-    const [calculatedGasFee, setCalculatedGasFee] = useState("0.00");
 
-    useEffect(() => {
+    const pricePerMonth = parseFloat(planData.price) || 0;
+    const gasPercentage = planData.gasPercentage || 0.2;
+    const months = parseInt(renewalMonths) || 0;
 
-        const pricePerMonth = parseFloat(planData.price) || 0;
-
-        const gasPercentage = planData.gasPercentage || 0.2;
-        const months = parseInt(renewalMonths) || 0;
-
-        if (months > 0) {
-
-            const renewalCost = months * pricePerMonth;
-            setCalculatedRenewalCost(renewalCost.toFixed(2));
-
-
-            const gasFee = renewalCost * gasPercentage;
-            setCalculatedGasFee(gasFee.toFixed(2));
-
-
-            const total = renewalCost + gasFee;
-            setTotalCost(total.toFixed(2));
-        } else {
-            setCalculatedRenewalCost('0.00');
-            setCalculatedGasFee('0.00');
-            setTotalCost('0.00');
-        }
-    }, [renewalMonths, planData.price, planData.gasPercentage]);
+    const calculatedRenewalCost = (months > 0 ? months * pricePerMonth : 0).toFixed(2);
+    const calculatedGasFee = (months > 0 ? parseFloat(calculatedRenewalCost) * gasPercentage : 0).toFixed(2);
+    const totalCost = (parseFloat(calculatedRenewalCost) + parseFloat(calculatedGasFee)).toFixed(2);
 
     useEffect(() => {
         if (contentRef.current) {
@@ -94,14 +73,14 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
     return (
         <div className="rounded-lg border border-[#EBEBEB] shadow-sm">
             <div
-                className="flex items-center justify-between p-4 cursor-pointer"
+                className="flex cursor-pointer items-center justify-between p-4"
                 onClick={() => setIsExpanded(!isExpanded)}
             >
-                <h2 className="text-xl font-semibold text-[#000000]">Plan Details</h2>
+                <h2 className="text-sm font-semibold text-[#000000] md:text-xl">Plan Details</h2>
                 {isExpanded ? (
-                    <ChevronUp className="h-5 w-5 text-[#959595]" />
+                    <ChevronUp className="size-5 text-[#959595]" />
                 ) : (
-                    <ChevronDown className="h-5 w-5 text-[#959595]" />
+                    <ChevronDown className="size-5 text-[#959595]" />
                 )}
             </div>
 
@@ -113,7 +92,7 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
             >
                 <div ref={contentRef} className="px-4 pb-4">
                     {daysUntilExpiration < 30 && (
-                        <div className="bg-[#F6DFDF] text-[#C73A3A] px-4 py-3 border-[#F6DFDF] border border-solid rounded-md mb-4">
+                        <div className="mb-4 rounded-md border border-solid border-[#F6DFDF] bg-[#F6DFDF] px-4 py-3 text-[#C73A3A]">
                             <p className="text-sm font-semibold">
                                 Your plan expires in {daysUntilExpiration} days. <br />
                                 <span className="font-normal">Renew now to prevent permanent data loss!</span>
@@ -121,52 +100,52 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                         </div>
                     )}
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
                         <div className="space-y-8">
-                            <h3 className=" font-medium text-[#141414] text-[16px] bg-[#F5F5F5] py-4 pl-4 border border-[#F0F0F0] rounded-[12px]">
+                            <h3 className=" rounded-[12px] border border-[#F0F0F0] bg-[#F5F5F5]  py-4 pl-4 text-[14px] font-medium text-[#141414] md:text-[18px]">
                                 Current Plan
                             </h3>
                             <div className="space-y-6 px-4">
                                 <div className="flex justify-between">
-                                    <span className="text-[#525252] font-[400] ">Server Plan:</span>
-                                    <span className="font-medium text-[#3D3D3D]">{planData.serverPlan}</span>
+                                    <span className="text-[12px] font-[400] text-[#525252] md:text-sm">Server Plan:</span>
+                                    <span className="text-[12px] font-medium text-[#3D3D3D] md:text-sm">{planData.serverPlan}</span>
                                 </div>
                                 <hr />
                                 <div className="flex justify-between">
-                                    <span className="text-[#525252] font-[400]">Starting Date:</span>
-                                    <span className="font-medium text-[#3D3D3D]">{planData.startingDate}</span>
+                                    <span className="text-[12px] font-[400] text-[#525252] md:text-sm">Starting Date:</span>
+                                    <span className="text-[12px] font-medium text-[#3D3D3D] md:text-sm">{planData.startingDate}</span>
                                 </div>
                                 <hr />
                                 <div className="flex justify-between">
-                                    <span className="text-[#525252] font-[400]">Expiring Date:</span>
-                                    <span className="font-medium text-[#3D3D3D]">
+                                    <span className="text-[12px] font-[400] text-[#525252] md:text-sm">Expiring Date:</span>
+                                    <span className="text-[12px] font-medium text-[#3D3D3D] md:text-sm">
                                         {planData.expiringDate}
                                     </span>
                                 </div>
                                 <hr />
                                 <div className="flex justify-between">
-                                    <span className="text-[#525252] font-[400]">Price:</span>
-                                    <span className="font-medium flex items-center">
+                                    <span className="text-[12px] font-[400] text-[#525252] md:text-sm">Price:</span>
+                                    <span className="flex items-center text-[12px] font-medium md:text-sm">
                                         {planData.currentPrice}
-                                        <div className="ml-1 w-4 h-4 flex items-center justify-center">
+                                        <div className="ml-1 flex size-4 items-center justify-center">
                                             <img src="/images/viewDeployment/ollama.svg" alt="" />
                                         </div>
                                     </span>
                                 </div>
                                 <hr />
-                                <div className="flex justify-between">
-                                    <span className="text-[#525252] font-[400]">Associated App:</span>
-                                    <span className="font-medium">{planData.associatedApp}</span>
+                                <div className="flex justify-between ">
+                                    <span className="text-[12px] font-[400] text-[#525252] md:text-sm">Associated App:</span>
+                                    <span className="text-[12px] font-medium md:text-sm">{planData.associatedApp}</span>
                                 </div>
                             </div>
 
                             <div
-                                className={`px-4 py-3 border rounded-md ${timeRemaining.days > 30
-                                    ? 'bg-[#DFF6DF] text-[#0F7B0F] border-[#DFF6DF]'
-                                    : 'bg-[#F6DFDF] text-[#C73A3A] border-[#F6DFDF]'
+                                className={`rounded-md border px-4 py-3 ${timeRemaining.days > 30
+                                    ? 'border-[#DFF6DF] bg-[#DFF6DF] text-[#0F7B0F]'
+                                    : 'border-[#F6DFDF] bg-[#F6DFDF] text-[#C73A3A]'
                                     }`}
                             >
-                                <div className="flex justify-between text-sm font-semibold">
+                                <div className="flex justify-between text-[12px] font-semibold md:text-sm">
                                     <span>Time Remaining</span>
                                     <span>
                                         {timeRemaining.days} days, {timeRemaining.hours} hours, {timeRemaining.minutes} minutes,{' '}
@@ -177,13 +156,13 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                         </div>
 
                         <div className="space-y-8">
-                            <h3 className="font-medium text-[#141414] text-[16px] bg-[#F5F5F5] py-4 pl-4 border border-[#F0F0F0] rounded-[12px]">
+                            <h3 className="rounded-[12px] border  border-[#F0F0F0] bg-[#F5F5F5]  py-4 pl-4 text-[14px] font-medium text-[#141414] md:text-[18px]">
                                 Manage your Plan
                             </h3>
 
                             <div className="space-y-8 px-4">
-                                <div className="flex items-center justify-between w-full">
-                                    <label className="text-sm font-medium text-[#525252]">Renewal Time Period (Months)</label>
+                                <div className="flex w-full items-center justify-between">
+                                    <label className=" text-[12px] font-medium text-[#525252] md:text-sm">Renewal Time Period (Months)</label>
                                     <input
                                         type="number"
                                         placeholder="Enter in Months"
@@ -195,7 +174,8 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                                                 setRenewalMonths(value);
                                             }
                                         }}
-                                        className="w-[50%] px-3 py-2 border border-gray-300 rounded-md"
+                                        // eslint-disable-next-line tailwindcss/no-unnecessary-arbitrary-value
+                                        className="w-[50%] rounded-md border border-gray-300 px-3 py-2"
                                         min={1}
                                         max={99}
                                     />
@@ -204,11 +184,11 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                                 <hr />
 
                                 <div className="flex justify-between">
-                                    <span className="text-[#525252] font-[400]">Renewal Cost:</span>
-                                    <span className="font-medium flex items-center">
+                                    <span className="text-[12px] font-[400] text-[#525252] md:text-sm">Renewal Cost:</span>
+                                    <span className="flex items-center text-[12px] font-medium md:text-sm">
                                         {calculatedRenewalCost}{' '}
-                                        <span className="text-[#525252] font-semibold ml-1">OPENX</span>
-                                        <div className="ml-1 w-4 h-4 flex items-center justify-center">
+                                        <span className="ml-1 text-[12px] font-semibold text-[#525252] md:text-sm">OPENX</span>
+                                        <div className="ml-1 flex size-4 items-center justify-center">
                                             <img src="/images/viewDeployment/ollama.svg" alt="" />
                                         </div>
                                     </span>
@@ -217,23 +197,23 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                                 <hr />
 
                                 <div className="flex justify-between">
-                                    <span className="text-[#525252] font-[400]">Gas fee:</span>
-                                    <span className="font-medium flex items-center">
+                                    <span className="text-[12px] font-[400] text-[#525252] md:text-sm">Gas fee:</span>
+                                    <span className="flex items-center text-[12px] font-medium md:text-sm">
                                         {calculatedGasFee}{' '}
 
                                     </span>
                                 </div>
 
-                                <hr className="text-[#CCCCCC] h-4" />
+                                <hr className="h-0 text-[#CCCCCC]" />
 
                                 <div className="flex justify-between">
-                                    <span className="text-[#525252] font-[400]">Total Cost:</span>
-                                    <span className="font-medium flex items-center">
-                                        <span className="text-[#0040B8] text-lg font-bold">
+                                    <span className="text-[12px] font-[400] text-[#525252] md:text-sm">Total Cost:</span>
+                                    <span className="flex items-center font-medium">
+                                        <span className="text-[12px]  font-bold text-[#0040B8] md:text-sm">
                                             {parseFloat(totalCost) === 0 ? '0.00' : totalCost}
                                             <span className="font-semibold"> OPENX /mo</span>
                                         </span>
-                                        <div className="ml-1 w-4 h-4 flex items-center justify-center">
+                                        <div className="ml-1 flex size-4 items-center justify-center">
                                             <img src="/images/viewDeployment/ollama.svg" alt="" />
                                         </div>
                                     </span>
@@ -260,4 +240,4 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
             </div>
         </div>
     );
-}
+} 
