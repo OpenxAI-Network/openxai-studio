@@ -20,7 +20,7 @@ const Resources = ({ xNode, lastUpdated }: XNodeResourcesProps) => {
         </div>
       </div>
       <div className="mt-6 grid grid-cols-3 gap-14">
-        <div className="flex flex-col items-center gap-4 rounded-2xl border-[1.2px] border-[#E0E0E0]  px-4 py-1.5">
+        <div className="flex flex-col items-center gap-2 rounded-2xl border-[1.2px] border-[#E0E0E0]  px-4 pt-4 pb-0">
           <div className="text-center">
             <p className="font-bold">CPU</p>
             <p className="text-sm text-[#8F8F8F]">
@@ -33,7 +33,7 @@ const Resources = ({ xNode, lastUpdated }: XNodeResourcesProps) => {
             healthData={xNode.heartbeatData?.cpuPercent ?? 0}
           />
         </div>
-        <div className="flex flex-col items-center gap-4 rounded-2xl border-[1.2px] border-[#E0E0E0]  px-4 py-1.5">
+        <div className="flex flex-col items-center gap-2 rounded-2xl border-[1.2px] border-[#E0E0E0]  px-4 pt-4 pb-0">
           <div className="text-center">
             <p className="font-bold">RAM</p>
             <p className="text-sm text-[#8F8F8F]">
@@ -57,7 +57,7 @@ const Resources = ({ xNode, lastUpdated }: XNodeResourcesProps) => {
             }
           />
         </div>
-        <div className="flex flex-col items-center gap-4 rounded-2xl border-[1.2px] border-[#E0E0E0]  px-4 py-1.5">
+        <div className="flex flex-col items-center gap-2 rounded-2xl border-[1.2px] border-[#E0E0E0]  px-4 pt-4 pb-0">
           <div className="text-center">
             <p className="font-bold">Storage</p>
             <p className="text-sm text-[#8F8F8F]">

@@ -9,10 +9,12 @@ interface PlanDetailsProps {
         startingDate: string;
         expiringDate: string;
         price: string;
+        currentPrice: string;
         associatedApp: string;
         renewalCost: string;
         gasFee: string;
         totalCost?: string;
+        gasPercentage?: number;
     };
 }
 
@@ -26,34 +28,43 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
     });
     const [contentHeight, setContentHeight] = useState(0);
     const contentRef = useRef<HTMLDivElement>(null);
-    const [renewalDays, setRenewalDays] = useState('');
+    const [renewalMonths, setRenewalMonths] = useState('');
     const [totalCost, setTotalCost] = useState("0.00");
     const [calculatedRenewalCost, setCalculatedRenewalCost] = useState("0.00");
-
+    const [calculatedGasFee, setCalculatedGasFee] = useState("0.00");
 
     useEffect(() => {
-        const perDayCost = parseFloat(planData.renewalCost) || 0;
-        const gasFee = parseFloat(planData.gasFee) || 0;
-        const days = parseInt(renewalDays) || 0;
 
-        if (days > 0) {
-            const cost = days * perDayCost;
-            setCalculatedRenewalCost(cost.toFixed(2));
-            setTotalCost((cost + gasFee).toFixed(2));
+        const pricePerMonth = parseFloat(planData.price) || 0;
+
+        const gasPercentage = planData.gasPercentage || 0.2;
+        const months = parseInt(renewalMonths) || 0;
+
+        if (months > 0) {
+
+            const renewalCost = months * pricePerMonth;
+            setCalculatedRenewalCost(renewalCost.toFixed(2));
+
+
+            const gasFee = renewalCost * gasPercentage;
+            setCalculatedGasFee(gasFee.toFixed(2));
+
+
+            const total = renewalCost + gasFee;
+            setTotalCost(total.toFixed(2));
         } else {
             setCalculatedRenewalCost('0.00');
+            setCalculatedGasFee('0.00');
             setTotalCost('0.00');
         }
-    }, [renewalDays, planData.renewalCost, planData.gasFee]);
-
-
-
+    }, [renewalMonths, planData.price, planData.gasPercentage]);
 
     useEffect(() => {
         if (contentRef.current) {
             setContentHeight(contentRef.current.scrollHeight);
         }
     }, [isExpanded]);
+
     useEffect(() => {
         const calculateTimeRemaining = () => {
             const now = new Date();
@@ -68,7 +79,6 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
 
                 setTimeRemaining({ days, hours, minutes, seconds });
             } else {
-
                 setTimeRemaining({ days: 20, hours: 12, minutes: 37, seconds: 40 });
             }
         };
@@ -80,7 +90,6 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
     }, [planData.expiringDate]);
 
     const daysUntilExpiration = timeRemaining.days;
-
 
     return (
         <div className="rounded-lg border border-[#EBEBEB] shadow-sm">
@@ -95,7 +104,6 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                     <ChevronDown className="h-5 w-5 text-[#959595]" />
                 )}
             </div>
-
 
             <div
                 style={{
@@ -112,7 +120,6 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                             </p>
                         </div>
                     )}
-
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         <div className="space-y-8">
@@ -134,14 +141,13 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                                     <span className="text-[#525252] font-[400]">Expiring Date:</span>
                                     <span className="font-medium text-[#3D3D3D]">
                                         {planData.expiringDate}
-
                                     </span>
                                 </div>
                                 <hr />
                                 <div className="flex justify-between">
                                     <span className="text-[#525252] font-[400]">Price:</span>
                                     <span className="font-medium flex items-center">
-                                        {planData.price}
+                                        {planData.currentPrice}
                                         <div className="ml-1 w-4 h-4 flex items-center justify-center">
                                             <img src="/images/viewDeployment/ollama.svg" alt="" />
                                         </div>
@@ -168,7 +174,6 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                                     </span>
                                 </div>
                             </div>
-
                         </div>
 
                         <div className="space-y-8">
@@ -177,18 +182,23 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                             </h3>
 
                             <div className="space-y-8 px-4">
-
                                 <div className="flex items-center justify-between w-full">
-                                    <label className="text-sm font-medium text-[#525252]">Renewal Time Period</label>
+                                    <label className="text-sm font-medium text-[#525252]">Renewal Time Period (Months)</label>
                                     <input
                                         type="number"
-                                        placeholder="Number of days of renewal"
-                                        value={renewalDays}
-                                        onChange={(e) => setRenewalDays(e.target.value)}
+                                        placeholder="Enter in Months"
+                                        value={renewalMonths}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+
+                                            if (value.length <= 2) {
+                                                setRenewalMonths(value);
+                                            }
+                                        }}
                                         className="w-[50%] px-3 py-2 border border-gray-300 rounded-md"
                                         min={1}
+                                        max={99}
                                     />
-
                                 </div>
 
                                 <hr />
@@ -206,10 +216,12 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
 
                                 <hr />
 
-
                                 <div className="flex justify-between">
                                     <span className="text-[#525252] font-[400]">Gas fee:</span>
-                                    <span className="font-medium">{planData.gasFee}</span>
+                                    <span className="font-medium flex items-center">
+                                        {calculatedGasFee}{' '}
+
+                                    </span>
                                 </div>
 
                                 <hr className="text-[#CCCCCC] h-4" />
@@ -227,33 +239,22 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                                     </span>
                                 </div>
 
-
-
-
                                 <button
                                     onClick={() => {
-                                        if (parseInt(renewalDays) > 0) {
-
-                                            setRenewalDays('');
+                                        if (parseInt(renewalMonths) > 0) {
+                                            setRenewalMonths('');
                                         }
                                     }}
-                                    className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${parseInt(renewalDays) > 0
+                                    className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${parseInt(renewalMonths) > 0
                                         ? 'bg-[#0059FF] text-white hover:bg-blue-400 cursor-pointer'
                                         : 'bg-[#99BDFF] text-white cursor-not-allowed'
                                         }`}
-                                    disabled={!renewalDays || parseInt(renewalDays) <= 0}
+                                    disabled={!renewalMonths || parseInt(renewalMonths) <= 0}
                                 >
                                     Renew
                                 </button>
-
-
-
-
-
                             </div>
                         </div>
-
-
                     </div>
                 </div>
             </div>

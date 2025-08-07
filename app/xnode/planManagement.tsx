@@ -67,11 +67,8 @@ export default function PlanManagement({ xnode }: PlanManagementProps) {
 
 
                 <div className="space-y-6">
-
                     <PlanDetails planData={planData.planDetails} />
-
-
-                    <TransferNFT onTransfer={handleTransfer} />
+                    <TransferNFT onTransfer={handleTransfer} currentWalletAddress={planData.planDetails.currentWalletAddress} />
                 </div>
             </div>
         </div>

@@ -126,7 +126,7 @@ const Deployed_Apps = ({ services, setDeleteServiceOpen }: Deployed_Apps_Props) 
                 </div>
                 <div>
                   <div className="text-xs text-gray-400 max-[1550px]:text-[10px] max-[1350px]:text-[9px] max-[1250px]:text-[8px] max-[992px]:text-[7px]">CPU</div>
-                  <div className="text-sm font-[500] max-[1550px]:text-xs max-[1350px]:text-[11px] max-[1250px]:text-[10px] max-[992px]:text-[9px]">{service?.options[0]?.cpu} cores</div>
+                  <div className="text-sm  font-[500]  max-[1550px]:text-xs max-[1350px]:text-[11px] max-[1250px]:text-[10px] max-[992px]:text-[9px]">{service?.options[0]?.cpu || 2} cores</div>
                 </div>
               </div>
             </div>

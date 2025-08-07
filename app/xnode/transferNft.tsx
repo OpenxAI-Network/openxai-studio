@@ -2,27 +2,72 @@
 import { useState, useEffect, useRef } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 
+
 interface TransferNFTProps {
     onTransfer?: (recipientAddress: string) => void;
+    currentWalletAddress?: string;
 }
 
-export default function TransferNFT({ onTransfer }: TransferNFTProps) {
+
+function isValidEthereumAddress(address: string): boolean {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+}
+
+export default function TransferNFT({ onTransfer, currentWalletAddress }: TransferNFTProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [recipientAddress, setRecipientAddress] = useState('');
-    const [contentHeight, setContentHeight] = useState(0);
+
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const contentRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (contentRef.current) {
-            setContentHeight(contentRef.current.scrollHeight);
-        }
-    }, [isExpanded]);
-
     const handleTransferClick = () => {
-        if (recipientAddress.trim()) {
-            setShowConfirmModal(true);
+
+        if (!recipientAddress.trim()) {
+            setErrorMessage("Please enter a recipient address.");
+            return;
         }
+
+
+        if (!isValidEthereumAddress(recipientAddress)) {
+            setErrorMessage("Invalid address");
+            return;
+        }
+
+
+        if (currentWalletAddress && recipientAddress.toLowerCase() === currentWalletAddress.toLowerCase()) {
+            setErrorMessage("You cannot transfer to your own wallet.");
+            return;
+        }
+
+
+        setShowConfirmModal(true);
+    };
+
+
+    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setRecipientAddress(value);
+
+
+        if (!value.trim()) {
+            setErrorMessage('');
+            return;
+        }
+
+
+        if (currentWalletAddress && value.toLowerCase() === currentWalletAddress.toLowerCase()) {
+            setErrorMessage("You cannot transfer to your own wallet.");
+            return;
+        }
+
+
+        if (!isValidEthereumAddress(value)) {
+            setErrorMessage("Invalid address");
+            return;
+        }
+
+
+        setErrorMessage('');
     };
 
     const confirmTransfer = () => {
@@ -47,7 +92,7 @@ export default function TransferNFT({ onTransfer }: TransferNFTProps) {
             </div>
 
             <div
-                style={{ maxHeight: isExpanded ? `${contentHeight}px` : '0px' }}
+                style={{ maxHeight: isExpanded ? `1000px` : '0px' }}
                 className="overflow-hidden transition-all duration-500 ease-in-out"
             >
                 <div ref={contentRef} className="px-4 pb-4">
@@ -60,17 +105,21 @@ export default function TransferNFT({ onTransfer }: TransferNFTProps) {
                             type="text"
                             placeholder="Recipient Wallet Address"
                             value={recipientAddress}
-                            onChange={(e) => setRecipientAddress(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                            onChange={handleAddressChange}
+                            className={`w-full px-3 py-2 border rounded-md ${errorMessage ? 'border-red-500' : 'border-gray-300'
+                                }`}
                         />
+                        {errorMessage && (
+                            <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
+                        )}
                     </div>
 
                     <button
                         onClick={handleTransferClick}
                         disabled={!recipientAddress.trim()}
                         className={`w-[40%] text-white py-2 px-4 rounded-md mb-4 transition-colors font-medium ${!recipientAddress.trim()
-                            ? 'bg-[#99BDFF] opacity-50 cursor-not-allowed'
-                            : 'bg-[#0059FF]'
+                            ? 'bg-[#99BDFF] cursor-not-allowed'
+                            : 'bg-[#0059FF] hover:bg-blue-700'
                             }`}
                     >
                         Transfer
