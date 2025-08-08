@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useDebounce } from '@uidotdev/usehooks'
 import axios, { AxiosError } from 'axios'
 import { addYears, formatDistanceToNowStrict } from 'date-fns'
+import Skeleton_deployment from './skeleton'
 
 
 import { useUser } from 'hooks/useUser'
@@ -96,15 +97,22 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
     if (!demoMode) return null
     return mockXNodes.find((node) => node.id === xNodeId) ?? null
   }, [demoMode, xNodeId])
-  const [processesOpen, setProcessesOpen] = useState(false);
-  const [appEditOpen, setAppEditOpen] = useState(false);
-  const [currentContainer, setCurrentContainer] = useState('');
+
 
 
   const [user] = useUser()
   const { toast } = useToast()
   const { push } = useRouter()
+  // just for testing purposes, remove later
+  // const [isLoadingSkeleton, setIsLoadingSkeleton] = useState(true);
+  // useEffect(() => {
 
+  //     const timer = setTimeout(() => {
+  //       setIsLoadingSkeleton(false);
+  //     }, 3000);
+
+  //     return () => clearTimeout(timer); 
+  //   }, []);
   const {
     data: xNodeData,
     isSuccess,
@@ -538,290 +546,14 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
     },
     [demoMode, refetch, user?.sessionToken, xNodeData]
   )
-
-  console.log("Xnode ==>", xNode)
-
-
   return (
     <div className="container mx-auto mb-12 mt-0  max-w-screen-3xl ">
       {isLoading && !demoMode ? (
-        <div>
-          <Skeleton className="h-5 w-28" />
-          <Skeleton className="mt-2 h-9 w-64" />
-          <div className="flex gap-2">
-            <Skeleton className="mt-2 h-7 w-24" />
-            <Skeleton className="mt-2 h-7 w-80" />
-          </div>
-          <div className="mt-6 rounded border p-6">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <Skeleton className="h-6 w-28" />
-                <Skeleton className="mt-1 h-4 w-40" />
-              </div>
-              <Skeleton className="h-9 w-28" />
-            </div>
-            <div className="mt-4 grid grid-cols-3 gap-6">
-              <Skeleton className="h-64" />
-              <Skeleton className="h-64" />
-              <Skeleton className="h-64" />
-            </div>
-          </div>
-          <div className="mt-6 rounded border p-6">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <Skeleton className="h-6 w-28" />
-                <Skeleton className="mt-1 h-4 w-40" />
-              </div>
-              <div className="flex gap-2">
-                <Skeleton className="h-9 w-28" />
-                <Skeleton className="h-9 w-24" />
-              </div>
-            </div>
-            <Table className="mt-4">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>
-                    <span />
-                  </TableHead>
-                  <TableHead>
-                    <Skeleton className="h-5 w-32" />
-                  </TableHead>
-                  <TableHead>
-                    <Skeleton className="h-5 w-32" />
-                  </TableHead>
-                  <TableHead>
-                    <Skeleton className="h-5 w-32" />
-                  </TableHead>
-                  <TableHead>
-                    <span />
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell>
-                      <Skeleton className="size-4" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-32" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-32" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-32" />
-                    </TableCell>
-                    <TableCell>
-                      <span className="inline-flex gap-2">
-                        <Skeleton className="size-4" />
-                        <Skeleton className="size-4" />
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
+        <Skeleton_deployment />
       ) : null}
       {(isSuccess || demoMode) && user?.sessionToken ? (
         <>
-          <Dialog
-            open={!!editService}
-            onOpenChange={() => setEditService(null)}
-          >
-            <DialogContent className="max-w-screen-lg">
-              <DialogHeader>
-                <DialogTitle>
-                  {serviceInEdit?.name ?? serviceInEdit?.nixName}
-                </DialogTitle>
-                <DialogDescription>
-                  Edit the configuration of the selected service.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="max-h-[32rem] overflow-y-auto">
-                {/* eslint-disable-next-line tailwindcss/migration-from-tailwind-2 */}
-                <Table className="w-full overflow-clip rounded">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="h-8">Name</TableHead>
-                      {/* <TableHead className="h-8">Description</TableHead> */}
-                      <TableHead className="h-8">Value</TableHead>
-                      <TableHead className="h-8 w-16">
-                        <Button
-                          disabled={
-                            serviceInEdit
-                              ? !changedOptions[serviceInEdit.nixName]
-                              : true
-                          }
-                          size="sm"
-                          variant="outlinePrimary"
-                          className="h-7 gap-1"
-                          onClick={() => {
-                            setServiceChanges((prev) => {
-                              if (!serviceInEdit) return prev
-                              const newMap = new Map(prev)
-                              const existingChanges = newMap.get(
-                                serviceInEdit.nixName
-                              )
-                              const changedServiceOptions =
-                                changedOptions[serviceInEdit.nixName]
 
-                              const updateOptionsRecursively = (
-                                options: ServiceOption[]
-                              ) => {
-                                return options.map((opt) => {
-                                  if (opt.options) {
-                                    opt.options = updateOptionsRecursively(
-                                      opt.options
-                                    )
-                                    return opt
-                                  }
-                                  return changedServiceOptions.includes(
-                                    opt.nixName
-                                  )
-                                    ? {
-                                      ...opt,
-                                      value: defaultOptions.get(
-                                        `${serviceInEdit.nixName}_${opt.nixName}`
-                                      ),
-                                    }
-                                    : opt
-                                })
-                              }
-
-                              newMap.set(
-                                serviceInEdit.nixName,
-                                updateOptionsRecursively(
-                                  existingChanges ?? serviceInEdit.options
-                                )
-                              )
-                              return newMap
-                            })
-                          }}
-                        >
-                          <RefreshCcw className="size-3.5" />
-                          Reset
-                        </Button>
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {serviceInEdit?.options?.map((option) => (
-                      <ServiceOptionRow
-                        key={option.nixName}
-                        option={option}
-                        value={(nixName, parentOption) => {
-                          return parentOption
-                            ? serviceChanges
-                              .get(serviceInEdit.nixName)
-                              ?.find((opt) => opt.nixName === parentOption)
-                              ?.options?.find(
-                                (opt) => opt.nixName === nixName
-                              )?.value
-                            : serviceChanges
-                              .get(serviceInEdit.nixName)
-                              ?.find((opt) => opt.nixName === nixName)?.value
-                        }}
-                        onUpdate={(newVal, currentOption, parentOption) => {
-                          setServiceChanges((prev) => {
-                            const newMap = new Map(prev)
-                            const existingChanges = newMap.get(
-                              serviceInEdit.nixName
-                            )
-                            const newChanges = (
-                              existingChanges ?? serviceInEdit.options
-                            )?.map((opt) => {
-                              if (
-                                opt.nixName === (parentOption ?? currentOption)
-                              ) {
-                                if (parentOption && opt.options) {
-                                  opt.options = opt.options.map((subOpt) =>
-                                    subOpt.nixName === currentOption
-                                      ? { ...subOpt, value: newVal }
-                                      : subOpt
-                                  )
-                                } else {
-                                  return { ...opt, value: newVal }
-                                }
-                              }
-                              return opt
-                            })
-                            newMap.set(serviceInEdit.nixName, newChanges)
-                            return newMap
-                          })
-                        }}
-                        canReset={(nixName) =>
-                          !changedOptions[serviceInEdit.nixName]?.includes(
-                            nixName
-                          )
-                        }
-                        onReset={(option, parentOption) => {
-                          setServiceChanges((prev) => {
-                            const newMap = new Map(prev)
-                            const existingChanges = newMap.get(
-                              serviceInEdit.nixName
-                            )
-                            const newChanges = (
-                              existingChanges ?? serviceInEdit.options
-                            )?.map((opt) => {
-                              if (opt.nixName === (parentOption ?? option)) {
-                                if (parentOption && opt.options) {
-                                  opt.options = opt.options.map((subOpt) =>
-                                    subOpt.nixName === option
-                                      ? {
-                                        ...subOpt,
-                                        value: defaultOptions.get(
-                                          `${serviceInEdit.nixName}_${option}`
-                                        ),
-                                      }
-                                      : subOpt
-                                  )
-                                } else {
-                                  return {
-                                    ...opt,
-                                    value: defaultOptions.get(
-                                      `${serviceInEdit.nixName}_${option}`
-                                    ),
-                                  }
-                                }
-                              }
-                              return opt
-                            })
-                            newMap.set(serviceInEdit.nixName, newChanges)
-                            return newMap
-                          })
-                        }}
-                      />
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-              <DialogFooter>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => {
-                    setEditService(null)
-                  }}
-                  className="min-w-28"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="lg"
-                  onClick={() => {
-                    setEditService(null)
-                    updateServices()
-                  }}
-                  className="min-w-48"
-                >
-                  Save
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
           <AlertDialog
             open={!!deleteServiceOpen}
             onOpenChange={() => setDeleteServiceOpen(null)}
@@ -844,141 +576,10 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
               </AlertDialogHeader>
             </AlertDialogContent>
           </AlertDialog>
-          <AlertDialog
-            open={!!resetMachineOpen}
-            onOpenChange={() => setResetMachineOpen(false)}
-          >
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  Are you sure you want to {xNode.isUnit ? 'reset' : 'delete'}{' '}
-                  your machine?
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  {xNode.isUnit
-                    ? 'This will delete all data storage of your applications. The nix configuration will be migrated to a new hardware machine.'
-                    : 'The underlying hardware will be deleted, which will cancel any future renting costs. This Xnode will cease to exist and cannot be restored.'}{' '}
-                  This action cannot be undone.
-                </AlertDialogDescription>
-                {!xNode.isUnit && (
-                  <div>
-                    <div className="mt-2 space-y-0.5">
-                      <Label htmlFor="apiKey">API Key</Label>
-                      <Input
-                        id="apiKey"
-                        name="apiKey"
-                        value={apiKey}
-                        className={
-                          validApiKey === false
-                            ? 'border-red-600'
-                            : validApiKey === true
-                              ? 'border-green-500'
-                              : ''
-                        }
-                        onChange={(e) => setApiKey(e.target.value)}
-                        type="password"
-                      />
-                    </div>
-                    {validApiKey === false && (
-                      <p className="text-sm text-red-700">Invalid API key</p>
-                    )}
-                  </div>
-                )}
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-red-500 hover:bg-red-600"
-                    onClick={() => resetMachine()}
-                    disabled={!xNode.isUnit && !validApiKey}
-                  >
-                    {xNode.isUnit ? 'Reset' : 'Delete'}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogHeader>
-            </AlertDialogContent>
-          </AlertDialog>
-          <AlertDialog open={resetting}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  {xNode.isUnit ? 'Resetting...' : 'Deleting...'}
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  Please wait. You will be redirected to the deployment page.{' '}
-                  {xNode.isUnit
-                    ? 'Your new server will show up once the new machine has been provisioned. This can take several minutes.'
-                    : ''}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-            </AlertDialogContent>
-          </AlertDialog>
-          <Dialog
-            open={editName !== undefined}
-            onOpenChange={() => setEditName(undefined)}
-          >
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Change Xnode Name</DialogTitle>
-                <DialogDescription>
-                  This name is purely cosmetic and does not affect the running
-                  Xnode in any way.
-                </DialogDescription>
-                <div>
-                  <Label htmlFor="newXnodeName">New Xnode Name</Label>
-                  <Input
-                    id="newXnodeName"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                  />
-                </div>
-                <DialogFooter>
-                  <Button
-                    onClick={() => setEditName(undefined)}
-                    disabled={changingName}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      changeName(editName)
-                        .catch(console.error)
-                        .finally(() => setEditName(undefined))
-                    }}
-                    disabled={changingName}
-                  >
-                    Save
-                  </Button>
-                </DialogFooter>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
-          {xNode.heartbeatData?.wantUpdate &&
-            xNode.updateGenerationHave == xNode.updateGenerationWant &&
-            xNode.status === 'online' ? (
-            <div className="fixed inset-x-0 bottom-8 z-30 flex justify-center">
-              <div className="flex flex-wrap items-center justify-between gap-12 rounded border border-primary bg-[color-mix(in_srgb,hsl(var(--background)),hsl(var(--primary))_5%)] px-6 py-4 shadow-xl">
-                <div>
-                  <p className="text-lg font-bold">Update available</p>
-                  <p className="max-w-96 text-balance text-sm text-muted-foreground">
-                    There is an update available for your Xnode. Please make
-                    sure to keep everything up to date, by allowing updates.
-                  </p>
-                </div>
-                <Button
-                  size="lg"
-                  className="min-w-32"
-                  onClick={() => updateXNode()}
-                >
-                  Update
-                </Button>
-              </div>
-            </div>
-          ) : null}
-
 
           {/* ---------------------------- New code based on new UI ----------------------------------------------- */}
 
-          
+
           <div className="flex w-full  flex-col gap-6 bg-white py-6 ">
 
             <div className="mb-4 flex items-center space-x-2">
@@ -989,10 +590,10 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
               </span>
             </div>
             <PlanManagement xnode={xNode} />
-           
+
           </div>
           <Resources xNode={xNode} lastUpdated={lastUpdated} />
-          
+
           <Deployed_Apps services={services?.services} xNode={xNode} setDeleteServiceOpen={setDeleteServiceOpen} />
 
         </>
