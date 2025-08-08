@@ -20,6 +20,7 @@
     "@emotion/styled": "^11.11.5",
     "@hookform/resolvers": "^3.4.2",
     "@libsql/client": "^0.14.0",
+    "@monaco-editor/react": "^4.7.0",
     "@mui/material": "^5.15.19",
     "@openmesh-network/xnode-manager-sdk": "^1.0.6",
     "@openmesh-network/xnode-manager-sdk-react": "^1.0.12",
