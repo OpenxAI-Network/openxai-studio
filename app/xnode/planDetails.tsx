@@ -19,7 +19,7 @@ interface PlanDetailsProps {
 }
 
 export default function PlanDetails({ planData }: PlanDetailsProps) {
-   const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState({
         days: 0,
         hours: 0,
@@ -155,12 +155,12 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                             </div>
                         </div>
 
-                        <div className="space-y-8">
+                        <div className="space-y-7">
                             <h3 className="rounded-[12px] border  border-[#F0F0F0] bg-[#F5F5F5]  py-4 pl-4 text-[14px] font-medium text-[#141414] md:text-[18px]">
                                 Manage your Plan
                             </h3>
 
-                            <div className="space-y-8 px-4">
+                            <div className="flex flex-col gap-8 px-4">
                                 <div className="flex w-full items-center justify-between">
                                     <label className=" text-[12px] font-medium text-[#525252] md:text-sm">Renewal Time Period (Months)</label>
                                     <input
@@ -174,8 +174,8 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                                                 setRenewalMonths(value);
                                             }
                                         }}
-                                        // eslint-disable-next-line tailwindcss/no-unnecessary-arbitrary-value
-                                        className="w-[50%] rounded-md border border-gray-300 px-3 py-2"
+
+                                        className="w-[50%] rounded-md border border-gray-300 px-3 py-1"
                                         min={1}
                                         max={99}
                                     />
@@ -208,15 +208,22 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
 
                                 <div className="flex justify-between">
                                     <span className="text-[12px] font-[400] text-[#525252] md:text-sm">Total Cost:</span>
-                                    <span className="flex items-center font-medium">
-                                        <span className="text-[12px]  font-bold text-[#0040B8] md:text-sm">
-                                            {parseFloat(totalCost) === 0 ? '0.00' : totalCost}
-                                            <span className="font-semibold"> OPENX /mo</span>
+                                    <div className='flex flex-col gap-1'>
+                                        <span className="flex items-center font-medium">
+                                            <span className="text-[12px]  font-bold text-[#0040B8] md:text-[16px]">
+                                                {parseFloat(totalCost) === 0 ? '0.00' : totalCost}
+                                                <span className="font-semibold"> OPENX</span>
+
+
+                                            </span>
+                                            <div className="ml-1 flex size-4 items-center justify-center">
+                                                <img src="/images/viewDeployment/ollama.svg" alt="" />
+                                            </div>
+
                                         </span>
-                                        <div className="ml-1 flex size-4 items-center justify-center">
-                                            <img src="/images/viewDeployment/ollama.svg" alt="" />
-                                        </div>
-                                    </span>
+                                        {renewalMonths && parseInt(renewalMonths) > 0 && (<span className='text-[13px] text-[#525252] self-end'>{planData.price}/month</span>)}
+
+                                    </div>
                                 </div>
 
                                 <button
