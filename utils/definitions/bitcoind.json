@@ -12,6 +12,9 @@
   "tags": ["Validator", "Blockchain", "Bitcoin"],
   "website": "https://bitcoin.org/",
   "implemented": true,
+  "version":"deepseekr1:1.5b",
+  "app_logo":"images/service_ollama.svg",
+  "version_logo":"images/version_logo.svg",
   "logo": "https://bitcoin.org/img/icons/opengraph.png",
   "options": [
     {

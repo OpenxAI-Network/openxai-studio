@@ -118,7 +118,7 @@ export function HealthChartItem({
   return (
     <ChartContainer
       config={chartConfig}
-      className={cn('size-64 min-h-48', className)}
+      className={cn('size-34 min-h-44', className)}
       {...props}
     >
       <RadialBarChart
@@ -126,8 +126,8 @@ export function HealthChartItem({
         data={chartData}
         startAngle={90}
         endAngle={-270}
-        innerRadius={90}
-        outerRadius={110}
+        innerRadius={74}
+        outerRadius={60}
       >
         <PolarAngleAxis
           type="number"
@@ -139,8 +139,8 @@ export function HealthChartItem({
           gridType="circle"
           radialLines={false}
           stroke="none"
-          className="first:fill-muted last:fill-background"
-          polarRadius={[94, 86]}
+          className="first:fill-[#EBF2FF] last:fill-[#FFFFFF]"
+          polarRadius={[70, 64]}
         />
         <PolarRadiusAxis
           angle={90}
@@ -163,7 +163,7 @@ export function HealthChartItem({
                     <tspan
                       x={viewBox.cx}
                       y={viewBox.cy}
-                      className="fill-foreground font-mono text-4xl font-bold"
+                      className="fill-foreground font-mono text-2xl font-bold"
                     >
                       {chartData[0].data.toLocaleString('en-US', {
                         minimumFractionDigits: 1,
@@ -173,7 +173,7 @@ export function HealthChartItem({
                     </tspan>
                     <tspan
                       x={viewBox.cx}
-                      y={(viewBox.cy || 0) + 26}
+                      y={(viewBox.cy || 0) + 16}
                       className="fill-muted-foreground uppercase"
                     >
                       {type}

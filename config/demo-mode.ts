@@ -45,5 +45,10 @@ export const mockXNodes: Xnode[] = [
     location: 'NYC1',
     createdAt: new Date(),
     updatedAt: new Date(),
+    cores: 16,
+    ram: 32 * 1024 ** 3, 
+    storage: 1 * 1024 ** 3, 
+    gpu: 'A4000',
+
   },
 ]

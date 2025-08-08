@@ -9,7 +9,13 @@ import { useQuery } from '@tanstack/react-query'
 import { useDebounce } from '@uidotdev/usehooks'
 import axios, { AxiosError } from 'axios'
 import { addYears, formatDistanceToNowStrict } from 'date-fns'
+import Skeleton_deployment from './skeleton'
+
+
 import { useUser } from 'hooks/useUser'
+import { useAccount } from 'wagmi'
+import Deployed_Apps from './deployed-apps'
+
 import {
   Copy,
   Edit3,
@@ -53,6 +59,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
+
 import {
   Table,
   TableBody,
@@ -71,25 +78,41 @@ import { useToast } from '@/components/ui/use-toast'
 import { SimpleTooltip } from '@/components/Common/SimpleTooltip'
 import { useDemoModeContext } from '@/components/demo-mode'
 import Signup from '@/components/Signup'
-
-import { HealthChartItem } from '../dashboard/health-data'
+import PlanManagement from './planManagement'
+import Resources from './resources'
 import { ServiceOptionRow } from './service-options'
+import { ChevronRight } from 'lucide-react';
+
+
+
 
 type XnodePageProps = {
   xNodeId: string
 }
 
 export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
+  const { address } = useAccount()
   const { demoMode } = useDemoModeContext()
   const testXNode = useMemo<Xnode | null>(() => {
     if (!demoMode) return null
     return mockXNodes.find((node) => node.id === xNodeId) ?? null
   }, [demoMode, xNodeId])
 
+
+
   const [user] = useUser()
   const { toast } = useToast()
   const { push } = useRouter()
+  // just for testing purposes, remove later
+  // const [isLoadingSkeleton, setIsLoadingSkeleton] = useState(true);
+  // useEffect(() => {
 
+  //     const timer = setTimeout(() => {
+  //       setIsLoadingSkeleton(false);
+  //     }, 3000);
+
+  //     return () => clearTimeout(timer); 
+  //   }, []);
   const {
     data: xNodeData,
     isSuccess,
@@ -273,6 +296,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
     xNodeId,
   ])
 
+
   const deleteService = useCallback(async () => {
     if (demoMode) return
     if (!services?.services || !user?.sessionToken) return
@@ -423,7 +447,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                   err.status.toString().startsWith('2') ||
                   err.status === 409 /*Device already cancelled*/ ||
                   err.response?.data?.error ===
-                    'Response constructor: Invalid response status code 204' ||
+                  'Response constructor: Invalid response status code 204' ||
                   err.response?.data?.error?.at(0) === 'Resource not Found.' // Already deleted
                 ) {
                   return
@@ -448,7 +472,7 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
                 if (
                   err.status.toString().startsWith('2') ||
                   err.response?.data?.error ===
-                    'Response constructor: Invalid response status code 204'
+                  'Response constructor: Invalid response status code 204'
                 ) {
                   return
                 }
@@ -522,287 +546,14 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
     },
     [demoMode, refetch, user?.sessionToken, xNodeData]
   )
-
   return (
-    <div className="container my-12 max-w-none">
+    <div className="container mx-auto mb-12 mt-0  max-w-screen-3xl ">
       {isLoading && !demoMode ? (
-        <div>
-          <Skeleton className="h-5 w-28" />
-          <Skeleton className="mt-2 h-9 w-64" />
-          <div className="flex gap-2">
-            <Skeleton className="mt-2 h-7 w-24" />
-            <Skeleton className="mt-2 h-7 w-80" />
-          </div>
-          <div className="mt-6 rounded border p-6">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <Skeleton className="h-6 w-28" />
-                <Skeleton className="mt-1 h-4 w-40" />
-              </div>
-              <Skeleton className="h-9 w-28" />
-            </div>
-            <div className="mt-4 grid grid-cols-3 gap-6">
-              <Skeleton className="h-64" />
-              <Skeleton className="h-64" />
-              <Skeleton className="h-64" />
-            </div>
-          </div>
-          <div className="mt-6 rounded border p-6">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <Skeleton className="h-6 w-28" />
-                <Skeleton className="mt-1 h-4 w-40" />
-              </div>
-              <div className="flex gap-2">
-                <Skeleton className="h-9 w-28" />
-                <Skeleton className="h-9 w-24" />
-              </div>
-            </div>
-            <Table className="mt-4">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>
-                    <span />
-                  </TableHead>
-                  <TableHead>
-                    <Skeleton className="h-5 w-32" />
-                  </TableHead>
-                  <TableHead>
-                    <Skeleton className="h-5 w-32" />
-                  </TableHead>
-                  <TableHead>
-                    <Skeleton className="h-5 w-32" />
-                  </TableHead>
-                  <TableHead>
-                    <span />
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell>
-                      <Skeleton className="size-4" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-32" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-32" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-32" />
-                    </TableCell>
-                    <TableCell>
-                      <span className="inline-flex gap-2">
-                        <Skeleton className="size-4" />
-                        <Skeleton className="size-4" />
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
+        <Skeleton_deployment />
       ) : null}
       {(isSuccess || demoMode) && user?.sessionToken ? (
         <>
-          <Dialog
-            open={!!editService}
-            onOpenChange={() => setEditService(null)}
-          >
-            <DialogContent className="max-w-screen-lg">
-              <DialogHeader>
-                <DialogTitle>
-                  {serviceInEdit?.name ?? serviceInEdit?.nixName}
-                </DialogTitle>
-                <DialogDescription>
-                  Edit the configuration of the selected service.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="max-h-[32rem] overflow-y-auto">
-                {/* eslint-disable-next-line tailwindcss/migration-from-tailwind-2 */}
-                <Table className="w-full overflow-clip rounded">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="h-8">Name</TableHead>
-                      {/* <TableHead className="h-8">Description</TableHead> */}
-                      <TableHead className="h-8">Value</TableHead>
-                      <TableHead className="h-8 w-16">
-                        <Button
-                          disabled={
-                            serviceInEdit
-                              ? !changedOptions[serviceInEdit.nixName]
-                              : true
-                          }
-                          size="sm"
-                          variant="outlinePrimary"
-                          className="h-7 gap-1"
-                          onClick={() => {
-                            setServiceChanges((prev) => {
-                              if (!serviceInEdit) return prev
-                              const newMap = new Map(prev)
-                              const existingChanges = newMap.get(
-                                serviceInEdit.nixName
-                              )
-                              const changedServiceOptions =
-                                changedOptions[serviceInEdit.nixName]
 
-                              const updateOptionsRecursively = (
-                                options: ServiceOption[]
-                              ) => {
-                                return options.map((opt) => {
-                                  if (opt.options) {
-                                    opt.options = updateOptionsRecursively(
-                                      opt.options
-                                    )
-                                    return opt
-                                  }
-                                  return changedServiceOptions.includes(
-                                    opt.nixName
-                                  )
-                                    ? {
-                                        ...opt,
-                                        value: defaultOptions.get(
-                                          `${serviceInEdit.nixName}_${opt.nixName}`
-                                        ),
-                                      }
-                                    : opt
-                                })
-                              }
-
-                              newMap.set(
-                                serviceInEdit.nixName,
-                                updateOptionsRecursively(
-                                  existingChanges ?? serviceInEdit.options
-                                )
-                              )
-                              return newMap
-                            })
-                          }}
-                        >
-                          <RefreshCcw className="size-3.5" />
-                          Reset
-                        </Button>
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {serviceInEdit?.options?.map((option) => (
-                      <ServiceOptionRow
-                        key={option.nixName}
-                        option={option}
-                        value={(nixName, parentOption) => {
-                          return parentOption
-                            ? serviceChanges
-                                .get(serviceInEdit.nixName)
-                                ?.find((opt) => opt.nixName === parentOption)
-                                ?.options?.find(
-                                  (opt) => opt.nixName === nixName
-                                )?.value
-                            : serviceChanges
-                                .get(serviceInEdit.nixName)
-                                ?.find((opt) => opt.nixName === nixName)?.value
-                        }}
-                        onUpdate={(newVal, currentOption, parentOption) => {
-                          setServiceChanges((prev) => {
-                            const newMap = new Map(prev)
-                            const existingChanges = newMap.get(
-                              serviceInEdit.nixName
-                            )
-                            const newChanges = (
-                              existingChanges ?? serviceInEdit.options
-                            )?.map((opt) => {
-                              if (
-                                opt.nixName === (parentOption ?? currentOption)
-                              ) {
-                                if (parentOption && opt.options) {
-                                  opt.options = opt.options.map((subOpt) =>
-                                    subOpt.nixName === currentOption
-                                      ? { ...subOpt, value: newVal }
-                                      : subOpt
-                                  )
-                                } else {
-                                  return { ...opt, value: newVal }
-                                }
-                              }
-                              return opt
-                            })
-                            newMap.set(serviceInEdit.nixName, newChanges)
-                            return newMap
-                          })
-                        }}
-                        canReset={(nixName) =>
-                          !changedOptions[serviceInEdit.nixName]?.includes(
-                            nixName
-                          )
-                        }
-                        onReset={(option, parentOption) => {
-                          setServiceChanges((prev) => {
-                            const newMap = new Map(prev)
-                            const existingChanges = newMap.get(
-                              serviceInEdit.nixName
-                            )
-                            const newChanges = (
-                              existingChanges ?? serviceInEdit.options
-                            )?.map((opt) => {
-                              if (opt.nixName === (parentOption ?? option)) {
-                                if (parentOption && opt.options) {
-                                  opt.options = opt.options.map((subOpt) =>
-                                    subOpt.nixName === option
-                                      ? {
-                                          ...subOpt,
-                                          value: defaultOptions.get(
-                                            `${serviceInEdit.nixName}_${option}`
-                                          ),
-                                        }
-                                      : subOpt
-                                  )
-                                } else {
-                                  return {
-                                    ...opt,
-                                    value: defaultOptions.get(
-                                      `${serviceInEdit.nixName}_${option}`
-                                    ),
-                                  }
-                                }
-                              }
-                              return opt
-                            })
-                            newMap.set(serviceInEdit.nixName, newChanges)
-                            return newMap
-                          })
-                        }}
-                      />
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-              <DialogFooter>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => {
-                    setEditService(null)
-                  }}
-                  className="min-w-28"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="lg"
-                  onClick={() => {
-                    setEditService(null)
-                    updateServices()
-                  }}
-                  className="min-w-48"
-                >
-                  Save
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
           <AlertDialog
             open={!!deleteServiceOpen}
             onOpenChange={() => setDeleteServiceOpen(null)}
@@ -825,433 +576,26 @@ export default function XNodeDashboard({ xNodeId }: XnodePageProps) {
               </AlertDialogHeader>
             </AlertDialogContent>
           </AlertDialog>
-          <AlertDialog
-            open={!!resetMachineOpen}
-            onOpenChange={() => setResetMachineOpen(false)}
-          >
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  Are you sure you want to {xNode.isUnit ? 'reset' : 'delete'}{' '}
-                  your machine?
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  {xNode.isUnit
-                    ? 'This will delete all data storage of your applications. The nix configuration will be migrated to a new hardware machine.'
-                    : 'The underlying hardware will be deleted, which will cancel any future renting costs. This Xnode will cease to exist and cannot be restored.'}{' '}
-                  This action cannot be undone.
-                </AlertDialogDescription>
-                {!xNode.isUnit && (
-                  <div>
-                    <div className="mt-2 space-y-0.5">
-                      <Label htmlFor="apiKey">API Key</Label>
-                      <Input
-                        id="apiKey"
-                        name="apiKey"
-                        value={apiKey}
-                        className={
-                          validApiKey === false
-                            ? 'border-red-600'
-                            : validApiKey === true
-                              ? 'border-green-500'
-                              : ''
-                        }
-                        onChange={(e) => setApiKey(e.target.value)}
-                        type="password"
-                      />
-                    </div>
-                    {validApiKey === false && (
-                      <p className="text-sm text-red-700">Invalid API key</p>
-                    )}
-                  </div>
-                )}
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-red-500 hover:bg-red-600"
-                    onClick={() => resetMachine()}
-                    disabled={!xNode.isUnit && !validApiKey}
-                  >
-                    {xNode.isUnit ? 'Reset' : 'Delete'}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogHeader>
-            </AlertDialogContent>
-          </AlertDialog>
-          <AlertDialog open={resetting}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  {xNode.isUnit ? 'Resetting...' : 'Deleting...'}
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  Please wait. You will be redirected to the deployment page.{' '}
-                  {xNode.isUnit
-                    ? 'Your new server will show up once the new machine has been provisioned. This can take several minutes.'
-                    : ''}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-            </AlertDialogContent>
-          </AlertDialog>
-          <Dialog
-            open={editName !== undefined}
-            onOpenChange={() => setEditName(undefined)}
-          >
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Change Xnode Name</DialogTitle>
-                <DialogDescription>
-                  This name is purely cosmetic and does not affect the running
-                  Xnode in any way.
-                </DialogDescription>
-                <div>
-                  <Label htmlFor="newXnodeName">New Xnode Name</Label>
-                  <Input
-                    id="newXnodeName"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                  />
-                </div>
-                <DialogFooter>
-                  <Button
-                    onClick={() => setEditName(undefined)}
-                    disabled={changingName}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      changeName(editName)
-                        .catch(console.error)
-                        .finally(() => setEditName(undefined))
-                    }}
-                    disabled={changingName}
-                  >
-                    Save
-                  </Button>
-                </DialogFooter>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
-          {xNode.heartbeatData?.wantUpdate &&
-          xNode.updateGenerationHave == xNode.updateGenerationWant &&
-          xNode.status === 'online' ? (
-            <div className="fixed inset-x-0 bottom-8 z-30 flex justify-center">
-              <div className="flex flex-wrap items-center justify-between gap-12 rounded border border-primary bg-[color-mix(in_srgb,hsl(var(--background)),hsl(var(--primary))_5%)] px-6 py-4 shadow-xl">
-                <div>
-                  <p className="text-lg font-bold">Update available</p>
-                  <p className="max-w-96 text-balance text-sm text-muted-foreground">
-                    There is an update available for your Xnode. Please make
-                    sure to keep everything up to date, by allowing updates.
-                  </p>
-                </div>
-                <Button
-                  size="lg"
-                  className="min-w-32"
-                  onClick={() => updateXNode()}
-                >
-                  Update
-                </Button>
-              </div>
-            </div>
-          ) : null}
-          <TooltipProvider>
-            <Tooltip open={!xNode.isUnit ? false : undefined}>
-              <TooltipTrigger className="flex items-start gap-0.5 font-medium text-muted-foreground">
-                {formatXNodeName(xNode)}
-                {xNode.isUnit && <HelpCircle className="size-3.5" />}
-              </TooltipTrigger>
-              <TooltipContent className="max-w-80">
-                <p className="text-base font-semibold">Xnode NFT</p>
-                <p className="break-all text-muted-foreground">
-                  {xNode.deploymentAuth}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <Button
-            className="size-auto gap-x-2 bg-transparent p-0 hover:bg-transparent"
-            onClick={() => setEditName(xNode.name)}
-          >
-            <h1 className="text-4xl font-bold text-black">{xNode.name}</h1>
-            <Edit3 className="size-7 text-muted-foreground" />
-          </Button>
-          <div className="mt-2 flex items-center gap-3">
-            <span
-              className={cn(
-                'rounded border border-orange-500/25 bg-orange-500/10 px-2.5 py-1 text-sm font-medium capitalize text-orange-500',
-                xNode.status === 'online' &&
-                  'border-green-600/25 bg-green-600/10 text-green-600',
-                xNode.status === 'booting' &&
-                  'border-destructive/25 bg-destructive/10 text-destructive',
-                xNode.status === undefined && 'bg-muted text-foreground'
-              )}
-            >
-              {xNode.status}
-            </span>
-            {xNode.ipAddress && (
-              <div className="flex gap-1.5 rounded border px-2.5 py-1 text-sm font-medium text-muted-foreground">
-                <span>IP address</span>
-                <div className="my-0.5">
-                  <Separator orientation="vertical" />
-                </div>
-                <SimpleTooltip tooltip="Copy to clipboard">
-                  <Button
-                    onClick={() => {
-                      navigator.clipboard
-                        .writeText(`${xNode.ipAddress}`)
-                        .then(() => {
-                          toast({
-                            title: 'Success',
-                            description: 'IP address copied to clipboard.',
-                          })
-                        })
-                        .catch((err) => {
-                          toast({
-                            title: 'Error',
-                            description:
-                              err?.message ??
-                              'Could not copy IP address to clipboard.',
-                          })
-                        })
-                    }}
-                    className="size-auto gap-x-1 bg-transparent p-0 text-muted-foreground hover:bg-transparent"
-                  >
-                    <span>{xNode.ipAddress}</span>
-                    <Copy className="size-4" />
-                  </Button>
-                </SimpleTooltip>
-              </div>
-            )}
-            {xNode.isUnit && (
-              <div className="flex gap-1.5 rounded border px-2.5 py-1 text-sm font-medium text-muted-foreground">
-                <span>Remaining Xnode Time</span>
-                <div className="my-0.5">
-                  <Separator orientation="vertical" />
-                </div>
-                <span>
-                  {formatDistanceToNowStrict(addYears(xNode.unitClaimTime, 1), {
-                    unit: 'day',
-                  })}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="mt-6 rounded border px-6 py-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-bold">Resources</h2>
-                <p className="text-xs text-muted-foreground">
-                  Last updated {lastUpdated} ago
-                </p>
-              </div>
-            </div>
-            <div className="mt-4 grid grid-cols-3 gap-6">
-              <div className="flex flex-col items-center gap-4 rounded border bg-muted/50 px-4 py-2.5">
-                <div className="text-center">
-                  <p className="font-bold">CPU</p>
-                  <p className="text-sm text-muted-foreground">
-                    Current CPU utilization
-                  </p>
-                </div>
-                <HealthChartItem
-                  className="size-48"
-                  type="cpu"
-                  healthData={xNode.heartbeatData?.cpuPercent ?? 0}
-                />
-              </div>
-              <div className="flex flex-col items-center gap-4 rounded border bg-muted/50 px-4 py-2.5">
-                <div className="text-center">
-                  <p className="font-bold">RAM</p>
-                  <p className="text-sm text-muted-foreground">
-                    {Math.round(
-                      ((xNode.heartbeatData?.ramMbUsed ?? 0) / 1024) * 100
-                    ) / 100}
-                    GB/
-                    {Math.round(
-                      ((xNode.heartbeatData?.ramMbTotal ?? 0) / 1024) * 100
-                    ) / 100}
-                    GB
-                  </p>
-                </div>
-                <HealthChartItem
-                  className="size-48"
-                  type="ram"
-                  healthData={
-                    ((xNode.heartbeatData?.ramMbUsed ?? 0) /
-                      (xNode.heartbeatData?.ramMbTotal ?? 1)) *
-                    100
-                  }
-                />
-              </div>
-              <div className="flex flex-col items-center gap-4 rounded border bg-muted/50 px-4 py-2.5">
-                <div className="text-center">
-                  <p className="font-bold">Storage</p>
-                  <p className="text-sm text-muted-foreground">
-                    {Math.round(
-                      ((xNode.heartbeatData?.storageMbUsed ?? 0) / 1024) * 100
-                    ) / 100}
-                    GB/
-                    {Math.round(
-                      ((xNode.heartbeatData?.storageMbTotal ?? 1) / 1024) * 100
-                    ) / 100}
-                    GB
-                  </p>
-                </div>
-                <HealthChartItem
-                  className="size-48"
-                  type="storage"
-                  healthData={
-                    ((xNode.heartbeatData?.storageMbUsed ?? 0) /
-                      (xNode.heartbeatData?.storageMbTotal ?? 1)) *
-                    100
-                  }
-                />
-              </div>
-            </div>
-          </div>
-          <div className="mt-6 rounded border px-6 py-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-bold">Apps</h2>
-                <p className="text-xs text-muted-foreground">
-                  See and manage all the installed apps on your Xnode.
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <Button
-                  disabled={isFetching}
-                  variant="outlinePrimary"
-                  onClick={() => setResetMachineOpen(true)}
-                >
-                  {xNode.isUnit ? 'Reset' : 'Delete'}
-                </Button>
-                <Button
-                  disabled={isFetching}
-                  variant="outlinePrimary"
-                  onClick={() => updateXNode()}
-                >
-                  Force Update
-                </Button>
-                <Link href="/app-store">
-                  <Button variant="outlinePrimary">Add App</Button>
-                </Link>
-              </div>
-            </div>
-            {/* eslint-disable-next-line tailwindcss/migration-from-tailwind-2 */}
-            <Table className="mt-4 w-full overflow-clip rounded">
-              <TableHeader className="bg-muted">
-                <TableRow>
-                  <TableHead className="h-8">
-                    <span className="sr-only">Open</span>
-                  </TableHead>
-                  <TableHead className="h-8">Name</TableHead>
-                  <TableHead className="h-8">Description</TableHead>
-                  <TableHead className="h-8">Tags</TableHead>
-                  <TableHead className="h-8">
-                    <span className="sr-only">Actions</span>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {services?.services.map((service) => {
-                  const servicePort = service.options
-                    ?.flatMap((o) => {
-                      const nestedOptions = [o]
-                      let index = 0
-                      while (nestedOptions[index].options?.length) {
-                        nestedOptions.push(...nestedOptions[index].options)
-                        index++
-                      }
-                      return nestedOptions
-                    })
-                    .find(
-                      (option) =>
-                        option.nixName === 'port' ||
-                        option.nixName === 'server-port' ||
-                        option.nixName === 'guiAddress'
-                    )
-                    ?.value?.split(':')
-                    .at(-1)
-                  const serviceEnabled =
-                    service.options?.find(
-                      (option) => option.nixName === 'enable'
-                    )?.value === 'true'
-                  const serviceFirewall =
-                    service.options?.find(
-                      (option) => option.nixName === 'openFirewall'
-                    )?.value === 'true'
 
-                  return (
-                    <TableRow key={service.nixName}>
-                      <TableCell>
-                        <Link
-                          href={`http://${xNode.ipAddress}:${servicePort}`}
-                          aria-disabled={
-                            !servicePort || !serviceEnabled || !serviceFirewall
-                          }
-                          target="_blank"
-                          rel="noreferrer noopener"
-                          className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
-                        >
-                          <span className="sr-only">Open</span>
-                          <ExternalLink className="size-6 text-muted-foreground" />
-                        </Link>
-                      </TableCell>
-                      <TableCell className="min-w-40">
-                        <span
-                          title={service.name ?? service.nixName}
-                          className="truncate"
-                        >
-                          {service.name ?? service.nixName}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="block max-w-96 truncate">
-                          {service.desc ?? '-'}
-                        </span>
-                      </TableCell>
-                      <TableCell className="min-w-56">
-                        <span className="inline-flex items-center gap-1">
-                          {service.tags?.map((tag) => (
-                            <span
-                              key={tag}
-                              className="rounded bg-primary/10 px-2 py-0.5 text-xs capitalize text-primary"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="flex items-center justify-end gap-2">
-                          <Button
-                            size="iconSm"
-                            variant="outline"
-                            disabled={!service.options}
-                            onClick={() => setEditService(service.nixName)}
-                          >
-                            <Pencil className="size-4" />
-                            <span className="sr-only">Edit</span>
-                          </Button>
-                          <Button
-                            size="iconSm"
-                            variant="outline"
-                            onClick={() =>
-                              setDeleteServiceOpen(service.nixName)
-                            }
-                          >
-                            <Trash2 className="size-4" />
-                            <span className="sr-only">Delete</span>
-                          </Button>
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
+          {/* ---------------------------- New code based on new UI ----------------------------------------------- */}
+
+
+          <div className="flex w-full  flex-col gap-6 bg-white py-6 ">
+
+            <div className="mb-4 flex items-center space-x-2">
+              <span className="text-lg text-[#8F8F8F]">Deployment</span>
+              <ChevronRight size={20} className="text-[#9B9B9B]" />
+              <span className="text-lg font-medium text-[#525252]">
+                {xNode.name}
+              </span>
+            </div>
+            <PlanManagement xnode={xNode} />
+
           </div>
+          <Resources xNode={xNode} lastUpdated={lastUpdated} />
+
+          <Deployed_Apps services={services?.services} xNode={xNode} setDeleteServiceOpen={setDeleteServiceOpen} />
+
         </>
       ) : null}
       {!isFetching && !isSuccess && !demoMode ? <Signup /> : null}

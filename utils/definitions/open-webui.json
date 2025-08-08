@@ -7,12 +7,15 @@
   "nixName": "open-webui",
   "specs": {
     "ram": 400,
-    "storage": 100
+    "storage": 100,
+    "cup":2
   },
   "tags": ["LLM"],
   "website": "https://github.com/open-webui/open-webui",
+  "version": "Voice-to-Voice",
   "implemented": true,
   "logo": "",
+  "app_logo":"images/service_openwebui.svg",
   "options": [
     {
       "name": "enable",
