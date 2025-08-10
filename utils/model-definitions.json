@@ -19,13 +19,48 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "1.5b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "deepseek-r1:1.5b" },
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "deepseek-r1:7b" },
-          "8b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "deepseek-r1:8b" },
-          "14b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "deepseek-r1:14b" },
-          "32b": { "ram": 24000, "storage": 40000, "cpu": 4, "ollamaCommand": "deepseek-r1:32b" },
-          "70b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "deepseek-r1:70b" },
-          "671b": { "ram": 512000, "storage": 700000, "cpu": 64, "ollamaCommand": "deepseek-r1:671b" }
+          "1.5b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "deepseek-r1:1.5b"
+          },
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "deepseek-r1:7b"
+          },
+          "8b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "deepseek-r1:8b"
+          },
+          "14b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "deepseek-r1:14b"
+          },
+          "32b": {
+            "ram": 24000,
+            "storage": 40000,
+            "cpu": 4,
+            "ollamaCommand": "deepseek-r1:32b"
+          },
+          "70b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "deepseek-r1:70b"
+          },
+          "671b": {
+            "ram": 512000,
+            "storage": 700000,
+            "cpu": 64,
+            "ollamaCommand": "deepseek-r1:671b"
+          }
         }
       }
     ]
@@ -49,9 +84,24 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "llama2:7b" },
-          "13b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "llama2:13b" },
-          "70b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "llama2:70b" }
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "llama2:7b"
+          },
+          "13b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "llama2:13b"
+          },
+          "70b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "llama2:70b"
+          }
         }
       }
     ]
@@ -75,7 +125,12 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "mistral:7b" }
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "mistral:7b"
+          }
         }
       }
     ]
@@ -99,7 +154,12 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "8x7b": { "ram": 24000, "storage": 40000, "cpu": 4, "ollamaCommand": "mixtral:8x7b" }
+          "8x7b": {
+            "ram": 24000,
+            "storage": 40000,
+            "cpu": 4,
+            "ollamaCommand": "mixtral:8x7b"
+          }
         }
       }
     ]
@@ -123,14 +183,54 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "0.5b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "qwen:0.5b" },
-          "1.8b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "qwen:1.8b" },
-          "4b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "qwen:4b" },
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "qwen:7b" },
-          "14b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "qwen:14b" },
-          "32b": { "ram": 24000, "storage": 40000, "cpu": 4, "ollamaCommand": "qwen:32b" },
-          "72b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "qwen:72b" },
-          "110b": { "ram": 512000, "storage": 700000, "cpu": 64, "ollamaCommand": "qwen:110b" }
+          "0.5b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "qwen:0.5b"
+          },
+          "1.8b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "qwen:1.8b"
+          },
+          "4b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "qwen:4b"
+          },
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "qwen:7b"
+          },
+          "14b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "qwen:14b"
+          },
+          "32b": {
+            "ram": 24000,
+            "storage": 40000,
+            "cpu": 4,
+            "ollamaCommand": "qwen:32b"
+          },
+          "72b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "qwen:72b"
+          },
+          "110b": {
+            "ram": 512000,
+            "storage": 700000,
+            "cpu": 64,
+            "ollamaCommand": "qwen:110b"
+          }
         }
       }
     ]
@@ -154,8 +254,18 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "2b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "gemma:2b" },
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "gemma:7b" }
+          "2b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "gemma:2b"
+          },
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "gemma:7b"
+          }
         }
       }
     ]
@@ -179,8 +289,18 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "3.8b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "phi3:3.8b" },
-          "14b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "phi3:14b" }
+          "3.8b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "phi3:3.8b"
+          },
+          "14b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "phi3:14b"
+          }
         }
       }
     ]
@@ -204,10 +324,30 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "codellama:7b" },
-          "13b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "codellama:13b" },
-          "34b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "codellama:34b" },
-          "70b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "codellama:70b" }
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "codellama:7b"
+          },
+          "13b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "codellama:13b"
+          },
+          "34b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "codellama:34b"
+          },
+          "70b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "codellama:70b"
+          }
         }
       }
     ]
@@ -231,7 +371,12 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "1.1b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "tinyllama:1.1b" }
+          "1.1b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "tinyllama:1.1b"
+          }
         }
       }
     ]
@@ -255,9 +400,24 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "3b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "starcoder2:3b" },
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "starcoder2:7b" },
-          "15b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "starcoder2:15b" }
+          "3b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "starcoder2:3b"
+          },
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "starcoder2:7b"
+          },
+          "15b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "starcoder2:15b"
+          }
         }
       }
     ]
@@ -281,8 +441,18 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "8x7b": { "ram": 24000, "storage": 40000, "cpu": 4, "ollamaCommand": "dolphin-mixtral:8x7b" },
-          "8x22b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "dolphin-mixtral:8x22b" }
+          "8x7b": {
+            "ram": 24000,
+            "storage": 40000,
+            "cpu": 4,
+            "ollamaCommand": "dolphin-mixtral:8x7b"
+          },
+          "8x22b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "dolphin-mixtral:8x22b"
+          }
         }
       }
     ]
@@ -306,8 +476,18 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "16b": { "ram": 24000, "storage": 40000, "cpu": 4, "ollamaCommand": "deepseek-coder-v2:16b" },
-          "236b": { "ram": 512000, "storage": 700000, "cpu": 64, "ollamaCommand": "deepseek-coder-v2:236b" }
+          "16b": {
+            "ram": 24000,
+            "storage": 40000,
+            "cpu": 4,
+            "ollamaCommand": "deepseek-coder-v2:16b"
+          },
+          "236b": {
+            "ram": 512000,
+            "storage": 700000,
+            "cpu": 64,
+            "ollamaCommand": "deepseek-coder-v2:236b"
+          }
         }
       }
     ]
@@ -331,8 +511,18 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "2b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "codegemma:2b" },
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "codegemma:7b" }
+          "2b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "codegemma:2b"
+          },
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "codegemma:7b"
+          }
         }
       }
     ]
@@ -356,8 +546,18 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "wizardlm2:7b" },
-          "8x22b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "wizardlm2:8x22b" }
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "wizardlm2:7b"
+          },
+          "8x22b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "wizardlm2:8x22b"
+          }
         }
       }
     ]
@@ -381,8 +581,18 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "zephyr:7b" },
-          "141b": { "ram": 512000, "storage": 700000, "cpu": 64, "ollamaCommand": "zephyr:141b" }
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "zephyr:7b"
+          },
+          "141b": {
+            "ram": 512000,
+            "storage": 700000,
+            "cpu": 64,
+            "ollamaCommand": "zephyr:141b"
+          }
         }
       }
     ]
@@ -406,9 +616,24 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "6b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "yi:6b" },
-          "9b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "yi:9b" },
-          "34b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "yi:34b" }
+          "6b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "yi:6b"
+          },
+          "9b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "yi:9b"
+          },
+          "34b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "yi:34b"
+          }
         }
       }
     ]
@@ -432,9 +657,24 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "llava:7b" },
-          "13b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "llava:13b" },
-          "34b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "llava:34b" }
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "llava:7b"
+          },
+          "13b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "llava:13b"
+          },
+          "34b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "llava:34b"
+          }
         }
       }
     ]
@@ -458,9 +698,24 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "2b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "gemma2:2b" },
-          "9b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "gemma2:9b" },
-          "27b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "gemma2:27b" }
+          "2b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "gemma2:2b"
+          },
+          "9b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "gemma2:9b"
+          },
+          "27b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "gemma2:27b"
+          }
         }
       }
     ]
@@ -484,13 +739,48 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "0.5b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "qwen2.5:0.5b" },
-          "1.5b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "qwen2.5:1.5b" },
-          "3b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "qwen2.5:3b" },
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "qwen2.5:7b" },
-          "14b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "qwen2.5:14b" },
-          "32b": { "ram": 24000, "storage": 40000, "cpu": 4, "ollamaCommand": "qwen2.5:32b" },
-          "72b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "qwen2.5:72b" }
+          "0.5b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "qwen2.5:0.5b"
+          },
+          "1.5b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "qwen2.5:1.5b"
+          },
+          "3b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "qwen2.5:3b"
+          },
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "qwen2.5:7b"
+          },
+          "14b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "qwen2.5:14b"
+          },
+          "32b": {
+            "ram": 24000,
+            "storage": 40000,
+            "cpu": 4,
+            "ollamaCommand": "qwen2.5:32b"
+          },
+          "72b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "qwen2.5:72b"
+          }
         }
       }
     ]
@@ -514,7 +804,12 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "12b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "mistral-nemo:12b" }
+          "12b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "mistral-nemo:12b"
+          }
         }
       }
     ]
@@ -538,8 +833,18 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "11b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "llama3.2-vision:11b" },
-          "90b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "llama3.2-vision:90b" }
+          "11b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "llama3.2-vision:11b"
+          },
+          "90b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "llama3.2-vision:90b"
+          }
         }
       }
     ]
@@ -563,12 +868,42 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "0.5b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "qwen2.5-coder:0.5b" },
-          "1.5b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "qwen2.5-coder:1.5b" },
-          "3b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "qwen2.5-coder:3b" },
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "qwen2.5-coder:7b" },
-          "14b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "qwen2.5-coder:14b" },
-          "32b": { "ram": 24000, "storage": 40000, "cpu": 4, "ollamaCommand": "qwen2.5-coder:32b" }
+          "0.5b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "qwen2.5-coder:0.5b"
+          },
+          "1.5b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "qwen2.5-coder:1.5b"
+          },
+          "3b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "qwen2.5-coder:3b"
+          },
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "qwen2.5-coder:7b"
+          },
+          "14b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "qwen2.5-coder:14b"
+          },
+          "32b": {
+            "ram": 24000,
+            "storage": 40000,
+            "cpu": 4,
+            "ollamaCommand": "qwen2.5-coder:32b"
+          }
         }
       }
     ]
@@ -592,10 +927,30 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "1m": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "internlm2:1m" },
-          "1.8b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "internlm2:1.8b" },
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "internlm2:7b" },
-          "20b": { "ram": 24000, "storage": 40000, "cpu": 4, "ollamaCommand": "internlm2:20b" }
+          "1m": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "internlm2:1m"
+          },
+          "1.8b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "internlm2:1.8b"
+          },
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "internlm2:7b"
+          },
+          "20b": {
+            "ram": 24000,
+            "storage": 40000,
+            "cpu": 4,
+            "ollamaCommand": "internlm2:20b"
+          }
         }
       }
     ]
@@ -619,7 +974,12 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "70b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "nemotron:70b" }
+          "70b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "nemotron:70b"
+          }
         }
       }
     ]
@@ -643,7 +1003,12 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "3.8b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "phi3.5:3.8b" }
+          "3.8b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "phi3.5:3.8b"
+          }
         }
       }
     ]
@@ -667,7 +1032,12 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "22b": { "ram": 24000, "storage": 40000, "cpu": 4, "ollamaCommand": "codestral:22b" }
+          "22b": {
+            "ram": 24000,
+            "storage": 40000,
+            "cpu": 4,
+            "ollamaCommand": "codestral:22b"
+          }
         }
       }
     ]
@@ -691,10 +1061,30 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "1b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "starcoder:1b" },
-          "3b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "starcoder:3b" },
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "starcoder:7b" },
-          "15b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "starcoder:15b" }
+          "1b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "starcoder:1b"
+          },
+          "3b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "starcoder:3b"
+          },
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "starcoder:7b"
+          },
+          "15b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "starcoder:15b"
+          }
         }
       }
     ]
@@ -718,10 +1108,30 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "3b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "granite-code:3b" },
-          "8b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "granite-code:8b" },
-          "20b": { "ram": 24000, "storage": 40000, "cpu": 4, "ollamaCommand": "granite-code:20b" },
-          "34b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "granite-code:34b" }
+          "3b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "granite-code:3b"
+          },
+          "8b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "granite-code:8b"
+          },
+          "20b": {
+            "ram": 24000,
+            "storage": 40000,
+            "cpu": 4,
+            "ollamaCommand": "granite-code:20b"
+          },
+          "34b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "granite-code:34b"
+          }
         }
       }
     ]
@@ -745,9 +1155,24 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "vicuna:7b" },
-          "13b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "vicuna:13b" },
-          "33b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "vicuna:33b" }
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "vicuna:7b"
+          },
+          "13b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "vicuna:13b"
+          },
+          "33b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "vicuna:33b"
+          }
         }
       }
     ]
@@ -771,9 +1196,24 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "135m": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "smollm:135m" },
-          "360m": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "smollm:360m" },
-          "1.7b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "smollm:1.7b" }
+          "135m": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "smollm:135m"
+          },
+          "360m": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "smollm:360m"
+          },
+          "1.7b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "smollm:1.7b"
+          }
         }
       }
     ]
@@ -797,9 +1237,24 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "wizard-vicuna-uncensored:7b" },
-          "13b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "wizard-vicuna-uncensored:13b" },
-          "30b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "wizard-vicuna-uncensored:30b" }
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "wizard-vicuna-uncensored:7b"
+          },
+          "13b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "wizard-vicuna-uncensored:13b"
+          },
+          "30b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "wizard-vicuna-uncensored:30b"
+          }
         }
       }
     ]
@@ -823,7 +1278,12 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "mistral-openorca:7b" }
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "mistral-openorca:7b"
+          }
         }
       }
     ]
@@ -847,7 +1307,12 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "32b": { "ram": 24000, "storage": 40000, "cpu": 4, "ollamaCommand": "qwq:32b" }
+          "32b": {
+            "ram": 24000,
+            "storage": 40000,
+            "cpu": 4,
+            "ollamaCommand": "qwq:32b"
+          }
         }
       }
     ]
@@ -871,8 +1336,18 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "llama2-chinese:7b" },
-          "13b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "llama2-chinese:13b" }
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "llama2-chinese:7b"
+          },
+          "13b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "llama2-chinese:13b"
+          }
         }
       }
     ]
@@ -896,9 +1371,24 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "135m": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "smollm2:135m" },
-          "360m": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "smollm2:360m" },
-          "1.7b": { "ram": 8000, "storage": 10000, "cpu": 2, "ollamaCommand": "smollm2:1.7b" }
+          "135m": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "smollm2:135m"
+          },
+          "360m": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "smollm2:360m"
+          },
+          "1.7b": {
+            "ram": 8000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "smollm2:1.7b"
+          }
         }
       }
     ]
@@ -922,7 +1412,12 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "9b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "codegeex4:9b" }
+          "9b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "codegeex4:9b"
+          }
         }
       }
     ]
@@ -946,7 +1441,12 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "openchat:7b" }
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "openchat:7b"
+          }
         }
       }
     ]
@@ -970,8 +1470,18 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "8b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "aya:8b" },
-          "35b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "aya:35b" }
+          "8b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "aya:8b"
+          },
+          "35b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "aya:35b"
+          }
         }
       }
     ]
@@ -995,7 +1505,12 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "671b": { "ram": 512000, "storage": 700000, "cpu": 64, "ollamaCommand": "deepseek-v3:671b" }
+          "671b": {
+            "ram": 512000,
+            "storage": 700000,
+            "cpu": 64,
+            "ollamaCommand": "deepseek-v3:671b"
+          }
         }
       }
     ]
@@ -1019,7 +1534,12 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "7b": { "ram": 16000, "storage": 10000, "cpu": 2, "ollamaCommand": "codeqwen:7b" }
+          "7b": {
+            "ram": 16000,
+            "storage": 10000,
+            "cpu": 2,
+            "ollamaCommand": "codeqwen:7b"
+          }
         }
       }
     ]
@@ -1043,8 +1563,53 @@
         "nixName": "model.size",
         "type": "string",
         "requirements": {
-          "10.7b": { "ram": 16000, "storage": 20000, "cpu": 4, "ollamaCommand": "nous-hermes2:10.7b" },
-          "34b": { "ram": 48000, "storage": 100000, "cpu": 8, "ollamaCommand": "nous-hermes2:34b" }
+          "10.7b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 4,
+            "ollamaCommand": "nous-hermes2:10.7b"
+          },
+          "34b": {
+            "ram": 48000,
+            "storage": 100000,
+            "cpu": 8,
+            "ollamaCommand": "nous-hermes2:34b"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "41",
+    "logo": "/images/models/OpenAI.svg",
+    "name": "gpt-oss",
+    "category": "AI",
+    "tags": ["General"],
+    "dateAdded": "2025-08-10T12:00:00Z",
+    "desc": "OpenAI's open-weight models designed for powerful reasoning, agentic tasks, and versatile developer use cases.",
+    "nixName": "gpt-oss",
+    "implemented": false,
+    "isUnitRunnable": true,
+    "last_updated": "20 hours ago",
+    "options": [
+      {
+        "name": "model_size",
+        "desc": "Size of the gpt-oss model to deploy.",
+        "nixName": "model.size",
+        "type": "string",
+        "requirements": {
+          "20b": {
+            "ram": 16000,
+            "storage": 20000,
+            "cpu": 8,
+            "ollamaCommand": "gpt-oss:20b"
+          },
+          "120b": {
+            "ram": 80000,
+            "storage": 100000,
+            "cpu": 16,
+            "ollamaCommand": "gpt-oss:120b"
+          }
         }
       }
     ]

@@ -2,16 +2,17 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
+import AgentDefinitions from '@/utils/agent-definitions.json'
+import ModelDefinitions from '@/utils/model-definitions.json'
+import { prefix } from '@/utils/prefix'
 import { AppWindow, Search } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { SortDropdown } from './ai-model-dropdown'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { prefix } from '@/utils/prefix'
-import ModelDefinitions from '@/utils/model-definitions.json'
-import AgentDefinitions from '@/utils/agent-definitions.json'
+
+import { SortDropdown } from './ai-model-dropdown'
 
 interface ModelOption {
   name: string
@@ -53,43 +54,45 @@ function parseRelativeTime(timeString: string): number {
   const [amount, unit] = timeString.split(' ')
   const now = Date.now()
   const number = parseInt(amount)
-  
+
   switch (unit) {
     case 'days':
     case 'day':
-      return now - (number * 24 * 60 * 60 * 1000)
+      return now - number * 24 * 60 * 60 * 1000
     case 'weeks':
     case 'week':
-      return now - (number * 7 * 24 * 60 * 60 * 1000)
+      return now - number * 7 * 24 * 60 * 60 * 1000
     case 'months':
     case 'month':
-      return now - (number * 30 * 24 * 60 * 60 * 1000)
+      return now - number * 30 * 24 * 60 * 60 * 1000
     default:
       return now
   }
 }
 
 function ModelCard({ data }: { data: ModelData }) {
-  const sizes = data.model_sizes?.split(',') || ["7b"]
+  const sizes = data.model_sizes?.split(',') || ['7b']
   const iconPath = data.logo
-  
+
   const cardContent = (
-    <div className={cn(
-      "flex h-[200px] cursor-pointer flex-col rounded-lg border p-4 hover:bg-muted/50"
-    )}>
+    <div
+      className={cn(
+        'flex h-[200px] cursor-pointer flex-col rounded-lg border p-4 hover:bg-muted/50'
+      )}
+    >
       <div className="flex items-start gap-4">
-        <img 
+        <img
           src={iconPath}
           alt={data.name}
           className="-ml-2 size-12 object-contain"
         />
         <div className="flex flex-col">
           <h3 className="text-lg font-semibold">{data.name}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {data.desc}
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{data.desc}</p>
         </div>
-        <span className="ml-auto text-sm text-muted-foreground">{data.last_updated}</span>
+        <span className="ml-auto text-sm text-muted-foreground">
+          {data.last_updated}
+        </span>
       </div>
 
       <div className="mt-auto flex items-center justify-between">
@@ -111,10 +114,13 @@ function ModelCard({ data }: { data: ModelData }) {
   )
 
   return (
-    <Link href={data.type === 'Agent' 
-      ? `/deploy?agentId=${data.nixName}`
-      : `/deploy?templateId=${data.nixName}`
-    }>
+    <Link
+      href={
+        data.type === 'Agent'
+          ? `/deploy?agentId=${data.nixName}`
+          : `/deploy?templateId=${data.nixName}`
+      }
+    >
       {cardContent}
     </Link>
   )
@@ -122,41 +128,46 @@ function ModelCard({ data }: { data: ModelData }) {
 
 export default function AppDirectory() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [sortBy, setSortBy] = useState('most-popular')
+  const [sortBy, setSortBy] = useState('recently-updated')
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [activeTab, setActiveTab] = useState('models')
 
-  const initialModels = ModelDefinitions.map(model => ({
+  const initialModels = ModelDefinitions.map((model) => ({
     ...model,
-    model_sizes: Object.keys((model.options?.[0] as ModelOption)?.requirements || {}).join(','),
-    type: model.tags[0] || "General"
+    model_sizes: Object.keys(
+      (model.options?.[0] as ModelOption)?.requirements || {}
+    ).join(','),
+    type: model.tags[0] || 'General',
   }))
 
   const filteredAndSortedItems = useMemo(() => {
-    let items = activeTab === 'models' ? [...initialModels] : [...AgentDefinitions]
-    
+    let items =
+      activeTab === 'models' ? [...initialModels] : [...AgentDefinitions]
+
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      items = items.filter(item => 
-        item.name.toLowerCase().includes(query)
-      )
+      items = items.filter((item) => item.name.toLowerCase().includes(query))
     }
-    
+
     // Apply type filters
     if (selectedTypes.length > 0) {
-      items = items.filter(item => selectedTypes.includes(item.type))
+      items = items.filter((item) => selectedTypes.includes(item.type))
     }
-    
+
     // Apply sorting
     switch (sortBy) {
       case 'most-popular':
-        items.sort((a, b) => (b.model_sizes?.split(',').length || 0) - (a.model_sizes?.split(',').length || 0))
+        items.sort(
+          (a, b) =>
+            (b.model_sizes?.split(',').length || 0) -
+            (a.model_sizes?.split(',').length || 0)
+        )
         break
       case 'recently-updated':
         items.sort((a, b) => {
-          const dateA = parseRelativeTime(a.last_updated || "")
-          const dateB = parseRelativeTime(b.last_updated || "")
+          const dateA = parseRelativeTime(a.last_updated || '')
+          const dateB = parseRelativeTime(b.last_updated || '')
           return dateB - dateA
         })
         break
@@ -167,15 +178,13 @@ export default function AppDirectory() {
         items.sort((a, b) => b.name.localeCompare(a.name))
         break
     }
-    
+
     return items
   }, [initialModels, sortBy, selectedTypes, searchQuery, activeTab])
 
   const toggleType = (type: string) => {
-    setSelectedTypes(prev => 
-      prev.includes(type)
-        ? prev.filter(t => t !== type)
-        : [...prev, type]
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     )
   }
 
@@ -219,8 +228,9 @@ export default function AppDirectory() {
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "transition-colors",
-                  selectedTypes.includes(type) && "bg-primary text-primary-foreground hover:bg-primary/90"
+                  'transition-colors',
+                  selectedTypes.includes(type) &&
+                    'bg-primary text-primary-foreground hover:bg-primary/90'
                 )}
                 onClick={() => toggleType(type)}
               >
@@ -231,7 +241,7 @@ export default function AppDirectory() {
 
           {/* Sort Dropdown */}
           <div className="flex justify-end">
-            <SortDropdown 
+            <SortDropdown
               value={sortBy}
               onValueChange={setSortBy}
               options={sortOptions}
@@ -255,4 +265,4 @@ export default function AppDirectory() {
       </div>
     </div>
   )
-} 
+}
