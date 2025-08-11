@@ -4,7 +4,7 @@ import { ChevronRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator'
 const Skeleton_deployment = () => {
     return (
-        <div className="space-y-6 mt-12">
+        <div className="mt-12 space-y-6">
 
             <div className="mb-4 flex items-center space-x-2">
                 <Skeleton className="h-5 w-28" />

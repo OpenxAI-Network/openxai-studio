@@ -21,11 +21,10 @@ const queryClient = new QueryClient()
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || 'demo_id'
 
 const metadata = {
-  name: 'Xnode',
-  description:
-    'Your Gateway to Building Personalized Data Ecosystems in minutes, instead of weeks.',
-  url: 'https://www.openmesh.network/xnode',
-  icons: ['https://www.openmesh.network/xnode/openmesh.svg'],
+  name: 'OpenxAI Studio',
+  description: 'Build AI applications & agents in lightning speed..',
+  url: 'https://studio.openxai.org',
+  icons: ['https://studio.openxai.org/images/openxai-logo.png'],
 }
 
 export const wagmiConfig = defaultWagmiConfig({
@@ -50,6 +49,7 @@ createWeb3Modal({
     '--w3m-accent': 'hsl(var(--primary))',
   },
   featuredWalletIds: [
+    'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa',
     'a797aa35c0fadbfc1a53e7f675162ed5226968b44a19ee3d24385c64d1d3c393',
   ],
 })

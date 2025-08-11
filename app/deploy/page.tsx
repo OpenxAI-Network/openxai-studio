@@ -80,7 +80,7 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
                 )}
                 <div>
                   <h2 className="text-xl font-bold text-primary">{agent.name}</h2>
-                  <div className="mt-4 prose prose-sm text-muted-foreground">
+                  <div className="prose prose-sm mt-4 text-muted-foreground">
                     {expandedDescription.split('\n').map((paragraph, i) => (
                       <p key={i} className="mt-2">{paragraph.trim()}</p>
                     ))}

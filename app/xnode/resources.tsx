@@ -62,7 +62,7 @@ const Resources = ({ xNode, lastUpdated }: XNodeResourcesProps) => {
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-14">
+      <div className="mt-6 grid grid-cols-1 gap-14 lg:grid-cols-3">
         <ResourceCard
           title="CPU"
           subtitle="Current CPU utilization"

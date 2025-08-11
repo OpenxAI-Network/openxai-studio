@@ -1,19 +1,25 @@
 'use client'
 
 import Link from 'next/link'
+import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { Blocks, Cloud, IdCard, Server } from 'lucide-react'
 import Youtube from 'react-youtube'
 
+import { Button } from '@/components/ui/button'
 import { SimpleTooltip } from '@/components/Common/SimpleTooltip'
 
 export default function Home() {
+  const { open } = useWeb3Modal()
   return (
     <>
       <section className="container mb-12 mt-24 w-full">
         <div className="flex gap-12">
           <div className="flex-1 basis-3/5">
             <h1 className="text-balance text-3xl font-bold lg:text-6xl">
-              Build AI applications <span className="whitespace-nowrap">& agents in lightning</span> speed.             </h1>
+              Build AI applications{' '}
+              <span className="whitespace-nowrap">& agents in lightning</span>{' '}
+              speed.{' '}
+            </h1>
             <p className="mt-4 text-pretty text-3xl font-medium">
               You own your model, data & infrastructure
             </p>
@@ -26,7 +32,7 @@ export default function Home() {
               </Link>
               <Link
                 href="/explore"
-                className="flex h-14 items-center rounded px-8 font-medium underline transition-colors hover:bg-foreground/10"
+                className="hidden h-14 items-center rounded px-8 font-medium underline transition-colors hover:bg-foreground/10"
               >
                 Earn free server
               </Link>
@@ -44,26 +50,29 @@ export default function Home() {
       <section className="container my-20 space-y-4">
         <h2 className="text-xl font-bold">Quick Access</h2>
         <div className="grid grid-cols-4 gap-6">
-          <Link
-            href="/claim"
-            className="flex items-center gap-2 rounded border p-4 text-sm font-semibold transition-colors hover:bg-foreground/5"
+          <Button
+            onClick={() => {
+              open()
+            }}
+            variant="outline"
+            className="flex h-full items-center justify-start gap-2 rounded border p-4 text-sm font-semibold transition-colors hover:bg-foreground/5"
           >
             <IdCard className="size-8" strokeWidth={1.5} />
-            Redeem an Xnode DVM
-          </Link>
+            Connect Wallet
+          </Button>
           <Link
             href="/app-store"
             className="flex items-center gap-2 rounded border p-4 text-sm font-semibold transition-colors hover:bg-foreground/5"
           >
             <Server className="size-8" strokeWidth={1.5} />
-            About Xnode One
+            Tokenize Server
           </Link>
           <Link
             href="/app-store"
             className="flex items-center gap-2 rounded border p-4 text-sm font-semibold transition-colors hover:bg-foreground/5"
           >
             <Blocks className="size-8" strokeWidth={1.5} />
-            Run a Node
+            Deploy App
           </Link>
           <SimpleTooltip tooltip="Coming Soon!">
             <Link

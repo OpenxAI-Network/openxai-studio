@@ -13,7 +13,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-import { rewardsMockData } from '../rewards/page'
 import { HealthSummary, XNodesApps, XNodesHealth } from './health-data'
 
 export default async function DashboardPage() {
@@ -52,7 +51,7 @@ export default async function DashboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {rewardsMockData.map((reward) => (
+              {/* {rewardsMockData.map((reward) => (
                 <TableRow key={`reward-${reward.dateOfClaim}`}>
                   <TableCell>{reward.node}</TableCell>
                   <TableCell>
@@ -60,7 +59,7 @@ export default async function DashboardPage() {
                   </TableCell>
                   <TableCell>{reward.amount}</TableCell>
                 </TableRow>
-              ))}
+              ))} */}
             </TableBody>
           </Table>
         </section>

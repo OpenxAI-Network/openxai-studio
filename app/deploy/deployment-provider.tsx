@@ -621,15 +621,14 @@ export default function DeploymentProvider({
               </div>
               <div className="col-span-3 flex flex-1 justify-end">
                 <div className="flex flex-col items-center gap-2">
-                  <Link href="/claim">
-                    <Button
-                      size="lg"
-                      className="min-w-48"
-                      variant="outlinePrimary"
-                    >
-                      Select
-                    </Button>
-                  </Link>
+                  <Button
+                    size="lg"
+                    className="min-w-48"
+                    variant="outlinePrimary"
+                    disabled
+                  >
+                    Select
+                  </Button>
                 </div>
               </div>
             </li>
@@ -727,6 +726,7 @@ function ProductCard({
                 onSelect({ ...selectedProduct, location })
               }}
               disabled={
+                true ||
                 selectedProduct.available === 0 ||
                 selectedProduct.storage.length > 1 ||
                 (selectedProduct.providerName === 'Hivelocity' &&

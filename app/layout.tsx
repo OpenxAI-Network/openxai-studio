@@ -44,7 +44,7 @@ export default function RootLayout({
         )}
       >
         <Providers>
-          <Header sessionToken={sessionCookie?.value} />
+          <Header />
           <NavLayout>
             {children}
             <ScrollToTop />

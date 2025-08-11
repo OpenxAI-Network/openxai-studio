@@ -1,3 +1,3 @@
-import { mainnet, sepolia } from 'wagmi/chains'
+import { base, baseSepolia } from 'wagmi/chains'
 
-export const chain = process.env.NEXT_PUBLIC_TESTNET ? sepolia : mainnet
+export const chain = process.env.NEXT_PUBLIC_TESTNET ? baseSepolia : base

@@ -221,7 +221,7 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                                             </div>
 
                                         </span>
-                                        {renewalMonths && parseInt(renewalMonths) > 0 && (<span className='text-[13px] text-[#525252] self-end'>{planData.price}/month</span>)}
+                                        {renewalMonths && parseInt(renewalMonths) > 0 && (<span className='self-end text-[13px] text-[#525252]'>{planData.price}/month</span>)}
 
                                     </div>
                                 </div>
@@ -232,9 +232,9 @@ export default function PlanDetails({ planData }: PlanDetailsProps) {
                                             setRenewalMonths('');
                                         }
                                     }}
-                                    className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${parseInt(renewalMonths) > 0
-                                        ? 'bg-[#0059FF] text-white hover:bg-blue-400 cursor-pointer'
-                                        : 'bg-[#99BDFF] text-white cursor-not-allowed'
+                                    className={`w-full rounded-md px-4 py-2 font-medium transition-colors ${parseInt(renewalMonths) > 0
+                                        ? 'cursor-pointer bg-blue500 text-white hover:bg-blue-400'
+                                        : 'cursor-not-allowed bg-[#99BDFF] text-white'
                                         }`}
                                     disabled={!renewalMonths || parseInt(renewalMonths) <= 0}
                                 >

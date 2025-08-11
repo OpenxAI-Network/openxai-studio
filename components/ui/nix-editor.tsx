@@ -33,7 +33,7 @@ export function NixEditor({
   return (
     <div className="flex flex-col gap-1">
       <div className="flex place-items-center gap-2">
-        <span className="font-semibold text-lg">{title}</span>
+        <span className="text-lg font-semibold">{title}</span>
         <div className="grow" />
         <span className="text-sm">Editor Mode</span>
         <Select

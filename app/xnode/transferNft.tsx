@@ -103,10 +103,10 @@ export default function TransferNFT({
           <button
             onClick={handleTransferClick}
             disabled={!recipientAddress.trim()}
-            className={`mb-4 w-[40%] rounded-md px-4 py-2 font-medium text-white transition-colors ${
+            className={`mb-4 w-2/5 rounded-md px-4 py-2 font-medium text-white transition-colors ${
               !recipientAddress.trim()
                 ? 'cursor-not-allowed bg-[#99BDFF]'
-                : 'bg-[#0059FF] hover:bg-blue-700'
+                : 'bg-blue500 hover:bg-blue-700'
             }`}
           >
             Transfer

@@ -31,7 +31,7 @@ const DEMO_POOL_SPECS = {
 
 type DeploymentStep = {
   modelSize?: any
-  provider?: any
+  provider?: string
   ercOption?: any
 }
 
@@ -83,7 +83,7 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
     setCurrentStep(1)
   }
 
-  const handleProviderSelect = (provider: any) => {
+  const handleProviderSelect = (provider: string) => {
     setStep((prev) => ({ ...prev, provider }))
     setCurrentStep(2)
   }

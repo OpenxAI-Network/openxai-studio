@@ -54,7 +54,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 
   return (
     <NavContainer className={className}>
-      <NavContent className="h-full overflow-y-auto overflow-x-clip p-2 flex flex-col">
+      <NavContent className="flex h-full flex-col overflow-y-auto overflow-x-clip p-2">
         <div className="mt-0 flex flex-col space-y-2">
           {(demoMode ? demoMainNavItems : navItems.main).map((navItem) =>
             navItem.type === 'item' ? (
@@ -84,8 +84,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             )
           )}
         </div>
-        <div className="mt-4 flex items-start ml-4 text-left">
-          <span className="text-red-500 mr-2 text-xl">❤️</span>
+        <div className="ml-4 mt-4 flex items-start text-left">
+          <span className="mr-2 text-xl text-red-500">❤️</span>
           <div className="text-xs text-neutral-500">
             <div>Made & Powered</div>
             <div>by Xnode</div>
