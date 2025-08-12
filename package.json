@@ -61,6 +61,7 @@
     "framer-motion": "^11.11.4",
     "input-otp": "^1.2.4",
     "leaflet": "1.9.4",
+    "lottie-react": "^2.4.1",
     "lucide-react": "^0.451.0",
     "next": "14.2.15",
     "next-themes": "^0.3.0",

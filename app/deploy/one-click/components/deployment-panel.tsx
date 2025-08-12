@@ -1,11 +1,11 @@
 'use client'
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDemoContext, useSetDemoContext } from '@/contexts/XnodeDemoContext'
 import ModelDefinitions from '@/utils/model-definitions.json'
 import { xnode } from '@openmesh-network/xnode-manager-sdk'
 import { Check } from 'lucide-react'
+import { useToast } from '@/components/ui/use-toast'
 
 import { cn } from '@/lib/utils'
 import {
@@ -16,7 +16,7 @@ import {
   type DemoXnode,
 } from '@/lib/xnode-demo'
 import { Button } from '@/components/ui/button'
-import { useToast } from '@/components/ui/use-toast'
+import { LoadingOverlay } from '@/components/ui/loading-overlay'
 
 import { ERCOptions } from './erc-options'
 import { ModelSizeSelector } from './model-size-selector'
@@ -92,9 +92,7 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
     setStep((prev) => ({ ...prev, ercOption }))
     setCurrentStep(3)
   }
-
   const { toast } = useToast()
-
   const demos = useDemosAvailable()
   const demoXnode = demos.data?.find((x) => !x.reservation)
   const reservedXnode = useDemoContext()
@@ -112,24 +110,20 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
         ?.map((x) => x.reservation.reserved_until)
         .sort()
         .at(0)
+
       toast({
         title: 'Deployment failed',
         description: `No demo xnodes available. ${nextFreeXnode ? `Next xnode will be free in ${Math.round((nextFreeXnode - Date.now() / 1000) / 60)} minutes.` : ''}`,
         variant: 'destructive',
       })
+
       return
     }
 
-    let dismiss = () => {}
     try {
       if (activeReservation) {
         deployOnXnode = reservedXnode.xnode
       } else {
-        dismiss = toast({
-          title: 'Reserving Xnode...',
-          description: 'This can take up to 1 minute..',
-          duration: 60_000,
-        }).dismiss
         deployOnXnode = await reserveDemo({ xnode_id: demoXnode.id })
       }
 
@@ -183,18 +177,18 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
       router.push('/deployments')
     } catch (e) {
       console.error(e)
-    } finally {
-      dismiss()
     }
   }
 
-  // Check if all selections are made
   const isReadyToDeploy = step.modelSize && step.provider && step.ercOption
 
   return (
     <>
+      <LoadingOverlay isVisible={deploying} />
       <div className="space-y-8">
         <h2 className="text-xl font-semibold">One Click Deployment</h2>
+
+
 
         <div
           className={cn(
@@ -269,11 +263,13 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
                 setDeploying(true)
                 deployOnDemo()
                   .catch(console.error)
-                  .finally(() => setDeploying(false))
               }}
             >
               One Click Deployment
             </Button>
+
+
+
           </>
         )}
       </div>
