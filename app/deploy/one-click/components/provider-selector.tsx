@@ -172,7 +172,9 @@ export function ProviderSelector({
             className={cn(
               'relative flex cursor-pointer flex-col rounded-lg border p-6 max-[1550px]:p-4 max-[1350px]:p-3 max-[1250px]:p-2 max-[992px]:p-1.5',
               'h-[128px] max-[1550px]:h-[120px] max-[1350px]:h-[115px] max-[1250px]:h-[110px] max-[992px]:h-[100px]',
-              selected === provider.return && 'border-primary bg-primary/5',
+              selected &&
+                selected === provider.return &&
+                'border-primary bg-primary/5',
               provider.disabled && 'cursor-not-allowed opacity-50'
             )}
           >
@@ -185,7 +187,7 @@ export function ProviderSelector({
                 <div
                   className={cn(
                     'max-[1550px]:size-2.75 size-3 rounded-full max-[1350px]:size-2.5 max-[1250px]:size-2 max-[992px]:size-1.5',
-                    selected === provider.return
+                    selected && selected === provider.return
                       ? 'bg-primary'
                       : 'border border-muted-foreground'
                   )}
@@ -403,7 +405,8 @@ function PaidProviderDialog({
             (total_credits < price ? (
               <div className="flex flex-col gap-2">
                 <span className="text-red-600">
-                  Missing {(price - total_credits) / 1_000_000} credits
+                  Missing {(price - total_credits) / 1_000_000} credits (worth{' '}
+                  {(price - total_credits) / 1_000_000} USD)
                 </span>
                 <div>
                   <span className="font-semibold">Get Credits</span>
@@ -422,6 +425,7 @@ function PaidProviderDialog({
                       <Button
                         onClick={() => {
                           performTransaction({
+                            transactionName: 'Buy Credits',
                             transaction: async () => {
                               return {
                                 abi: erc20Abi,
@@ -451,7 +455,7 @@ function PaidProviderDialog({
                         }}
                         disabled={performingTransaction}
                       >
-                        Top Up
+                        Buy
                       </Button>
                     </div>
                   )}

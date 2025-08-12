@@ -14,7 +14,7 @@ import {
   reserveDemo,
   useDemosAvailable,
   type DemoXnode,
-} from '@/lib/xnode-demo'
+} from '@/lib/xnode'
 import { Button } from '@/components/ui/button'
 import {
   Select,

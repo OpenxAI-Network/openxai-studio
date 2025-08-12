@@ -63,7 +63,7 @@ export function useDeployModel() {
             update_inputs: null,
             settings: {
               network: 'containernet',
-              flake: getFlake({ model }),
+              flake: getFlake({ model, gpu: false }),
               nvidia_gpus: null,
             },
           },
@@ -72,7 +72,7 @@ export function useDeployModel() {
   )
 }
 
-export function getFlake({ model }: { model: string }) {
+export function getFlake({ model, gpu }: { model: string; gpu: boolean }) {
   return `{
   inputs = {
     xnode-manager.url = "github:Openmesh-Network/xnode-manager";
@@ -83,9 +83,13 @@ export function getFlake({ model }: { model: string }) {
   nixConfig = {
     extra-substituters = [
       "https://openxai.cachix.org"
+      "https://nix-community.cachix.org"
+      "https://cuda-maintainers.cachix.org"
     ];
     extra-trusted-public-keys = [
       "openxai.cachix.org-1:3evd2khRVc/2NiGwVmypAF4VAklFmOpMuNs1K28bMQE="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
     ];
   };
 
@@ -113,6 +117,20 @@ export function getFlake({ model }: { model: string }) {
 
             services.xnode-ai-chat.enable = true;
 
+            ${
+              gpu
+                ? `services.ollama.acceleration = "cuda";
+            hardware.graphics = {
+              enable = true;
+              extraPackages = [
+                pkgs.nvidia-vaapi-driver
+              ];
+            };
+            hardware.nvidia.open = true;
+            services.xserver.videoDrivers = [ "nvidia" ];`
+                : ''
+            }
+
             networking.firewall.allowedTCPPorts = [
               8080
             ];
@@ -122,4 +140,8 @@ export function getFlake({ model }: { model: string }) {
     };
   };
 }`
+}
+
+export function toXnodeAddress({ address }: { address: string }): string {
+  return `eth:${address.replace('0x', '').toLowerCase()}`
 }

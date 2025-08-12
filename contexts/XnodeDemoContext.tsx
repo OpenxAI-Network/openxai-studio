@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { xnode } from '@openmesh-network/xnode-manager-sdk'
 
-import type { DemoXnode } from '@/lib/xnode-demo'
+import type { DemoXnode } from '@/lib/xnode'
 
 export interface DemoContext {
   xnode?: DemoXnode

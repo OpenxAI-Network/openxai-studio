@@ -1,41 +1,66 @@
-'use client';
+'use client'
 
-import { useCallback, useMemo } from 'react';
-import Image from 'next/image';
-import { ArrowUpRight } from 'lucide-react';
+import { useCallback, useMemo } from 'react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { OpenxAITokenizedServerV1Contract } from '@/contracts/OpenxAITokenizedServerV1'
+import { chain } from '@/utils/chain'
+import type { xnode } from '@openmesh-network/xnode-manager-sdk'
+import {
+  useUsageCpu,
+  useUsageDisk,
+  useUsageMemory,
+} from '@openmesh-network/xnode-manager-sdk-react'
+import { ArrowUpRight, Underline } from 'lucide-react'
+import { isAddress } from 'viem'
+import { useAccount } from 'wagmi'
 
-import PlanDetails from './planDetails';
-import TransferNFT from './transferNft';
-import planData from '../../utils/plan-data.json';
-import { type Xnode } from '@/types/node';
+import { usePerformTransaction } from '@/hooks/usePerformTransaction'
+
+import planData from '../../utils/plan-data.json'
+import PlanDetails from './planDetails'
+import TransferNFT from './transferNft'
 
 interface PlanManagementProps {
-  xnode: Xnode;
+  session: xnode.utils.Session
 }
 
-const formatStorage = (bytes: number): string => {
-  if (bytes >= 1024 ** 4) return `${(bytes / 1024 ** 4).toFixed(1)}PB`;
-  if (bytes >= 1024 ** 3) return `${(bytes / 1024 ** 3).toFixed(0)}TB`;
-  return `${(bytes / 1024 ** 2).toFixed(0)}GB`;
-};
+const formatGb = (bytes: number): string => {
+  if (bytes >= 1024 ** 5) return `${(bytes / 1024 ** 5).toFixed(1)}PB`
+  if (bytes >= 1024 ** 4) return `${(bytes / 1024 ** 4).toFixed(0)}TB`
+  return `${(bytes / 1024 ** 3).toFixed(0)}GB`
+}
 
-export default function PlanManagement({ xnode }: PlanManagementProps) {
-  const { name, cores, ram = 0, storage = 0, gpu = 0 } = xnode;
+export default function PlanManagement({ session }: PlanManagementProps) {
+  const { data: cpu } = useUsageCpu({
+    session,
+    scope: 'host',
+  })
+  const { data: memory } = useUsageMemory({
+    session,
+    scope: 'host',
+  })
+  const { data: disk } = useUsageDisk({ session, scope: 'host' })
+  const gpu = 'Nvidia RTX A4000'
 
   const formattedSpecs = useMemo(() => {
-    const ramGB = Math.round(ram / 1024 ** 3);
-    const storageStr = formatStorage(storage);
-    return `${cores} cores, ${ramGB}GB RAM, ${storageStr} Storage, ${gpu} GPU`;
-  }, [cores, ram, storage, gpu]);
+    return `${cpu?.length ?? 0} cores, ${formatGb(memory?.total ?? 0)} RAM, ${formatGb(disk?.reduce((prev, cur) => prev + cur.total, 0) ?? 0)} Storage, ${gpu} GPU`
+  }, [cpu, memory, disk, gpu])
 
-  const handleTransfer = useCallback((recipientAddress: string) => {
-    
-    console.log('Transfer NFT to:', recipientAddress);
-  }, []);
+  const tokenId = useMemo(() => {
+    try {
+      return BigInt(
+        session.baseUrl
+          .replace('https://manager.', '')
+          .replace('.base.ownaiv1.openxai.network', '')
+      )
+    } catch {
+      return undefined
+    }
+  }, [session])
 
   return (
     <div className="">
-     
       <div className="mb-10 flex items-start justify-between">
         <div className="flex items-center gap-3">
           <Image
@@ -48,7 +73,7 @@ export default function PlanManagement({ xnode }: PlanManagementProps) {
           <div>
             <div className="flex items-center gap-1">
               <h2 className="flex items-center gap-2 text-xl font-semibold text-[#000000]">
-                {name}
+                {session.baseUrl.replace('https://manager.', '')}
                 <Image
                   src="/images/viewDeployment/ollama.svg"
                   alt="Ollama"
@@ -70,14 +95,10 @@ export default function PlanManagement({ xnode }: PlanManagementProps) {
         </button>
       </div>
 
-      
       <div className="space-y-6">
-        <PlanDetails planData={planData.planDetails} />
-        <TransferNFT
-          onTransfer={handleTransfer}
-          currentWalletAddress={planData.planDetails.currentWalletAddress}
-        />
+        <PlanDetails tokenId={tokenId} />
+        <TransferNFT tokenId={tokenId} />
       </div>
     </div>
-  );
+  )
 }

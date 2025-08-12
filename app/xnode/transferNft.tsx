@@ -1,68 +1,102 @@
-'use client';
+'use client'
 
-import React, { useState, useRef, useCallback } from 'react';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import React, { useCallback, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { OpenxAITokenizedServerV1Contract } from '@/contracts/OpenxAITokenizedServerV1'
+import { chain } from '@/utils/chain'
+import { ChevronDown, ChevronUp } from 'lucide-react'
+import { isAddress } from 'viem'
+import { useAccount } from 'wagmi'
+
+import { usePerformTransaction } from '@/hooks/usePerformTransaction'
 
 interface TransferNFTProps {
-  onTransfer?: (recipientAddress: string) => void;
-  currentWalletAddress?: string;
+  tokenId?: bigint
 }
 
 const isValidEthereumAddress = (address: string): boolean =>
-  /^0x[a-fA-F0-9]{40}$/.test(address);
+  /^0x[a-fA-F0-9]{40}$/.test(address)
 
-export default function TransferNFT({
-  onTransfer,
-  currentWalletAddress,
-}: TransferNFTProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [recipientAddress, setRecipientAddress] = useState('');
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const contentRef = useRef<HTMLDivElement>(null);
+export default function TransferNFT({ tokenId }: TransferNFTProps) {
+  const { address } = useAccount()
+  const { push } = useRouter()
+
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [recipientAddress, setRecipientAddress] = useState('')
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const contentRef = useRef<HTMLDivElement>(null)
 
   const validateRecipient = useCallback(
-    (address: string): string => {
-      if (!address.trim()) return 'Please enter a recipient address.';
-      if (!isValidEthereumAddress(address)) return 'Invalid Wallet address.';
-      if (
-        currentWalletAddress &&
-        address.toLowerCase() === currentWalletAddress.toLowerCase()
-      )
-        return 'You cannot transfer to your own wallet.';
-      return '';
+    (receiver: string): string => {
+      if (!receiver.trim()) return 'Please enter a recipient address.'
+      if (!isValidEthereumAddress(receiver)) return 'Invalid Wallet address.'
+      if (address && receiver.toLowerCase() === address.toLowerCase())
+        return 'You cannot transfer to your own wallet.'
+      return ''
     },
-    [currentWalletAddress]
-  );
+    [address]
+  )
 
   const handleTransferClick = useCallback(() => {
-    const error = validateRecipient(recipientAddress);
+    const error = validateRecipient(recipientAddress)
     if (error) {
-      setErrorMessage(error);
-      return;
+      setErrorMessage(error)
+      return
     }
 
-    setShowConfirmModal(true);
-  }, [recipientAddress, validateRecipient]);
+    setShowConfirmModal(true)
+  }, [recipientAddress, validateRecipient])
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setRecipientAddress(value);
-    setErrorMessage(validateRecipient(value));
-  };
+    const value = e.target.value
+    setRecipientAddress(value)
+    setErrorMessage(validateRecipient(value))
+  }
 
   const confirmTransfer = () => {
-    onTransfer?.(recipientAddress);
-    setShowConfirmModal(false);
-    setRecipientAddress('');
-    setIsExpanded(false);
-  };
+    if (tokenId === undefined) {
+      loggers?.onError?.({
+        title: 'Invalid tokenId',
+        description: 'TokenId of NFT was not detected.',
+      })
+      return
+    }
 
-  const toggleExpand = () => setIsExpanded((prev) => !prev);
+    if (!isAddress(recipientAddress)) {
+      loggers?.onError?.({
+        title: 'Invalid receiver address',
+        description: `Could not parse ${recipientAddress} as valid Ethereum address.`,
+      })
+      return
+    }
+
+    performTransaction({
+      transactionName: 'NFT transfer',
+      transaction: async () => {
+        return {
+          abi: OpenxAITokenizedServerV1Contract.abi,
+          address: OpenxAITokenizedServerV1Contract.address,
+          functionName: 'safeTransferFrom',
+          args: [address, recipientAddress, tokenId],
+        }
+      },
+      onConfirmed: () => {
+        push('/')
+      },
+    })
+    setShowConfirmModal(false)
+    setRecipientAddress('')
+    setIsExpanded(false)
+  }
+
+  const toggleExpand = () => setIsExpanded((prev) => !prev)
+
+  const { performTransaction, performingTransaction, loggers } =
+    usePerformTransaction({ chainId: chain.id })
 
   return (
     <div className="relative rounded-lg border border-[#EBEBEB] shadow-sm">
-
       <div
         className="flex cursor-pointer items-center justify-between p-4"
         onClick={toggleExpand}
@@ -102,7 +136,7 @@ export default function TransferNFT({
 
           <button
             onClick={handleTransferClick}
-            disabled={!recipientAddress.trim()}
+            disabled={performingTransaction || !recipientAddress.trim()}
             className={`mb-4 w-2/5 rounded-md px-4 py-2 font-medium text-white transition-colors ${
               !recipientAddress.trim()
                 ? 'cursor-not-allowed bg-[#99BDFF]'
@@ -114,12 +148,9 @@ export default function TransferNFT({
         </div>
       </div>
 
-   
       {showConfirmModal && (
-        
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
           <div className="relative w-1/2 rounded-[24px] bg-white py-6 shadow-lg">
-           
             <button
               onClick={() => setShowConfirmModal(false)}
               className="absolute right-4 top-4 text-xl font-medium text-gray-500 hover:text-gray-800"
@@ -170,5 +201,5 @@ export default function TransferNFT({
         </div>
       )}
     </div>
-  );
+  )
 }

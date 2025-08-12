@@ -15,6 +15,7 @@ import DemoModeProvider from '@/components/demo-mode'
 import DeploymentQueueProvider from '@/components/deployment-queue'
 import ScreenProvider from '@/components/screen-provider'
 import SelectedXnodeProvider from '@/components/selected-xnode'
+import SignatureCacheProvider from '@/components/signature-cache'
 
 export const chains = [chain] as const
 const queryClient = new QueryClient()
@@ -70,13 +71,15 @@ export function Providers({
             <DemoModeProvider>
               <SelectedXnodeProvider>
                 <DemoContextProvider>
-                  <DeploymentQueueProvider>
-                    <ScreenProvider>
-                      {children}
-                      <ToastContainer />
-                      <Toaster />
-                    </ScreenProvider>
-                  </DeploymentQueueProvider>
+                  <SignatureCacheProvider>
+                    <DeploymentQueueProvider>
+                      <ScreenProvider>
+                        {children}
+                        <ToastContainer />
+                        <Toaster />
+                      </ScreenProvider>
+                    </DeploymentQueueProvider>
+                  </SignatureCacheProvider>
                 </DemoContextProvider>
               </SelectedXnodeProvider>
             </DemoModeProvider>

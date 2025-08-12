@@ -15,7 +15,7 @@ import {
   useDemosAvailable,
   useDeployModel,
   type DemoXnode,
-} from '@/lib/xnode-demo'
+} from '@/lib/xnode'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { useDeploymentQueueContext } from '@/components/deployment-queue'
@@ -218,7 +218,7 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
       },
       data: {
         settings: {
-          flake: getFlake({ model: ollamaCommand }),
+          flake: getFlake({ model: ollamaCommand, gpu: true }),
           network: 'containernet',
           nvidia_gpus: [0],
         },

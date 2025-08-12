@@ -11,11 +11,7 @@ import {
 } from '@openmesh-network/xnode-manager-sdk-react'
 import { Loader2 } from 'lucide-react'
 
-import {
-  useDemosAvailable,
-  useDemoSession,
-  type DemoXnode,
-} from '@/lib/xnode-demo'
+import { useDemosAvailable, useDemoSession, type DemoXnode } from '@/lib/xnode'
 import { Ansi } from '@/components/ui/ansi'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'

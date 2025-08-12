@@ -37,7 +37,7 @@ export default function DeploymentQueueProvider({
   }>({})
 
   useEffect(() => {
-    const stored = localStorage.getItem('queue')
+    const stored = localStorage.getItem('deployment-queue')
     if (stored) {
       // storedSettings could be missing certain settings only introduced later
       setQueue(JSON.parse(stored))
@@ -55,7 +55,7 @@ export default function DeploymentQueueProvider({
       }
 
       queue[xnode].push(deployment)
-      localStorage.setItem('queue', JSON.stringify(queue))
+      localStorage.setItem('deployment-queue', JSON.stringify(queue))
       return queue
     })
   }
@@ -65,7 +65,7 @@ export default function DeploymentQueueProvider({
       queue[xnode] = queue[xnode]?.filter(
         (deployment) => deployment.path.container !== container
       )
-      localStorage.setItem('queue', JSON.stringify(queue))
+      localStorage.setItem('deployment-queue', JSON.stringify(queue))
       return queue
     })
   }
