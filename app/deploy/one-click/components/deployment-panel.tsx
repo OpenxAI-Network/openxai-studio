@@ -10,6 +10,7 @@ import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   demoSession,
+  getFlake,
   reserveDemo,
   useDemosAvailable,
   useDeployModel,
@@ -17,6 +18,7 @@ import {
 } from '@/lib/xnode-demo'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
+import { useDeploymentQueueContext } from '@/components/deployment-queue'
 
 import { ERCOptions } from './erc-options'
 import { ModelSizeSelector } from './model-size-selector'
@@ -29,9 +31,13 @@ const DEMO_POOL_SPECS = {
   storageGB: 310, // 310GB Storage
 } as const
 
+export type Provider =
+  | { type: 'demo' }
+  | { type: 'xnode'; collection: string; chain: string; tokenId: string }
+
 type DeploymentStep = {
   modelSize?: any
-  provider?: string
+  provider?: Provider
   ercOption?: any
 }
 
@@ -83,7 +89,7 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
     setCurrentStep(1)
   }
 
-  const handleProviderSelect = (provider: string) => {
+  const handleProviderSelect = (provider: Provider) => {
     setStep((prev) => ({ ...prev, provider }))
     setCurrentStep(2)
   }
@@ -188,6 +194,41 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
     }
   }
 
+  const { addToQueue } = useDeploymentQueueContext()
+  const deployOnXnode = async (xnode: string) => {
+    // Use templateId to find the correct model definition
+    const selectedModel = ModelDefinitions.find((m) => m.nixName === templateId)
+    console.log('Found model definition:', selectedModel)
+
+    // Get the selected size from the UI
+    const modelSize = step.modelSize?.name
+    console.log('Model size:', modelSize)
+
+    const ollamaCommand =
+      selectedModel?.options[0].requirements[modelSize]?.ollamaCommand
+    console.log('Ollama command:', ollamaCommand)
+
+    if (!ollamaCommand) {
+      throw new Error('Selected model configuration not found')
+    }
+
+    addToQueue(xnode, {
+      path: {
+        container: 'xnode-ai-chat',
+      },
+      data: {
+        settings: {
+          flake: getFlake({ model: ollamaCommand }),
+          network: 'containernet',
+          nvidia_gpus: [0],
+        },
+        update_inputs: [],
+      },
+    })
+
+    router.push(`/xnode?baseUrl=${xnode}`)
+  }
+
   // Check if all selections are made
   const isReadyToDeploy = step.modelSize && step.provider && step.ercOption
 
@@ -267,7 +308,12 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
               disabled={!isReadyToDeploy || deploying}
               onClick={() => {
                 setDeploying(true)
-                deployOnDemo()
+                ;(step.provider.type === 'demo'
+                  ? deployOnDemo()
+                  : deployOnXnode(
+                      `https://manager.${step.provider.tokenId}.${step.provider.chain}.${step.provider.collection}.openxai.network`
+                    )
+                )
                   .catch(console.error)
                   .finally(() => setDeploying(false))
               }}

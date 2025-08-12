@@ -78,6 +78,7 @@ export function useDeployDemo() {
     };
   };
 }`,
+              nvidia_gpus: null,
             },
           },
         }),

@@ -23,6 +23,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 import DeploymentProvider from '../../deployment-provider'
+import { type Provider as ProviderReturn } from './deployment-panel'
 
 type Provider = {
   name: string
@@ -35,12 +36,13 @@ type Provider = {
   disabled?: boolean
   comingSoon?: boolean
   isDecentralized?: boolean
+  return?: ProviderReturn
 }
 
 interface ProviderSelectorProps {
-  selected?: string
+  selected?: ProviderReturn
   showAll?: boolean
-  onSelect: (provider: string) => void
+  onSelect: (provider: ProviderReturn) => void
 }
 
 export function ProviderSelector({
@@ -72,15 +74,23 @@ export function ProviderSelector({
   })
 
   const providers: Provider[] = (
-    myServers?.map((server) => {
-      return {
-        name: `OwnAIv1 ${server.chain}#${server.token_id}`,
-        icon: '/images/xnode-card/silvercard-front.webp',
-        features: ['Web3 Ready', 'No KYC'],
-        action: { label: 'Owned by you' },
-        isDecentralized: true,
-      } as Provider
-    }) ?? []
+    myServers
+      ?.filter((server) => server.expires > Date.now() / 1000)
+      .map((server) => {
+        return {
+          name: `OwnAIv1 ${server.chain}#${server.token_id}`,
+          icon: '/images/xnode-card/silvercard-front.webp',
+          features: ['Web3 Ready', 'No KYC'],
+          action: { label: 'Owned by you' },
+          isDecentralized: true,
+          return: {
+            type: 'xnode',
+            collection: 'ownaiv1',
+            chain: server.chain,
+            tokenId: server.token_id,
+          },
+        } as Provider
+      }) ?? []
   ).concat([
     {
       name: 'Demo Xnode',
@@ -88,6 +98,7 @@ export function ProviderSelector({
       features: ['Web3 Ready', 'No KYC'],
       action: { label: 'Try for Free' },
       isDecentralized: true,
+      return: { type: 'demo' },
     },
     {
       name: 'New OwnAIv1',
@@ -134,7 +145,7 @@ export function ProviderSelector({
   const displayProviders = showAll
     ? providers
     : selected
-      ? [...providers.filter((p) => p.name === selected)]
+      ? [...providers.filter((p) => p.return === selected)]
       : providers
 
   const [paidProvider, setPaidProvider] = useState<string | undefined>(
@@ -155,13 +166,13 @@ export function ProviderSelector({
               if (provider.name === 'New OwnAIv1') {
                 setPaidProvider(provider.name)
               } else {
-                onSelect(provider.name)
+                onSelect(provider.return)
               }
             }}
             className={cn(
               'relative flex cursor-pointer flex-col rounded-lg border p-6 max-[1550px]:p-4 max-[1350px]:p-3 max-[1250px]:p-2 max-[992px]:p-1.5',
               'h-[128px] max-[1550px]:h-[120px] max-[1350px]:h-[115px] max-[1250px]:h-[110px] max-[992px]:h-[100px]',
-              selected === provider.name && 'border-primary bg-primary/5',
+              selected === provider.return && 'border-primary bg-primary/5',
               provider.disabled && 'cursor-not-allowed opacity-50'
             )}
           >
@@ -174,7 +185,7 @@ export function ProviderSelector({
                 <div
                   className={cn(
                     'max-[1550px]:size-2.75 size-3 rounded-full max-[1350px]:size-2.5 max-[1250px]:size-2 max-[992px]:size-1.5',
-                    selected === provider.name
+                    selected === provider.return
                       ? 'bg-primary'
                       : 'border border-muted-foreground'
                   )}
@@ -282,9 +293,6 @@ export function ProviderSelector({
         <DialogContent className="max-w-[1200px]">
           <DeploymentProvider
             onSelect={(selectedProvider) => {
-              if (selectedProvider) {
-                onSelect(selectedProvider.productName)
-              }
               setShowExtendedOptions(false)
             }}
           />
@@ -294,9 +302,12 @@ export function ProviderSelector({
       {paidProvider && (
         <PaidProviderDialog
           paidProvider={paidProvider}
-          close={() => {
+          close={(select) => {
             refetchMyServers()
             setPaidProvider(undefined)
+            if (select !== undefined) {
+              onSelect(select)
+            }
           }}
         />
       )}
@@ -309,7 +320,7 @@ function PaidProviderDialog({
   close,
 }: {
   paidProvider: string
-  close: () => void
+  close: (select?: ProviderReturn) => void
 }) {
   const { address } = useAccount()
   const { data: total_credits, refetch: refetchCredits } = useQuery({
@@ -462,7 +473,7 @@ function PaidProviderDialog({
 
                     signMessageAsync({
                       account: address,
-                      message: `Mint New ownaiv1@base to ${address}`,
+                      message: `Mint new ownaiv1@base to ${address}`,
                     })
                       .then((signature) => {
                         setDeploying(true)
@@ -475,8 +486,14 @@ function PaidProviderDialog({
                               payer_signature: signature,
                             }
                           )
-                          .then(() => {
-                            close()
+                          .then((res) => res.data as number)
+                          .then((tokenId) => {
+                            close({
+                              type: 'xnode',
+                              collection: 'ownaiv1',
+                              chain: 'base',
+                              tokenId: tokenId.toString(),
+                            })
                           })
                           .finally(() => setDeploying(false))
                       })

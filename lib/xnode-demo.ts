@@ -63,7 +63,17 @@ export function useDeployModel() {
             update_inputs: null,
             settings: {
               network: 'containernet',
-              flake: `{
+              flake: getFlake({ model }),
+              nvidia_gpus: null,
+            },
+          },
+        }),
+    [set]
+  )
+}
+
+export function getFlake({ model }: { model: string }) {
+  return `{
   inputs = {
     xnode-manager.url = "github:Openmesh-Network/xnode-manager";
     xnode-ai-chat.url = "github:OpenxAI-Network/xnode-ai-chat";
@@ -111,10 +121,5 @@ export function useDeployModel() {
       ];
     };
   };
-}`,
-            },
-          },
-        }),
-    [set]
-  )
+}`
 }

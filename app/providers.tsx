@@ -12,6 +12,7 @@ import { WagmiProvider, type State } from 'wagmi'
 
 import { Toaster } from '@/components/ui/toaster'
 import DemoModeProvider from '@/components/demo-mode'
+import DeploymentQueueProvider from '@/components/deployment-queue'
 import ScreenProvider from '@/components/screen-provider'
 import SelectedXnodeProvider from '@/components/selected-xnode'
 
@@ -22,7 +23,7 @@ const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || 'demo_id'
 
 const metadata = {
   name: 'OpenxAI Studio',
-  description: 'Build AI applications & agents in lightning speed..',
+  description: 'Build AI applications & agents in lightning speed.',
   url: 'https://studio.openxai.org',
   icons: ['https://studio.openxai.org/images/openxai-logo.png'],
 }
@@ -54,31 +55,6 @@ createWeb3Modal({
   ],
 })
 
-const disconnectWallet = async () => {
-  try {
-    // Get the current connector from wagmiConfig
-    const connector = wagmiConfig.state.connections.values().next()
-      .value?.connector
-
-    if (connector && typeof connector.disconnect === 'function') {
-      await connector.disconnect()
-    } else if (
-      connector?.provider &&
-      typeof connector.provider.disconnect === 'function'
-    ) {
-      await connector.provider.disconnect()
-    } else {
-      // Fallback: just reset the connection state without calling disconnect
-      console.warn(
-        'WalletConnect disconnect method not available, using fallback'
-      )
-      // Add any state reset logic here
-    }
-  } catch (error) {
-    console.error('Error disconnecting wallet:', error)
-  }
-}
-
 export function Providers({
   children,
   initialState,
@@ -94,11 +70,13 @@ export function Providers({
             <DemoModeProvider>
               <SelectedXnodeProvider>
                 <DemoContextProvider>
-                  <ScreenProvider>
-                    {children}
-                    <ToastContainer />
-                    <Toaster />
-                  </ScreenProvider>
+                  <DeploymentQueueProvider>
+                    <ScreenProvider>
+                      {children}
+                      <ToastContainer />
+                      <Toaster />
+                    </ScreenProvider>
+                  </DeploymentQueueProvider>
                 </DemoContextProvider>
               </SelectedXnodeProvider>
             </DemoModeProvider>
