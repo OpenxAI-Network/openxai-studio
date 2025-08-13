@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { xnode } from '@openmesh-network/xnode-manager-sdk'
 import { useAuthLogin } from '@openmesh-network/xnode-manager-sdk-react'
 import { ChevronRight } from 'lucide-react'
@@ -12,6 +12,7 @@ import { RequestPopupProvider } from '@/components/xnode/request-popup'
 import Deployed_Apps from './deployed-apps'
 import PlanManagement from './planManagement'
 import Resources from './resources'
+import Rewards from './rewards'
 import Skeleton_deployment from './skeleton'
 
 type XnodePageProps = {
@@ -29,10 +30,27 @@ export default function XNodeDashboard({ baseUrl }: XnodePageProps) {
     setSignature(getSignature(baseUrl))
   }, [getSignature])
 
-  const { data: session, status } = useAuthLogin({
-    baseUrl,
-    ...signature,
-  })
+  // const { data: session, status } = useAuthLogin({
+  //   baseUrl,
+  //   ...signature,
+  // })
+
+  const session = {
+    baseUrl: 'https://manager.6.base.ownaiv1.openxai.network',
+  } as xnode.utils.Session
+  const status = '' as string
+
+  const tokenId = useMemo(() => {
+    try {
+      return BigInt(
+        session.baseUrl
+          .replace('https://manager.', '')
+          .replace('.base.ownaiv1.openxai.network', '')
+      )
+    } catch {
+      return undefined
+    }
+  }, [session])
 
   return (
     <RequestPopupProvider session={session}>
@@ -65,11 +83,12 @@ export default function XNodeDashboard({ baseUrl }: XnodePageProps) {
                   {baseUrl.replace('https://manager.', '')}
                 </span>
               </div>
-              <PlanManagement session={session} />
+              <PlanManagement session={session} tokenId={tokenId} />
             </div>
             <Resources session={session} />
 
             <Deployed_Apps session={session} />
+            <Rewards tokenId={tokenId} />
           </>
         )}
         {!signature && (

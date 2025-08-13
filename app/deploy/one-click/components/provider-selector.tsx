@@ -21,6 +21,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/use-toast'
+import { CreditsPayment } from '@/components/credits-payment'
 
 import DeploymentProvider from '../../deployment-provider'
 import { type Provider as ProviderReturn } from './deployment-panel'
@@ -43,6 +45,26 @@ interface ProviderSelectorProps {
   selected?: ProviderReturn
   showAll?: boolean
   onSelect: (provider: ProviderReturn) => void
+}
+
+function EqualProvider({
+  provider1,
+  provider2,
+}: {
+  provider1?: ProviderReturn
+  provider2?: ProviderReturn
+}) {
+  if (provider1?.type === 'demo') {
+    return provider2?.type === 'demo'
+  }
+
+  if (provider1?.type === 'xnode') {
+    return (
+      provider2?.type === 'xnode' && provider1.tokenId === provider2.tokenId
+    )
+  }
+
+  return false
 }
 
 export function ProviderSelector({
@@ -145,7 +167,11 @@ export function ProviderSelector({
   const displayProviders = showAll
     ? providers
     : selected
-      ? [...providers.filter((p) => p.return === selected)]
+      ? [
+          ...providers.filter((p) =>
+            EqualProvider({ provider1: selected, provider2: p.return })
+          ),
+        ]
       : providers
 
   const [paidProvider, setPaidProvider] = useState<string | undefined>(
@@ -172,9 +198,10 @@ export function ProviderSelector({
             className={cn(
               'relative flex cursor-pointer flex-col rounded-lg border p-6 max-[1550px]:p-4 max-[1350px]:p-3 max-[1250px]:p-2 max-[992px]:p-1.5',
               'h-[128px] max-[1550px]:h-[120px] max-[1350px]:h-[115px] max-[1250px]:h-[110px] max-[992px]:h-[100px]',
-              selected &&
-                selected === provider.return &&
-                'border-primary bg-primary/5',
+              EqualProvider({
+                provider1: selected,
+                provider2: provider.return,
+              }) && 'border-primary bg-primary/5',
               provider.disabled && 'cursor-not-allowed opacity-50'
             )}
           >
@@ -187,7 +214,10 @@ export function ProviderSelector({
                 <div
                   className={cn(
                     'max-[1550px]:size-2.75 size-3 rounded-full max-[1350px]:size-2.5 max-[1250px]:size-2 max-[992px]:size-1.5',
-                    selected && selected === provider.return
+                    EqualProvider({
+                      provider1: selected,
+                      provider2: provider.return,
+                    })
                       ? 'bg-primary'
                       : 'border border-muted-foreground'
                   )}
@@ -348,25 +378,29 @@ function PaidProviderDialog({
     }
   }, [paidProvider])
 
-  const [topUp, setTopUp] = useState<number>(0)
-  useEffect(() => {
-    if (total_credits === undefined) {
-      return
-    }
-
-    setTopUp((price - total_credits) / 1_000_000)
-  }, [total_credits, price])
-
-  const { performTransaction, performingTransaction, loggers } =
-    usePerformTransaction({
-      chainId: chain.id,
-    })
-  const [pendingTransaction, setPendingTransaction] = useState<
-    Hash | undefined
-  >(undefined)
-
+  const { toast } = useToast()
   const { signMessageAsync } = useSignMessage()
   const [deploying, setDeploying] = useState<boolean>(false)
+
+  if (total_credits === undefined) {
+    return <></>
+  }
+
+  if (total_credits < price) {
+    return (
+      <CreditsPayment
+        item={paidProvider.replace('New ', '1x ')}
+        price={price}
+        close={(success) => {
+          if (success) {
+            refetchCredits()
+          } else {
+            close()
+          }
+        }}
+      />
+    )
+  }
 
   return (
     <Dialog
@@ -393,7 +427,9 @@ function PaidProviderDialog({
       ) : (
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>GPU credits required for {paidProvider}</DialogTitle>
+            <DialogTitle>
+              Mint {paidProvider.replace('New ', '1x ')}
+            </DialogTitle>
             {total_credits !== undefined && (
               <DialogDescription>
                 You have {total_credits / 1_000_000} / {price / 1_000_000} GPU
@@ -401,113 +437,51 @@ function PaidProviderDialog({
               </DialogDescription>
             )}
           </DialogHeader>
-          {total_credits !== undefined &&
-            (total_credits < price ? (
-              <div className="flex flex-col gap-2">
-                <span className="text-red-600">
-                  Missing {(price - total_credits) / 1_000_000} credits (worth{' '}
-                  {(price - total_credits) / 1_000_000} USD)
-                </span>
-                <div>
-                  <span className="font-semibold">Get Credits</span>
-                  {pendingTransaction ? (
-                    <div className="flex gap-1 text-orange-500">
-                      <Hourglass />
-                      <span>Waiting for deposit confirmation</span>
-                    </div>
-                  ) : (
-                    <div className="flex place-items-center gap-1">
-                      <Input
-                        type="number"
-                        value={topUp}
-                        onChange={(e) => setTopUp(parseInt(e.target.value))}
-                      />
-                      <Button
-                        onClick={() => {
-                          performTransaction({
-                            transactionName: 'Buy Credits',
-                            transaction: async () => {
-                              return {
-                                abi: erc20Abi,
-                                address:
-                                  chain.id === 84532
-                                    ? '0x036CbD53842c5426634e7929541eC2318f3dCF7e'
-                                    : '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
-                                functionName: 'transfer',
-                                args: [
-                                  OpenxAICreditDepositContract.address,
-                                  BigInt(topUp) * BigInt(1_000_000),
-                                ],
-                              }
-                            },
-                            onSubmitted(transactionHash) {
-                              setPendingTransaction(transactionHash)
-                            },
-                            onConfirmed: () => {
-                              new Promise((resolve) =>
-                                setTimeout(resolve, 3_000)
-                              ).then(() => {
-                                refetchCredits()
-                                setPendingTransaction(undefined)
-                              })
-                            },
-                          })
-                        }}
-                        disabled={performingTransaction}
-                      >
-                        Buy
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-5">
-                <div className="flex gap-1 text-green-600">
-                  <CheckCircle2 />
-                  <span>You have enough GPU credits</span>
-                </div>
-                <Button
-                  onClick={() => {
-                    loggers.onUpdate?.({
-                      title: 'Please confirm in your wallet',
-                      description:
-                        'Signing the message is free and used as confirmation to spend your credits.',
-                    })
+          <div className="flex flex-col gap-5">
+            <div className="flex gap-1 text-green-600">
+              <CheckCircle2 />
+              <span>You have enough GPU credits</span>
+            </div>
+            <Button
+              onClick={() => {
+                toast({
+                  title: 'Please confirm in your wallet',
+                  description:
+                    'Signing the message is used as confirmation to spend your credits.',
+                })
 
-                    signMessageAsync({
-                      account: address,
-                      message: `Mint new ownaiv1@base to ${address}`,
-                    })
-                      .then((signature) => {
-                        setDeploying(true)
-                        axios
-                          .post(
-                            'https://indexer.core.openxai.org/api/ownaiv1/base/mint',
-                            {
-                              to: address,
-                              payer_address: address,
-                              payer_signature: signature,
-                            }
-                          )
-                          .then((res) => res.data as number)
-                          .then((tokenId) => {
-                            close({
-                              type: 'xnode',
-                              collection: 'ownaiv1',
-                              chain: 'base',
-                              tokenId: tokenId.toString(),
-                            })
-                          })
-                          .finally(() => setDeploying(false))
+                signMessageAsync({
+                  account: address,
+                  message: `Mint new ownaiv1@base to ${address}`,
+                })
+                  .then((signature) => {
+                    setDeploying(true)
+                    axios
+                      .post(
+                        'https://indexer.core.openxai.org/api/ownaiv1/base/mint',
+                        {
+                          to: address,
+                          payer_address: address,
+                          payer_signature: signature,
+                        }
+                      )
+                      .then((res) => res.data as number)
+                      .then((tokenId) => {
+                        close({
+                          type: 'xnode',
+                          collection: 'ownaiv1',
+                          chain: 'base',
+                          tokenId: tokenId.toString(),
+                        })
                       })
-                      .catch(console.error)
-                  }}
-                >
-                  Use {price / 1_000_000} credits
-                </Button>
-              </div>
-            ))}
+                      .finally(() => setDeploying(false))
+                  })
+                  .catch(console.error)
+              }}
+            >
+              Use {price / 1_000_000} GPU credits
+            </Button>
+          </div>
         </DialogContent>
       )}
     </Dialog>

@@ -16,14 +16,11 @@ export const Signup = ({
 
   return (
     <>
-      <div className="flex flex-row">
+      <div className="mt-40 flex place-items-center justify-center gap-5">
         {isConnecting && <Loading />}
         <div className="w-full">
-          <div className="mx-auto w-fit">
+          <div className="mx-auto flex w-fit flex-col place-items-center gap-3">
             <h3 className="text-2xl font-semibold">Log into Xnode</h3>
-
-            <div className="mt-5" />
-
             <w3m-button />
             {isConnected && (
               <div>

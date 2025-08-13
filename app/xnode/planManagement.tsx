@@ -1,28 +1,21 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import { OpenxAITokenizedServerV1Contract } from '@/contracts/OpenxAITokenizedServerV1'
-import { chain } from '@/utils/chain'
 import type { xnode } from '@openmesh-network/xnode-manager-sdk'
 import {
   useUsageCpu,
   useUsageDisk,
   useUsageMemory,
 } from '@openmesh-network/xnode-manager-sdk-react'
-import { ArrowUpRight, Underline } from 'lucide-react'
-import { isAddress } from 'viem'
-import { useAccount } from 'wagmi'
+import { ArrowUpRight } from 'lucide-react'
 
-import { usePerformTransaction } from '@/hooks/usePerformTransaction'
-
-import planData from '../../utils/plan-data.json'
 import PlanDetails from './planDetails'
 import TransferNFT from './transferNft'
 
 interface PlanManagementProps {
   session: xnode.utils.Session
+  tokenId?: bigint
 }
 
 const formatGb = (bytes: number): string => {
@@ -31,7 +24,10 @@ const formatGb = (bytes: number): string => {
   return `${(bytes / 1024 ** 3).toFixed(0)}GB`
 }
 
-export default function PlanManagement({ session }: PlanManagementProps) {
+export default function PlanManagement({
+  session,
+  tokenId,
+}: PlanManagementProps) {
   const { data: cpu } = useUsageCpu({
     session,
     scope: 'host',
@@ -46,18 +42,6 @@ export default function PlanManagement({ session }: PlanManagementProps) {
   const formattedSpecs = useMemo(() => {
     return `${cpu?.length ?? 0} cores, ${formatGb(memory?.total ?? 0)} RAM, ${formatGb(disk?.reduce((prev, cur) => prev + cur.total, 0) ?? 0)} Storage, ${gpu} GPU`
   }, [cpu, memory, disk, gpu])
-
-  const tokenId = useMemo(() => {
-    try {
-      return BigInt(
-        session.baseUrl
-          .replace('https://manager.', '')
-          .replace('.base.ownaiv1.openxai.network', '')
-      )
-    } catch {
-      return undefined
-    }
-  }, [session])
 
   return (
     <div className="">

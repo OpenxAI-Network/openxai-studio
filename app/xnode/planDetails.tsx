@@ -10,9 +10,11 @@ import { erc20Abi } from 'viem'
 import { useAccount, useSignMessage } from 'wagmi'
 
 import { usePerformTransaction } from '@/hooks/usePerformTransaction'
+import { useToast } from '@/components/ui/use-toast'
 
 export default function PlanDetails({ tokenId }: { tokenId: bigint }) {
   const { address } = useAccount()
+  const { toast } = useToast()
 
   const [isExpanded, setIsExpanded] = useState(false)
   const [timeRemaining, setTimeRemaining] = useState({
@@ -25,7 +27,7 @@ export default function PlanDetails({ tokenId }: { tokenId: bigint }) {
   const contentRef = useRef<HTMLDivElement>(null)
   const [renewalMonths, setRenewalMonths] = useState('')
 
-  const pricePerMonth = 150
+  const pricePerMonth = 10
   const months = parseInt(renewalMonths) || 0
 
   const calculatedRenewalCost = (
@@ -322,6 +324,12 @@ export default function PlanDetails({ tokenId }: { tokenId: bigint }) {
                         },
                       })
                     } else {
+                      toast({
+                        title: 'Please confirm in your wallet',
+                        description:
+                          'Signing the message is used as confirmation to spend your credits.',
+                      })
+
                       signMessageAsync({
                         account: address,
                         message: `Extend expiry of ownaiv1@base@${tokenId.toString()} by ${months} months`,
@@ -336,8 +344,12 @@ export default function PlanDetails({ tokenId }: { tokenId: bigint }) {
                             }
                           )
                         })
+                        .then(() => {
+                          refetchCredits()
+                          refetchServer()
+                          setRenewalMonths('')
+                        })
                         .catch(console.error)
-                      setRenewalMonths('')
                     }
                   }}
                   className={`w-full rounded-md px-4 py-2 font-medium transition-colors ${
@@ -345,7 +357,11 @@ export default function PlanDetails({ tokenId }: { tokenId: bigint }) {
                       ? 'cursor-pointer bg-blue500 text-white hover:bg-blue-400'
                       : 'cursor-not-allowed bg-[#99BDFF] text-white'
                   }`}
-                  disabled={!renewalMonths || parseInt(renewalMonths) <= 0}
+                  disabled={
+                    performingTransaction ||
+                    !renewalMonths ||
+                    parseInt(renewalMonths) <= 0
+                  }
                 >
                   {total_credits !== undefined &&
                   totalCost * 1_000_000 > total_credits
