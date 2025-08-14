@@ -5,7 +5,10 @@ import { useRouter } from 'next/navigation'
 import { useDemoContext, useSetDemoContext } from '@/contexts/XnodeDemoContext'
 import ModelDefinitions from '@/utils/model-definitions.json'
 import { xnode } from '@openmesh-network/xnode-manager-sdk'
+import axios from 'axios'
 import { Check } from 'lucide-react'
+import { type SignMessageReturnType } from 'viem'
+import { useAccount } from 'wagmi'
 
 import { cn } from '@/lib/utils'
 import {
@@ -20,6 +23,7 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { useDeploymentQueueContext } from '@/components/deployment-queue'
 
+import { DeploymentSignature } from '../../deployment-signature'
 import { ERCOptions } from './erc-options'
 import { ModelSizeSelector } from './model-size-selector'
 import { ProviderSelector } from './provider-selector'
@@ -43,9 +47,10 @@ type DeploymentStep = {
 
 interface DeploymentPanelProps {
   templateId?: string
+  app: string
 }
 
-export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
+export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
   const router = useRouter()
   const [step, setStep] = useState<DeploymentStep>({})
   const [currentStep, setCurrentStep] = useState<number>(0)
@@ -107,7 +112,7 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
   const setReservedXnode = useSetDemoContext()
   const deployModel = useDeployModel()
 
-  const deployOnDemo = async () => {
+  const deployOnDemo = async ({ signature }: { signature?: string }) => {
     const activeReservation =
       reservedXnode.xnode &&
       reservedXnode.xnode.reservation.reserved_until > Date.now() / 1000
@@ -160,6 +165,22 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
       }
 
       const session = demoSession({ xnode_id: deployOnXnode.id })
+      await axios
+        .post(
+          'https://indexer.core.openxai.org/api/deployment_signature/upload',
+          {
+            xnode: session.baseUrl,
+            app: `xnode-ai-chat:${app}`,
+            version: modelSize,
+            ...(signature && signature !== '0x'
+              ? {
+                  deployer: address,
+                  signature,
+                }
+              : {}),
+          }
+        )
+        .catch(console.error)
       while (true) {
         // Wait until access is granted
         try {
@@ -195,7 +216,13 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
   }
 
   const { addToQueue } = useDeploymentQueueContext()
-  const deployOnXnode = async (xnode: string) => {
+  const deployOnXnode = async ({
+    xnode,
+    signature,
+  }: {
+    xnode: string
+    signature?: string
+  }) => {
     // Use templateId to find the correct model definition
     const selectedModel = ModelDefinitions.find((m) => m.nixName === templateId)
     console.log('Found model definition:', selectedModel)
@@ -211,6 +238,23 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
     if (!ollamaCommand) {
       throw new Error('Selected model configuration not found')
     }
+
+    await axios
+      .post(
+        'https://indexer.core.openxai.org/api/deployment_signature/upload',
+        {
+          xnode,
+          app: `xnode-ai-chat:${app}`,
+          version: modelSize,
+          ...(signature && signature !== '0x'
+            ? {
+                deployer: address,
+                signature,
+              }
+            : {}),
+        }
+      )
+      .catch(console.error)
 
     addToQueue(xnode, {
       path: {
@@ -232,6 +276,9 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
   // Check if all selections are made
   const isReadyToDeploy = step.modelSize && step.provider && step.ercOption
 
+  const { address } = useAccount()
+  const [askSignature, setAskSignature] = useState<boolean>(false)
+
   return (
     <>
       <div className="space-y-8">
@@ -250,6 +297,7 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
             hardware={DEMO_POOL_SPECS}
             onSelect={handleModelSelect}
             templateId={templateId}
+            app={app}
           />
           {currentStep > 0 && step.modelSize && (
             <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
@@ -307,15 +355,7 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
               size="lg"
               disabled={!isReadyToDeploy || deploying}
               onClick={() => {
-                setDeploying(true)
-                ;(step.provider.type === 'demo'
-                  ? deployOnDemo()
-                  : deployOnXnode(
-                      `https://manager.${step.provider.tokenId}.${step.provider.chain}.${step.provider.collection}.openxai.network`
-                    )
-                )
-                  .catch(console.error)
-                  .finally(() => setDeploying(false))
+                setAskSignature(true)
               }}
             >
               One Click Deployment
@@ -323,6 +363,24 @@ export function DeploymentPanel({ templateId }: DeploymentPanelProps) {
           </>
         )}
       </div>
+      <DeploymentSignature
+        app={app}
+        version={step.modelSize?.name}
+        open={askSignature}
+        close={(signature) => {
+          setAskSignature(false)
+          setDeploying(true)
+          ;(step.provider.type === 'demo'
+            ? deployOnDemo({ signature })
+            : deployOnXnode({
+                xnode: `https://manager.${step.provider.tokenId}.${step.provider.chain}.${step.provider.collection}.openxai.network`,
+                signature,
+              })
+          )
+            .catch(console.error)
+            .finally(() => setDeploying(false))
+        }}
+      />
     </>
   )
 }

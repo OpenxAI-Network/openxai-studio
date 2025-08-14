@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { DeploymentCounter } from '@/app/deploy/deloyment-counter'
 
 import { SortDropdown } from './ai-model-dropdown'
 
@@ -87,7 +88,10 @@ function ModelCard({ data }: { data: ModelData }) {
           className="-ml-2 size-12 object-contain"
         />
         <div className="flex flex-col">
-          <h3 className="text-lg font-semibold">{data.name}</h3>
+          <div className="flex gap-2">
+            <h3 className="text-lg font-semibold">{data.name}</h3>
+            <DeploymentCounter app={data.name} />
+          </div>
           <p className="mt-1 text-sm text-muted-foreground">{data.desc}</p>
         </div>
         <span className="ml-auto text-sm text-muted-foreground">

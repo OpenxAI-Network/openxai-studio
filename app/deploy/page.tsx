@@ -1,12 +1,12 @@
-import { cookies } from 'next/headers'
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import AgentDefinitions from '@/utils/agent-definitions.json'
 import { prefix } from '@/utils/prefix'
 import { AppWindow } from 'lucide-react'
 import { remark } from 'remark'
 import html from 'remark-html'
 import { z } from 'zod'
-import { Suspense } from 'react'
 
 import {
   getSpecsByTemplate,
@@ -17,13 +17,13 @@ import {
   type ServiceData,
   type Specs,
 } from '@/types/dataProvider'
-import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-
-import { DeploymentContextProvider } from './deployment-context'
-import { DeploymentPanel } from './one-click/components/deployment-panel'
-import AgentDefinitions from '@/utils/agent-definitions.json'
 import AgentDeployment from '@/components/AgentDeployment/agent-deployment'
+
+import { DeploymentCounter } from './deloyment-counter'
+import { DeploymentContextProvider } from './deployment-context'
+import { LatestDeployments } from './latest-deployments'
+import { DeploymentPanel } from './one-click/components/deployment-panel'
 
 type DeployPageProps = {
   searchParams: {
@@ -41,7 +41,7 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
   const agentId = z.string().optional().parse(searchParams.agentId)
 
   if (agentId) {
-    const agent = AgentDefinitions.find(a => a.nixName === agentId)
+    const agent = AgentDefinitions.find((a) => a.nixName === agentId)
     if (!agent) redirect('/app-store')
 
     const expandedDescription = `
@@ -62,7 +62,7 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
           <span>/</span>
           <span className="text-primary/75">{agent.name}</span>
         </div>
-        
+
         <div className="mt-8 grid grid-cols-12 gap-8">
           {/* Left Content Panel */}
           <div className="col-span-8">
@@ -70,19 +70,30 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
               <div className="flex flex-1 items-start gap-3">
                 {agent.logo && agent.logo !== '' ? (
                   <img
-                    src={agent.logo.startsWith('https://') ? agent.logo : `${prefix}${agent.logo}`}
+                    src={
+                      agent.logo.startsWith('https://')
+                        ? agent.logo
+                        : `${prefix}${agent.logo}`
+                    }
                     alt={`${agent.name} logo`}
                     width={48}
                     height={48}
                   />
                 ) : (
-                  <AppWindow className="size-12 text-muted-foreground" strokeWidth={1.5} />
+                  <AppWindow
+                    className="size-12 text-muted-foreground"
+                    strokeWidth={1.5}
+                  />
                 )}
                 <div>
-                  <h2 className="text-xl font-bold text-primary">{agent.name}</h2>
+                  <h2 className="text-xl font-bold text-primary">
+                    {agent.name}
+                  </h2>
                   <div className="prose prose-sm mt-4 text-muted-foreground">
                     {expandedDescription.split('\n').map((paragraph, i) => (
-                      <p key={i} className="mt-2">{paragraph.trim()}</p>
+                      <p key={i} className="mt-2">
+                        {paragraph.trim()}
+                      </p>
                     ))}
                   </div>
                 </div>
@@ -98,9 +109,6 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
       </div>
     )
   }
-
-  const sessionCookie = cookies().get('userSessionToken')
-  const sessionToken = sessionCookie?.value || 'demo-token'
 
   function getData() {
     if (!templateId && !useCaseId && !advanced) redirect('/app-store')
@@ -182,7 +190,7 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
           <span>/</span>
           <span className="text-primary/75">{data.name}</span>
         </div>
-        
+
         <div className="mt-8 grid grid-cols-12 gap-8">
           {/* Left Content Panel */}
           <div className="col-span-8">
@@ -190,16 +198,28 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
               <div className="flex flex-1 items-start gap-3">
                 {data.logo && data.logo !== '' ? (
                   <img
-                    src={data.logo.startsWith('https://') ? data.logo : `${prefix}${data.logo}`}
+                    src={
+                      data.logo.startsWith('https://')
+                        ? data.logo
+                        : `${prefix}${data.logo}`
+                    }
                     alt={`${data.name} logo`}
                     width={48}
                     height={48}
                   />
                 ) : (
-                  <AppWindow className="size-12 text-muted-foreground" strokeWidth={1.5} />
+                  <AppWindow
+                    className="size-12 text-muted-foreground"
+                    strokeWidth={1.5}
+                  />
                 )}
                 <div>
-                  <h2 className="text-xl font-bold text-primary">{data.name}</h2>
+                  <div className="flex gap-2">
+                    <h2 className="text-xl font-bold text-primary">
+                      {data.name}
+                    </h2>
+                    <DeploymentCounter app={data.name} />
+                  </div>
                   <p className="mt-2 line-clamp-2 max-w-prose text-muted-foreground">
                     {data.desc}
                   </p>
@@ -233,21 +253,39 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
                       </TabsTrigger>
                     ) : null}
                   </TabsList>
-                  <TabsContent value="overview" className="prose prose-sm text-muted-foreground">
-                    {data.longDesc && data.longDesc !== '' ? (
-                      <div dangerouslySetInnerHTML={{ __html: longDesc || '' }} />
-                    ) : (
-                      data.desc
-                    )}
+                  <TabsContent
+                    value="overview"
+                    className="w-full text-muted-foreground"
+                  >
+                    <div className="flex flex-col gap-4">
+                      {data.longDesc && data.longDesc !== '' ? (
+                        <div
+                          dangerouslySetInnerHTML={{ __html: longDesc || '' }}
+                        />
+                      ) : (
+                        data.desc
+                      )}
+                      <LatestDeployments app={data.name} />
+                    </div>
                   </TabsContent>
                   {data.useCases && data.useCases !== '' ? (
-                    <TabsContent value="use-cases" className="prose prose-sm text-muted-foreground">
-                      <div dangerouslySetInnerHTML={{ __html: useCases || '' }} />
+                    <TabsContent
+                      value="use-cases"
+                      className="prose prose-sm text-muted-foreground"
+                    >
+                      <div
+                        dangerouslySetInnerHTML={{ __html: useCases || '' }}
+                      />
                     </TabsContent>
                   ) : null}
                   {data.support && data.support !== '' ? (
-                    <TabsContent value="support" className="prose prose-sm text-muted-foreground">
-                      <div dangerouslySetInnerHTML={{ __html: support || '' }} />
+                    <TabsContent
+                      value="support"
+                      className="prose prose-sm text-muted-foreground"
+                    >
+                      <div
+                        dangerouslySetInnerHTML={{ __html: support || '' }}
+                      />
                     </TabsContent>
                   ) : null}
                 </Tabs>
@@ -261,7 +299,7 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
               {templateId === 'fetch-ai-uagents' ? (
                 <AgentDeployment agent={AgentDefinitions[0]} />
               ) : (
-                <DeploymentPanel templateId={templateId} />
+                <DeploymentPanel templateId={templateId} app={data.name} />
               )}
             </Suspense>
           </div>
