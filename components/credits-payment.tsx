@@ -1,14 +1,21 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { OpenxAICreditDepositContract } from '@/contracts/OpenxAICreditDeposit'
 import { chain } from '@/utils/chain'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { CheckCircle2, CircleDollarSign, Hourglass, Wallet } from 'lucide-react'
+import {
+  AlertTriangle,
+  CheckCircle2,
+  CircleDollarSign,
+  Hourglass,
+  Wallet,
+} from 'lucide-react'
 import { erc20Abi } from 'viem'
-import { useAccount } from 'wagmi'
+import { useAccount, useReadContract } from 'wagmi'
 
 import { usePerformTransaction } from '@/hooks/usePerformTransaction'
 
+import { Alert, AlertTitle } from './ui/alert'
 import { Button } from './ui/button'
 import {
   Dialog,
@@ -57,6 +64,21 @@ export function CreditsPayment({
   })
   const [step, setStep] = useState<'buy' | 'wait' | 'confirm'>('buy')
 
+  const tokenAddress = useMemo(() => {
+    return chain.id === 84532
+      ? '0x036CbD53842c5426634e7929541eC2318f3dCF7e'
+      : '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
+  }, [chain])
+
+  const { data: balance } = useReadContract({
+    abi: erc20Abi,
+    address: tokenAddress,
+    functionName: 'balanceOf',
+    args: [address],
+    query: {
+      enabled: !!address,
+    },
+  })
   return (
     <Dialog
       open
@@ -110,6 +132,15 @@ export function CreditsPayment({
                 <span>You&apos;ll be charged</span>
                 <span>{topUp} USDC</span>
               </div>
+              {balance !== undefined &&
+                balance < BigInt(topUp) * BigInt(1_000_000) && (
+                  <Alert variant="destructive">
+                    <AlertTriangle />
+                    <AlertTitle>
+                      Insufficient USDC balance for account {address}
+                    </AlertTitle>
+                  </Alert>
+                )}
             </div>
           )}
         </div>
@@ -132,10 +163,7 @@ export function CreditsPayment({
                   transaction: async () => {
                     return {
                       abi: erc20Abi,
-                      address:
-                        chain.id === 84532
-                          ? '0x036CbD53842c5426634e7929541eC2318f3dCF7e'
-                          : '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+                      address: tokenAddress,
                       functionName: 'transfer',
                       args: [
                         OpenxAICreditDepositContract.address,
@@ -158,7 +186,11 @@ export function CreditsPayment({
                   },
                 })
               }}
-              disabled={performingTransaction}
+              disabled={
+                performingTransaction ||
+                (balance !== undefined &&
+                  balance < BigInt(topUp) * BigInt(1_000_000))
+              }
             >
               Purchase Credits
             </Button>
