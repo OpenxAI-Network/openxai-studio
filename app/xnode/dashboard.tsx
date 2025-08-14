@@ -30,15 +30,10 @@ export default function XNodeDashboard({ baseUrl }: XnodePageProps) {
     setSignature(getSignature(baseUrl))
   }, [getSignature])
 
-  // const { data: session, status } = useAuthLogin({
-  //   baseUrl,
-  //   ...signature,
-  // })
-
-  const session = {
-    baseUrl: 'https://manager.6.base.ownaiv1.openxai.network',
-  } as xnode.utils.Session
-  const status = '' as string
+  const { data: session, status } = useAuthLogin({
+    baseUrl,
+    ...signature,
+  })
 
   const tokenId = useMemo(() => {
     try {

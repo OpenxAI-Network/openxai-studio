@@ -1,15 +1,12 @@
-import { cookies } from 'next/headers'
 import Link from 'next/link'
 
 import { DemoPool } from './demo-pool'
-
-// import DeploymentsList from './deployments-list'
+import { MyXnodes } from './my-xnodes'
 
 export default function DeploymentsPage() {
-  const sessionCookie = cookies().get('userSessionToken')
-
   return (
-    <div className="container my-12 max-w-none">
+    <div className="container my-12 flex max-w-none flex-col gap-6">
+      <MyXnodes />
       {/* Demo Pool */}
       <div>
         <h1 className="mb-6 text-3xl font-bold">OpenxAI Launch Demo Pool</h1>

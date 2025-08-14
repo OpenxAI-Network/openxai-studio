@@ -1,18 +1,14 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Image from 'next/image'
-import { OpenxAICreditDepositContract } from '@/contracts/OpenxAICreditDeposit'
-import { chain } from '@/utils/chain'
 import { useQuery } from '@tanstack/react-query'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import axios from 'axios'
 import { Check, CheckCircle2, Hourglass, X } from 'lucide-react'
-import { erc20Abi, type Hash } from 'viem'
 import { useAccount, useSignMessage } from 'wagmi'
 
 import { cn } from '@/lib/utils'
-import { usePerformTransaction } from '@/hooks/usePerformTransaction'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -21,7 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { CreditsPayment } from '@/components/credits-payment'
 

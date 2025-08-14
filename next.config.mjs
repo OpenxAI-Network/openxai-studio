@@ -22,6 +22,9 @@ const nextConfig = {
     webpackConfig.externals.push('pino-pretty', 'lokijs', 'encoding')
     return webpackConfig
   },
+  images: {
+    remotePatterns: [{ hostname: 'erc721.openxai.org'}],
+  },
 }
 
 export default nextConfig
