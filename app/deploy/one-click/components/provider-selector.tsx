@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { OpenxAICreditDepositContract } from '@/contracts/OpenxAICreditDeposit'
 import { chain } from '@/utils/chain'
 import { useQuery } from '@tanstack/react-query'
+import { useWeb3Modal } from '@web3modal/wagmi/react'
 import axios from 'axios'
 import { Check, CheckCircle2, Hourglass, X } from 'lucide-react'
 import { erc20Abi, type Hash } from 'viem'
@@ -75,6 +76,7 @@ export function ProviderSelector({
   const [showExtendedOptions, setShowExtendedOptions] = useState(false)
 
   const { address } = useAccount()
+  const { open } = useWeb3Modal()
   const { data: myServers, refetch: refetchMyServers } = useQuery({
     queryKey: [address ?? ''],
     enabled: !!address,
@@ -190,7 +192,11 @@ export function ProviderSelector({
               }
 
               if (provider.name === 'New OwnAIv1') {
-                setPaidProvider(provider.name)
+                if (!address) {
+                  open()
+                } else {
+                  setPaidProvider(provider.name)
+                }
               } else {
                 onSelect(provider.return)
               }
