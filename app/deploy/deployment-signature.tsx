@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react'
 import type { SignMessageReturnType } from 'viem'
 import { useAccount, useSignMessage } from 'wagmi'
 
@@ -28,6 +27,7 @@ export function DeploymentSignature({
 }) {
   const { address } = useAccount()
   const { open: connectWallet } = useWeb3Modal()
+  const { open: connectWalletOpen } = useWeb3ModalState()
 
   const { toast } = useToast()
   const { signMessageAsync } = useSignMessage()
@@ -35,6 +35,10 @@ export function DeploymentSignature({
     <Dialog
       open={open}
       onOpenChange={(open) => {
+        if (connectWalletOpen) {
+          return
+        }
+
         if (!open) {
           close()
         }
