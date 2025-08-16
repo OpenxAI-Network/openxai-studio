@@ -21,6 +21,7 @@
     "@hookform/resolvers": "^3.4.2",
     "@libsql/client": "^0.14.0",
     "@mui/material": "^5.15.19",
+    "@next/third-parties": "^15.4.6",
     "@openmesh-network/xnode-manager-sdk": "^1.0.6",
     "@openmesh-network/xnode-manager-sdk-react": "^1.0.12",
     "@plopmenz/viem-extensions": "^2.19.7",

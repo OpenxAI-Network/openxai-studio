@@ -6,6 +6,7 @@ import { type Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { cookies } from 'next/headers'
 import { prefix } from '@/utils/prefix'
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 import { cn } from '@/lib/utils'
 import CTAHelp from '@/components/cta-help'
@@ -53,6 +54,7 @@ export default function RootLayout({
           <CTAHelp />
         </Providers>
       </body>
+      <GoogleAnalytics gaId="G-9PSXBJPNPC" />
     </html>
   )
 }
