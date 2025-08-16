@@ -22,6 +22,7 @@
     "@libsql/client": "^0.14.0",
     "@monaco-editor/react": "^4.7.0",
     "@mui/material": "^5.15.19",
+    "@next/third-parties": "^15.4.6",
     "@openmesh-network/xnode-manager-sdk": "^1.0.8",
     "@openmesh-network/xnode-manager-sdk-react": "^1.0.13",
     "@plopmenz/viem-extensions": "^2.19.7",
