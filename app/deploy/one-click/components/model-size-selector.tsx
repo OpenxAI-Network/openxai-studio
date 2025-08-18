@@ -105,7 +105,7 @@ export function ModelSizeSelector({
                       : 'border border-muted-foreground'
                   )}
                 ></div>
-                <div className="flex gap-2">
+                <div className="flex place-items-center gap-2">
                   <span className="text-lg font-medium max-[1550px]:text-base max-[1350px]:text-sm max-[1250px]:text-xs max-[992px]:text-[10px]">
                     {size.name}
                   </span>

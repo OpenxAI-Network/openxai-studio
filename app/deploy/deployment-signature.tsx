@@ -1,6 +1,7 @@
 'use client'
 
 import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react'
+import { CheckSquare2 } from 'lucide-react'
 import type { SignMessageReturnType } from 'viem'
 import { useAccount, useSignMessage } from 'wagmi'
 
@@ -46,16 +47,29 @@ export function DeploymentSignature({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Share Deployment</DialogTitle>
+          <DialogTitle>
+            Would you like to authenticate your deployment record?
+          </DialogTitle>
         </DialogHeader>
-        <span>
-          Connect your wallet and sign a (gas-free) message to share your
-          deployment publicly. Wallets that participate in this program might be
-          eligible for an airdrop or other benefits in the future.
-        </span>
+        <div>
+          <div className="flex gap-1">
+            <CheckSquare2 />
+            <span>Record on-chain (gas-free)</span>
+          </div>
+          <div className="flex gap-1">
+            <CheckSquare2 />
+            <span>Share your launch record with the world</span>
+          </div>
+          <div className="flex gap-1">
+            <CheckSquare2 />
+            <span>
+              Unlock eligibility for <strong>$OPENX rewards</strong>
+            </span>
+          </div>
+        </div>
         <DialogFooter>
-          {address ? (
-            <div className="flex w-full flex-col gap-1">
+          <div className="flex w-full flex-col gap-1">
+            {address ? (
               <Button
                 className="w-full"
                 onClick={() => {
@@ -70,28 +84,28 @@ export function DeploymentSignature({
                   }).then((signature) => close(signature))
                 }}
               >
-                Share Deployment
+                Sign and share (gas-free)
               </Button>
+            ) : (
               <Button
                 className="w-full"
-                variant="outline"
                 onClick={() => {
-                  close('0x')
+                  connectWallet()
                 }}
               >
-                Skip
+                Connect Wallet
               </Button>
-            </div>
-          ) : (
+            )}
             <Button
               className="w-full"
+              variant="outline"
               onClick={() => {
-                connectWallet()
+                close('0x')
               }}
             >
-              Connect Wallet
+              No, I will skip
             </Button>
-          )}
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

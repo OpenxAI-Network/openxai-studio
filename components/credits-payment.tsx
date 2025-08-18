@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { OpenxAICreditDepositContract } from '@/contracts/OpenxAICreditDeposit'
 import { chain } from '@/utils/chain'
 import { useQuery } from '@tanstack/react-query'
@@ -7,7 +8,9 @@ import {
   AlertTriangle,
   CheckCircle2,
   CircleDollarSign,
+  HelpCircle,
   Hourglass,
+  Info,
   Wallet,
 } from 'lucide-react'
 import { erc20Abi } from 'viem'
@@ -56,7 +59,7 @@ export function CreditsPayment({
       return
     }
 
-    setTopUp((price - total_credits) / 1_000_000)
+    setTopUp(Math.round((price - total_credits) / 1_000_000))
   }, [total_credits, price])
 
   const { performTransaction, performingTransaction } = usePerformTransaction({
@@ -98,7 +101,9 @@ export function CreditsPayment({
             <span>Cost of {item}</span>
             <div className="flex place-items-center gap-1 rounded-lg bg-green-200 px-2 py-1 text-sm">
               <CircleDollarSign className="size-5" />
-              <span>{price / 1_000_000} GPU Credits</span>
+              <span>
+                {price / 1_000_000} GPU Credits ({price / 1_000_000} USDC)
+              </span>
             </div>
           </div>
           {step === 'confirm' ? (
@@ -115,23 +120,38 @@ export function CreditsPayment({
             <div className="flex flex-col gap-3">
               {total_credits !== undefined && (
                 <div className="flex place-content-between place-items-center">
-                  <span>In your wallet</span>
+                  <span>Your wallet balance</span>
                   <div className="flex place-items-center gap-1 rounded-lg bg-blue-200 px-2 py-1 text-sm">
                     <Wallet className="size-5" />
-                    <span>{total_credits / 1_000_000} GPU Credits</span>
+                    <span>
+                      {(total_credits / 1_000_000).toFixed(2)} GPU Credits
+                    </span>
                   </div>
                 </div>
               )}
               <div className="flex place-content-between place-items-center">
-                <span>Missing</span>
+                <span>You need</span>
                 <div className="flex place-items-center gap-1 rounded-lg bg-red-200 px-2 py-1 text-sm">
                   <span>{topUp} GPU Credits</span>
                 </div>
               </div>
               <div className="flex place-content-between place-items-center">
-                <span>You&apos;ll be charged</span>
+                <span>You will be charged</span>
                 <span>{topUp} USDC</span>
               </div>
+              {item !== undefined &&
+                item === "OpenxAI's Dedicated Tokenized GPU" && (
+                  <Alert>
+                    <div className="flex place-items-center gap-1">
+                      <AlertTitle>
+                        You can stake your GPU to earn rewards - 330% APY
+                      </AlertTitle>
+                      <Link href="/" target="_blank">
+                        <HelpCircle className="size-5" />
+                      </Link>
+                    </div>
+                  </Alert>
+                )}
               {balance !== undefined &&
                 balance < BigInt(topUp) * BigInt(1_000_000) && (
                   <Alert variant="destructive">

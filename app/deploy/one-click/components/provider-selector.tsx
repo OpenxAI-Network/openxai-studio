@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import axios from 'axios'
-import { Check, CheckCircle2, Hourglass, X } from 'lucide-react'
+import { Check, CheckCircle2, Hourglass, Search, X } from 'lucide-react'
 import { useAccount, useSignMessage } from 'wagmi'
 
 import { cn } from '@/lib/utils'
@@ -28,8 +28,9 @@ type Provider = {
   icon?: string
   features: string[]
   action: {
-    label: string
-    price?: string
+    label?: string
+    description?: string[]
+    badge?: string
   }
   disabled?: boolean
   comingSoon?: boolean
@@ -112,18 +113,23 @@ export function ProviderSelector({
       }) ?? []
   ).concat([
     {
-      name: 'Demo Xnode',
+      name: '30 minutes free trial',
       icon: '/images/xnode-logo/xnode-cube.png',
       features: ['Web3 Ready', 'No KYC'],
-      action: { label: 'Try for Free' },
+      action: {
+        description: ["OpenxAI's Community Servers | Slow"],
+      },
       isDecentralized: true,
       return: { type: 'demo' },
     },
     {
-      name: 'New OwnAIv1',
+      name: 'Deploy Now',
       icon: '/images/xnode-card/silvercard-front.webp',
       features: ['Web3 Ready', 'No KYC'],
-      action: { label: '150 GPU Credits' },
+      action: {
+        label: '150 GPU Credits',
+        description: ["OpenxAI's Tokenized GPUs | Dedicated", 'Up to 330% APY'],
+      },
       isDecentralized: true,
     },
     {
@@ -186,7 +192,7 @@ export function ProviderSelector({
                 return
               }
 
-              if (provider.name === 'New OwnAIv1') {
+              if (provider.name === 'Deploy Now') {
                 if (!address) {
                   open()
                 } else {
@@ -197,8 +203,7 @@ export function ProviderSelector({
               }
             }}
             className={cn(
-              'relative flex cursor-pointer flex-col rounded-lg border p-6 max-[1550px]:p-4 max-[1350px]:p-3 max-[1250px]:p-2 max-[992px]:p-1.5',
-              'h-[128px] max-[1550px]:h-[120px] max-[1350px]:h-[115px] max-[1250px]:h-[110px] max-[992px]:h-[100px]',
+              'relative flex cursor-pointer flex-col place-content-evenly gap-4 rounded-lg border p-4',
               EqualProvider({
                 provider1: selected,
                 provider2: provider.return,
@@ -206,11 +211,7 @@ export function ProviderSelector({
               provider.disabled && 'cursor-not-allowed opacity-50'
             )}
           >
-            <div
-              className={cn(
-                'mb-6 flex items-center justify-between max-[1550px]:mb-4 max-[1350px]:mb-3 max-[1250px]:mb-2 max-[992px]:mb-1'
-              )}
-            >
+            <div className={cn('flex items-center justify-between')}>
               <div className="flex items-center gap-3 max-[1550px]:gap-2.5 max-[1350px]:gap-2 max-[1250px]:gap-1.5 max-[992px]:gap-1">
                 <div
                   className={cn(
@@ -241,38 +242,34 @@ export function ProviderSelector({
                 </div>
               </div>
               <div className="text-right">
-                {provider.name === 'Demo Xnode' ? (
-                  <div className="inline-flex overflow-hidden rounded-md max-[1250px]:rounded-[3px] max-[992px]:rounded-[2px]">
+                {provider.action.label &&
+                  (provider.name === 'Deploy Now' ? (
                     <div
+                      className="max-[1550px]:py-0.75 max-[992px]:py-0.25 whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium text-black max-[1550px]:px-2.5 max-[1550px]:text-sm max-[1350px]:px-2 max-[1350px]:py-0.5 max-[1350px]:text-xs max-[1250px]:rounded-[3px] max-[1250px]:px-1.5 max-[1250px]:py-0.5 max-[1250px]:text-[10px] max-[992px]:rounded-[2px] max-[992px]:px-1 max-[992px]:text-[8px]"
                       style={{
-                        padding: '1px',
                         background:
-                          'linear-gradient(to right, #ef4444, #eab308)',
+                          'linear-gradient(to right, #bef264, #22c55e)',
                       }}
                     >
-                      <div className="max-[1550px]:py-0.75 max-[992px]:py-0.25 rounded-[0.3rem] bg-white px-3 py-1 dark:bg-black max-[1550px]:px-2.5 max-[1350px]:px-2 max-[1350px]:py-0.5 max-[1250px]:rounded-[0.2rem] max-[1250px]:px-1.5 max-[1250px]:py-0.5 max-[992px]:rounded-[0.15rem] max-[992px]:px-1">
-                        <span className="whitespace-nowrap text-sm font-medium text-green-500 max-[1550px]:text-sm max-[1350px]:text-xs max-[1250px]:text-[10px] max-[992px]:text-[8px]">
-                          {provider.action.label}
-                        </span>
-                      </div>
+                      {provider.action.label}
                     </div>
-                  </div>
-                ) : provider.name === 'New OwnAIv1' ? (
-                  <div
-                    className="max-[1550px]:py-0.75 max-[992px]:py-0.25 whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium text-black max-[1550px]:px-2.5 max-[1550px]:text-sm max-[1350px]:px-2 max-[1350px]:py-0.5 max-[1350px]:text-xs max-[1250px]:rounded-[3px] max-[1250px]:px-1.5 max-[1250px]:py-0.5 max-[1250px]:text-[10px] max-[992px]:rounded-[2px] max-[992px]:px-1 max-[992px]:text-[8px]"
-                    style={{
-                      background: 'linear-gradient(to right, #bef264, #22c55e)',
-                    }}
-                  >
-                    {provider.action.label}
-                  </div>
-                ) : (
-                  <span className="whitespace-nowrap text-sm max-[1550px]:text-sm max-[1350px]:text-xs max-[1250px]:text-[10px] max-[992px]:text-[8px]">
-                    {provider.action.label}
-                  </span>
-                )}
+                  ) : (
+                    <span className="whitespace-nowrap text-sm max-[1550px]:text-sm max-[1350px]:text-xs max-[1250px]:text-[10px] max-[992px]:text-[8px]">
+                      {provider.action.label}
+                    </span>
+                  ))}
               </div>
             </div>
+
+            {provider.action.description && (
+              <div className="flex flex-col gap-1">
+                {provider.action.description.map((description) => (
+                  <span className="text-muted-foreground max-[1550px]:text-base max-[1350px]:text-sm max-[1250px]:text-xs max-[992px]:text-[10px]">
+                    {description}
+                  </span>
+                ))}
+              </div>
+            )}
 
             {provider.comingSoon && (
               <div className="absolute left-0 top-0 rounded-br-md rounded-tl-md bg-green-500 px-2 py-0.5 text-[10px] font-medium text-white max-[1550px]:text-[9px] max-[1250px]:text-[8px] max-[992px]:text-[7px]">
@@ -280,7 +277,7 @@ export function ProviderSelector({
               </div>
             )}
 
-            <div className="mt-auto flex items-center justify-between">
+            <div className="flex items-center justify-between">
               <div className="flex gap-x-4 max-[1550px]:gap-x-3.5 max-[1350px]:gap-x-3 max-[1250px]:gap-x-2 max-[992px]:gap-x-1.5">
                 <div className="max-[1550px]:gap-0.75 max-[992px]:gap-0.25 flex items-center gap-1 max-[1250px]:gap-0.5">
                   {provider.isDecentralized ? (
@@ -314,12 +311,18 @@ export function ProviderSelector({
             </div>
           </div>
         ))}
-        <button
-          onClick={() => setShowExtendedOptions(true)}
-          className="w-full text-center text-sm text-muted-foreground underline max-[1250px]:text-xs"
-        >
-          View more options
-        </button>
+        <div className="flex w-full flex-col place-items-center gap-1 pb-2 text-center text-sm text-muted-foreground max-[1250px]:text-xs">
+          <span>Not happy? Scan for more!</span>
+          <div>
+            <Button
+              className="flex gap-2"
+              onClick={() => setShowExtendedOptions(true)}
+            >
+              <span>SkyScanner for Compute & GPUs</span>
+              <Search />
+            </Button>
+          </div>
+        </div>
       </div>
 
       <Dialog open={showExtendedOptions} onOpenChange={setShowExtendedOptions}>
@@ -372,8 +375,8 @@ function PaidProviderDialog({
 
   const price = useMemo(() => {
     switch (paidProvider) {
-      case 'New OwnAIv1':
-        return 10_000_000
+      case 'Deploy Now':
+        return 10_000_000 * 1000
       default:
         return 1_000_000_000_000_000
     }
@@ -390,7 +393,7 @@ function PaidProviderDialog({
   if (total_credits < price) {
     return (
       <CreditsPayment
-        item={paidProvider.replace('New ', '1x ')}
+        item="OpenxAI's Dedicated Tokenized GPU"
         price={price}
         close={(success) => {
           if (success) {
@@ -429,7 +432,7 @@ function PaidProviderDialog({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Mint {paidProvider.replace('New ', '1x ')}
+              Mint OpenxAI&apos;s Dedicated Tokenized GPU
             </DialogTitle>
             {total_credits !== undefined && (
               <DialogDescription>
@@ -480,7 +483,7 @@ function PaidProviderDialog({
                   .catch(console.error)
               }}
             >
-              Use {price / 1_000_000} GPU credits
+              Deploy Now
             </Button>
           </div>
         </DialogContent>

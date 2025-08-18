@@ -36,8 +36,8 @@ export function LatestDeployments({ app }: { app?: string }) {
   })
 
   return (
-    <div className="flex flex-col gap-1 text-base text-black">
-      <span>Latest deployments</span>
+    <div className="flex flex-col gap-3 text-base text-gray-600">
+      <span className="text-xl">Latest deployments</span>
       <Table>
         <TableHeader>
           <TableRow>

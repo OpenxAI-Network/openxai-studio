@@ -20,7 +20,13 @@ export const Signup = ({
         {isConnecting && <Loading />}
         <div className="w-full">
           <div className="mx-auto flex w-fit flex-col place-items-center gap-3">
-            <h3 className="text-2xl font-semibold">Log into Xnode</h3>
+            <span className="text-2xl font-semibold">Final Step</span>
+            <span className="text-lg">
+              Log into your Tokenized GPU to unlock monitoring and management.
+            </span>
+            <span className="text-lg">
+              The session is safely stored in your browser.
+            </span>
             <w3m-button />
             {isConnected && (
               <div>

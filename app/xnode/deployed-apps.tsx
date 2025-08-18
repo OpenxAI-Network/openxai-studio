@@ -129,6 +129,16 @@ function Container({
 
   return (
     <div className="flex w-full max-w-sm flex-col gap-4 rounded-xl border p-6">
+      <Link
+        href={session.baseUrl.replace('manager.', '')}
+        aria-disabled={container !== 'xnode-ai-chat'}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="flex items-center justify-center gap-3 rounded-md bg-primary py-2 text-sm font-medium text-white aria-disabled:pointer-events-none aria-disabled:opacity-50"
+      >
+        Open your app
+        <Image src="/images/arrow-up-right.svg" alt="" width={20} height={20} />
+      </Link>
       <div className="flex justify-between">
         <div className="flex gap-4">
           <Image
@@ -139,7 +149,7 @@ function Container({
           />
           <div className="flex flex-col gap-1">
             <div className="text-[12px] font-[600] text-[#141414] xl:text-[16px] 2xl:text-[16px] 3xl:text-[24px]">
-              {container}
+              {container === 'xnode-ai-chat' ? 'OpenxAI Engine' : container}
             </div>
             <div className="flex items-center gap-2 text-xs font-medium text-[#525252]">
               <span className="text-[12px] font-[500] text-[#525252] xl:text-[14px] 2xl:text-[14px] 3xl:text-[20px]">
@@ -248,17 +258,6 @@ function Container({
         <AppEdit session={session} container={container} />
         <AppUpdate session={session} container={container} />
       </div>
-
-      <Link
-        href={session.baseUrl.replace('manager.', '')}
-        aria-disabled={container !== 'xnode-ai-chat'}
-        target="_blank"
-        rel="noreferrer noopener"
-        className="flex items-center justify-center gap-3 rounded-md bg-primary py-2 text-sm font-medium text-white aria-disabled:pointer-events-none aria-disabled:opacity-50"
-      >
-        Open {container}
-        <Image src="/images/arrow-up-right.svg" alt="" width={20} height={20} />
-      </Link>
     </div>
   )
 }

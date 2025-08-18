@@ -31,13 +31,13 @@ export function LoadingOverlay({ isVisible, message = 'Reserving Xnode...', fade
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm transition-all duration-300 ease-in-out 
-      ${fadeOut ? 'opacity-0 scale-95 backdrop-blur-none' : isEntering ? 'opacity-0 scale-105 backdrop-blur-none' : 'opacity-100 scale-100 backdrop-blur-sm'}`}
+      ${fadeOut ? 'scale-95 opacity-0 backdrop-blur-none' : isEntering ? 'scale-105 opacity-0 backdrop-blur-none' : 'scale-100 opacity-100 backdrop-blur-sm'}`}
     >
-      <div className={`flex flex-col items-center space-y-20 text-white transition-all duration-500 delay-100 
-      ${fadeOut ? 'opacity-0 translate-y-2' : isEntering ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
+      <div className={`flex flex-col items-center space-y-20 text-white transition-all delay-100 duration-500 
+      ${fadeOut ? 'translate-y-2 opacity-0' : isEntering ? 'translate-y-2 opacity-0' : 'translate-y-0 opacity-100'}`}>
 
 
-        <div className="w-60 h-60 flex items-center justify-center">
+        <div className="flex size-60 items-center justify-center">
           <Image
             src="/images/viewDeployment/layerAnim (1).gif"
             alt="Loading animation"
@@ -47,9 +47,9 @@ export function LoadingOverlay({ isVisible, message = 'Reserving Xnode...', fade
           />
         </div>
 
-        <div className="text-center mt-20">
-          <h3 className="text-xl font-semibold mb-2">{message}</h3>
-          <p className="text-gray-300 text-sm">This can take up to 1 minute...</p>
+        <div className="mt-20 text-center">
+          <h3 className="mb-2 text-xl font-semibold">{message}</h3>
+          <p className="text-sm text-gray-300">This can take up to 1 minute...</p>
         </div>
       </div>
     </div>

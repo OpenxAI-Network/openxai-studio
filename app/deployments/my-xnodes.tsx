@@ -2,6 +2,8 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { OpenxAITokenizedServerV1Contract } from '@/contracts/OpenxAITokenizedServerV1'
+import { chain } from '@/utils/chain'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { useAccount } from 'wagmi'
@@ -39,29 +41,37 @@ export function MyXnodes() {
       <span className="text-3xl font-bold">Your Servers</span>
       <div className="@max-lg:grid-cols-1 @max-3xl:grid-cols-2 @max-6xl:grid-cols-3 grid grid-cols-4 gap-3">
         {servers?.map((xnode, i) => (
-          <Link
-            key={i}
-            href={`/xnode?baseUrl=https://manager.${xnode.token_id}.${xnode.chain}.ownaiv1.openxai.network`}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {xnode.chain}#{xnode.token_id}
-                </CardTitle>
-                <CardDescription>ERC721 Tokenized Server</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex place-content-center">
+          <Card key={i}>
+            <CardHeader className="pb-2">
+              <CardTitle>OpenxAI Dedicated GPU {xnode.token_id}</CardTitle>
+              <CardDescription>ERC721 Tokenized Server</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-2">
+                <div className="flex place-items-center gap-1">
                   <Image
                     alt={'OwnAIv1 NFT image'}
                     src={`https://erc721.openxai.org/image/OwnAIv1/default.png`}
-                    width={100}
-                    height={100}
+                    width={32}
+                    height={32}
                   />
+                  <Link
+                    className="underline"
+                    href={`${chain.blockExplorers.default.url}/nft/${OpenxAITokenizedServerV1Contract.address}/${xnode.token_id}`}
+                    target="_blank"
+                  >
+                    View On Explorer
+                  </Link>
                 </div>
-              </CardContent>
-            </Card>
-          </Link>
+                <Link
+                  className="rounded border bg-primary py-1 text-center text-white"
+                  href={`/xnode?baseUrl=https://manager.${xnode.token_id}.${xnode.chain}.ownaiv1.openxai.network`}
+                >
+                  Access
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>

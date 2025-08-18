@@ -275,70 +275,81 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
   return (
     <>
       <LoadingOverlay isVisible={deploying} />
-      <div className="space-y-8">
+      <div className="flex flex-col space-y-8">
         <h2 className="text-xl font-semibold">One Click Deployment</h2>
 
-        <div
-          className={cn(
-            'relative cursor-pointer rounded-lg',
-            currentStep > 0 && 'bg-primary/5'
-          )}
-          onClick={handleModelClick}
-        >
-          <ModelSizeSelector
-            selected={step.modelSize}
-            showAll={currentStep === 0}
-            hardware={DEMO_POOL_SPECS}
-            onSelect={handleModelSelect}
-            templateId={templateId}
-            app={app}
-          />
-          {currentStep > 0 && step.modelSize && (
-            <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
-              <Check className="size-4 stroke-[3] text-white" />
-            </div>
-          )}
-        </div>
-
-        {currentStep >= 1 && (
+        <div className="flex flex-col gap-2">
+          <span className="text-lg font-semibold">Select your version</span>
           <div
             className={cn(
               'relative cursor-pointer rounded-lg',
-              currentStep > 1 && 'bg-primary/5'
+              currentStep > 0 && 'bg-primary/5'
             )}
-            onClick={handleProviderClick}
+            onClick={handleModelClick}
           >
-            <ProviderSelector
-              selected={step.provider}
-              showAll={currentStep === 1}
-              onSelect={handleProviderSelect}
+            <ModelSizeSelector
+              selected={step.modelSize}
+              showAll={currentStep === 0}
+              hardware={DEMO_POOL_SPECS}
+              onSelect={handleModelSelect}
+              templateId={templateId}
+              app={app}
             />
-            {currentStep > 1 && step.provider && (
+            {currentStep > 0 && step.modelSize && (
               <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
                 <Check className="size-4 stroke-[3] text-white" />
               </div>
             )}
           </div>
+        </div>
+
+        {currentStep >= 1 && (
+          <div className="flex flex-col gap-2">
+            <span className="text-lg font-semibold">Select your host</span>
+            <div
+              className={cn(
+                'relative cursor-pointer rounded-lg',
+                currentStep > 1 && 'bg-primary/5'
+              )}
+              onClick={handleProviderClick}
+            >
+              <ProviderSelector
+                selected={step.provider}
+                showAll={currentStep === 1}
+                onSelect={handleProviderSelect}
+              />
+              {currentStep > 1 && step.provider && (
+                <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
+                  <Check className="size-4 stroke-[3] text-white" />
+                </div>
+              )}
+            </div>
+          </div>
         )}
 
         {currentStep >= 2 && (
-          <div
-            className={cn(
-              'relative cursor-pointer rounded-lg',
-              currentStep > 2 && 'bg-primary/5'
-            )}
-            onClick={handleERCClick}
-          >
-            <ERCOptions
-              selected={step.ercOption}
-              showAll={currentStep === 2}
-              onSelect={handleERCSelect}
-            />
-            {currentStep > 2 && step.ercOption && (
-              <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
-                <Check className="size-4 stroke-[3] text-white" />
-              </div>
-            )}
+          <div className="flex flex-col gap-2">
+            <span className="text-lg font-semibold">
+              Tokenization and Monetization
+            </span>
+            <div
+              className={cn(
+                'relative cursor-pointer rounded-lg',
+                currentStep > 2 && 'bg-primary/5'
+              )}
+              onClick={handleERCClick}
+            >
+              <ERCOptions
+                selected={step.ercOption}
+                showAll={currentStep === 2}
+                onSelect={handleERCSelect}
+              />
+              {currentStep > 2 && step.ercOption && (
+                <div className="absolute -right-2.5 -top-2.5 flex size-5 items-center justify-center rounded-full bg-[#22C55E]">
+                  <Check className="size-4 stroke-[3] text-white" />
+                </div>
+              )}
+            </div>
           </div>
         )}
 

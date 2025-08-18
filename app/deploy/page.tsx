@@ -218,11 +218,11 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
                     <h2 className="text-xl font-bold text-primary">
                       {data.name}
                     </h2>
-                    <DeploymentCounter app={data.name} />
                   </div>
                   <p className="mt-2 line-clamp-2 max-w-prose text-muted-foreground">
                     {data.desc}
                   </p>
+                  <DeploymentCounter app={data.name} />
                 </div>
               </div>
 
@@ -257,7 +257,7 @@ export default async function DeployPage({ searchParams }: DeployPageProps) {
                     value="overview"
                     className="w-full text-muted-foreground"
                   >
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-20">
                       {data.longDesc && data.longDesc !== '' ? (
                         <div
                           dangerouslySetInnerHTML={{ __html: longDesc || '' }}

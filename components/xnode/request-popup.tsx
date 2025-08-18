@@ -160,6 +160,34 @@ export function RequestCommand({
     scrollErrToBottom()
   }, [commandInfo?.stderr, scrollErrToBottom])
 
+  const userReadableName = useMemo(() => {
+    if (!commandInfo) {
+      return undefined
+    }
+
+    const command = commandInfo.command
+    if (
+      command.includes('nix') &&
+      command.includes('flake') &&
+      command.includes('update')
+    ) {
+      return 'Checking for the latest version and updating software…'
+    }
+    if (command.includes('systemctl') && command.includes('daemon-reload')) {
+      return 'Updating permissions…'
+    }
+    if (command.includes('nix') && command.includes('build')) {
+      return 'Building the operating system, dependencies, middleware, backend, database, frontend, observability, and apps…'
+    }
+    if (
+      command.includes('systemctl') &&
+      command.includes('reload-or-restart')
+    ) {
+      return 'Starting services…'
+    }
+    return command
+  }, [commandInfo])
+
   return (
     commandInfo && (
       <AccordionItem value={command}>
@@ -172,7 +200,7 @@ export function RequestCommand({
             ) : (
               <Hourglass className="shrink-0" />
             )}
-            <span>{commandInfo.command}</span>
+            <span>{userReadableName}</span>
           </div>
         </AccordionTrigger>
         <AccordionContent>
