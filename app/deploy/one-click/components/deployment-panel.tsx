@@ -20,6 +20,7 @@ import {
   type DemoXnode,
 } from '@/lib/xnode'
 import { Button } from '@/components/ui/button'
+import { LoadingOverlay } from '@/components/ui/loading-overlay'
 import { useToast } from '@/components/ui/use-toast'
 import { useDeploymentQueueContext } from '@/components/deployment-queue'
 
@@ -103,9 +104,7 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
     setStep((prev) => ({ ...prev, ercOption }))
     setCurrentStep(3)
   }
-
   const { toast } = useToast()
-
   const demos = useDemosAvailable()
   const demoXnode = demos.data?.find((x) => !x.reservation)
   const reservedXnode = useDemoContext()
@@ -123,24 +122,20 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
         ?.map((x) => x.reservation.reserved_until)
         .sort()
         .at(0)
+
       toast({
         title: 'Deployment failed',
         description: `No demo xnodes available. ${nextFreeXnode ? `Next xnode will be free in ${Math.round((nextFreeXnode - Date.now() / 1000) / 60)} minutes.` : ''}`,
         variant: 'destructive',
       })
+
       return
     }
 
-    let dismiss = () => {}
     try {
       if (activeReservation) {
         deployOnXnode = reservedXnode.xnode
       } else {
-        dismiss = toast({
-          title: 'Reserving Xnode...',
-          description: 'This can take up to 1 minute..',
-          duration: 60_000,
-        }).dismiss
         deployOnXnode = await reserveDemo({ xnode_id: demoXnode.id })
       }
 
@@ -210,8 +205,6 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
       router.push('/deployments')
     } catch (e) {
       console.error(e)
-    } finally {
-      dismiss()
     }
   }
 
@@ -281,6 +274,7 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
 
   return (
     <>
+      <LoadingOverlay isVisible={deploying} />
       <div className="space-y-8">
         <h2 className="text-xl font-semibold">One Click Deployment</h2>
 

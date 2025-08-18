@@ -14,7 +14,7 @@ import PlanDetails from './planDetails'
 import TransferNFT from './transferNft'
 
 interface PlanManagementProps {
-  session: xnode.utils.Session
+  session?: xnode.utils.Session
   tokenId?: bigint
 }
 
@@ -57,7 +57,7 @@ export default function PlanManagement({
           <div>
             <div className="flex items-center gap-1">
               <h2 className="flex items-center gap-2 text-xl font-semibold text-[#000000]">
-                {session.baseUrl.replace('https://manager.', '')}
+                {session?.baseUrl.replace('https://manager.', '')}
                 <Image
                   src="/images/viewDeployment/ollama.svg"
                   alt="Ollama"

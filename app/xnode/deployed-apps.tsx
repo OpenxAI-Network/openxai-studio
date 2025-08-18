@@ -65,6 +65,10 @@ const DeployedApps = ({ session }: DeployedAppsProps) => {
   const setRequestPopup = useRequestPopup()
   const { mutate: set } = useConfigContainerSet()
   useEffect(() => {
+    if (!session) {
+      return
+    }
+
     const queue = getQueue(session.baseUrl)
     if (queue.length > 0) {
       let deployment = queue[0]
@@ -85,7 +89,7 @@ const DeployedApps = ({ session }: DeployedAppsProps) => {
         }
       )
     }
-  }, [getQueue])
+  }, [session, getQueue])
 
   if (!containers) {
     return <></>
