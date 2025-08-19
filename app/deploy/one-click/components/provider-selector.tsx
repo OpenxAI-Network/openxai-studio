@@ -376,7 +376,7 @@ function PaidProviderDialog({
   const price = useMemo(() => {
     switch (paidProvider) {
       case 'Deploy Now':
-        return 10_000_000 * 1000
+        return 10_000_000
       default:
         return 1_000_000_000_000_000
     }
