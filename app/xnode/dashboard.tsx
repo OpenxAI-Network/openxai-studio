@@ -33,6 +33,10 @@ export default function XNodeDashboard({ baseUrl }: XnodePageProps) {
   const { data: session, status } = useAuthLogin({
     baseUrl,
     ...signature,
+    overrides: {
+      retry: true,
+      retryDelay: 10_000,
+    },
   })
 
   const tokenId = useMemo(() => {
@@ -52,7 +56,7 @@ export default function XNodeDashboard({ baseUrl }: XnodePageProps) {
       <div className="container mx-auto mb-12 mt-0 max-w-screen-3xl">
         {signature &&
           !session &&
-          (status === 'pending' ? (
+          (status !== 'success' ? (
             <div className="mt-40 flex place-items-center justify-center gap-5">
               <div className="size-16 animate-spin rounded-full border-b-2 border-[#0354EC]" />
               <div className="flex flex-col gap-1">
@@ -60,7 +64,7 @@ export default function XNodeDashboard({ baseUrl }: XnodePageProps) {
                   XnodeOS is installing...
                 </span>
                 <span className="text-sm text-black/60">
-                  This can take up to 5 minutes. The page will reload
+                  This can take up to 10 minutes. The page will reload
                   automatically.
                 </span>
               </div>
