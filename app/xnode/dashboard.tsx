@@ -9,7 +9,6 @@ import { useSignatureCacheContext } from '@/components/signature-cache'
 import { Signup } from '@/components/Signup'
 import { RequestPopupProvider } from '@/components/xnode/request-popup'
 
-import Deployed_Apps from './deployed-apps'
 import PlanManagement from './planManagement'
 import Resources from './resources'
 import Rewards from './rewards'
@@ -86,7 +85,6 @@ export default function XNodeDashboard({ baseUrl }: XnodePageProps) {
             </div>
             <Resources session={session} />
 
-            <Deployed_Apps session={session} />
             <Rewards tokenId={tokenId} />
           </>
         )}

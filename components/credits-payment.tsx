@@ -141,16 +141,15 @@ export function CreditsPayment({
               </div>
               {item !== undefined &&
                 item === "OpenxAI's Dedicated Tokenized GPU" && (
-                  <Alert>
-                    <div className="flex place-items-center gap-1">
-                      <AlertTitle>
-                        You can stake your GPU to earn rewards - 330% APY
-                      </AlertTitle>
+                  <div className="flex place-content-between place-items-center">
+                    <span>You can stake your GPU to earn rewards</span>
+                    <div className="flex gap-1">
+                      <span>330% APY</span>
                       <Link href="/" target="_blank">
                         <HelpCircle className="size-5" />
                       </Link>
                     </div>
-                  </Alert>
+                  </div>
                 )}
               {balance !== undefined &&
                 balance < BigInt(topUp) * BigInt(1_000_000) && (

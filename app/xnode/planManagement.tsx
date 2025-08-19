@@ -10,6 +10,7 @@ import {
 } from '@openmesh-network/xnode-manager-sdk-react'
 import { ArrowUpRight } from 'lucide-react'
 
+import Deployed_Apps from './deployed-apps'
 import PlanDetails from './planDetails'
 import TransferNFT from './transferNft'
 
@@ -78,6 +79,8 @@ export default function PlanManagement({
           <ArrowUpRight className="ml-2" />
         </button>
       </div>
+
+      <Deployed_Apps session={session} />
 
       <div className="space-y-6">
         <PlanDetails tokenId={tokenId} />

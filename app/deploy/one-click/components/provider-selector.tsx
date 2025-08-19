@@ -98,7 +98,7 @@ export function ProviderSelector({
       ?.filter((server) => server.expires > Date.now() / 1000)
       .map((server) => {
         return {
-          name: `OwnAIv1 ${server.chain}#${server.token_id}`,
+          name: `Tokenized GPU ${server.token_id}`,
           icon: '/images/xnode-card/silvercard-front.webp',
           features: ['Web3 Ready', 'No KYC'],
           action: { label: 'Owned by you' },
@@ -128,7 +128,10 @@ export function ProviderSelector({
       features: ['Web3 Ready', 'No KYC'],
       action: {
         label: '150 GPU Credits',
-        description: ["OpenxAI's Tokenized GPUs | Dedicated", 'Up to 330% APY'],
+        description: [
+          "OpenxAI's Tokenized GPUs | Dedicated",
+          'Stake & earn up to 330% APY',
+        ],
       },
       isDecentralized: true,
     },
@@ -262,12 +265,20 @@ export function ProviderSelector({
             </div>
 
             {provider.action.description && (
-              <div className="flex flex-col gap-1">
-                {provider.action.description.map((description) => (
-                  <span className="text-muted-foreground max-[1550px]:text-base max-[1350px]:text-sm max-[1250px]:text-xs max-[992px]:text-[10px]">
-                    {description}
-                  </span>
-                ))}
+              <div className="flex flex-col gap-6">
+                {provider.action.description.map((description, i) =>
+                  i === 0 ? (
+                    <span className="text-muted-foreground max-[1550px]:text-base max-[1350px]:text-sm max-[1250px]:text-xs max-[992px]:text-[10px]">
+                      {description}
+                    </span>
+                  ) : (
+                    <div>
+                      <span className="rounded-lg bg-gray-200 px-3 py-2 text-sm text-black/60 max-[1350px]:text-xs max-[1250px]:text-[10px] max-[992px]:text-[8px]">
+                        {description}
+                      </span>
+                    </div>
+                  )
+                )}
               </div>
             )}
 
