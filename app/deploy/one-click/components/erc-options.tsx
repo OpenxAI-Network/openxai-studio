@@ -6,6 +6,15 @@ import { Fuel } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
+
+import Tokenization from './preview'
 
 type ERCOption = {
   id: string
@@ -67,72 +76,116 @@ export function ERCOptions({ selected, showAll, onSelect }: ERCOptionsProps) {
       ? [...options.filter((o) => o.id === selected.id)]
       : options
 
+  const [preview, setPreview] = useState<string | undefined>(undefined)
+
   return (
-    <div className="space-y-3 max-[1550px]:space-y-2.5 max-[1350px]:space-y-2 max-[1250px]:space-y-1.5">
-      {displayOptions.map((option) => (
-        <div
-          key={option.id}
-          onClick={() => {
-            if (option.id !== 'decide-later') {
-              return
-            }
+    <>
+      <Dialog
+        open={!!preview}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPreview(undefined)
+          }
+        }}
+      >
+        <DialogContent className="max-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>Tokenization and Monetization</DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[500px]">
+            <Tokenization
+              start={
+                preview === 'single-owner'
+                  ? {
+                      Token: 'sellEntireMonetization',
+                      label: 'Sell entire service to someone',
+                      Token_label: 'ERC-721 (NFT)',
+                    }
+                  : preview === 'saas'
+                    ? {
+                        Token: 'buildChainOnSaaS',
+                        label: 'Sell entire service to On-chain SaaS',
+                        Token_label: 'On-chain SaaS',
+                      }
+                    : {}
+              }
+              setExpandedItem={() => {}}
+              setFinalAmount={() => {}}
+            />
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+      <div className="space-y-3 max-[1550px]:space-y-2.5 max-[1350px]:space-y-2 max-[1250px]:space-y-1.5">
+        {displayOptions.map((option) => (
+          <div
+            key={option.id}
+            onClick={() => {
+              if (option.id !== 'decide-later') {
+                return
+              }
 
-            onSelect(option)
-          }}
-          className={cn(
-            'relative flex cursor-pointer items-start justify-between rounded-lg border p-6 hover:border-primary/50 max-[1550px]:p-5 max-[1350px]:p-4 max-[1250px]:p-3 max-[992px]:p-2',
-            selected?.id === option.id && 'border-primary bg-primary/5',
-            option.id !== 'decide-later' && 'cursor-not-allowed bg-muted'
-          )}
-        >
-          <div className="flex items-center gap-3 max-[1550px]:gap-2.5 max-[1350px]:gap-2 max-[1250px]:gap-1.5 max-[992px]:gap-1">
-            <div
-              className={cn(
-                'max-[1550px]:size-2.75 size-3 shrink-0 rounded-full max-[1350px]:size-2.5 max-[1250px]:size-2 max-[992px]:size-1.5',
-                selected?.id === option.id
-                  ? 'bg-primary'
-                  : 'border border-muted-foreground'
-              )}
-            ></div>
-            <div className="flex flex-col">
-              <div className="max-[992px]:mb-0.25 mb-1 flex items-center gap-2 max-[1550px]:gap-1.5 max-[1350px]:gap-1 max-[1250px]:mb-0.5 max-[1250px]:gap-0.5">
-                <div className="flex place-content-between text-base font-medium max-[1550px]:text-sm max-[1350px]:text-xs max-[1250px]:text-[10px] max-[992px]:text-[9px]">
-                  <span>{option.title}</span>
-                  {option.id !== 'decide-later' && (
-                    <Button variant="outline">preview</Button>
-                  )}
+              onSelect(option)
+            }}
+            className={cn(
+              'relative flex cursor-pointer items-start justify-between rounded-lg border p-6 hover:border-primary/50 max-[1550px]:p-5 max-[1350px]:p-4 max-[1250px]:p-3 max-[992px]:p-2',
+              selected?.id === option.id && 'border-primary bg-primary/5',
+              option.id !== 'decide-later' && 'cursor-not-allowed bg-muted'
+            )}
+          >
+            <div className="flex items-center gap-3 max-[1550px]:gap-2.5 max-[1350px]:gap-2 max-[1250px]:gap-1.5 max-[992px]:gap-1">
+              <div
+                className={cn(
+                  'max-[1550px]:size-2.75 size-3 shrink-0 rounded-full max-[1350px]:size-2.5 max-[1250px]:size-2 max-[992px]:size-1.5',
+                  selected?.id === option.id
+                    ? 'bg-primary'
+                    : 'border border-muted-foreground'
+                )}
+              ></div>
+              <div className="flex flex-col">
+                <div className="max-[992px]:mb-0.25 mb-1 flex items-center gap-2 max-[1550px]:gap-1.5 max-[1350px]:gap-1 max-[1250px]:mb-0.5 max-[1250px]:gap-0.5">
+                  <div className="flex place-content-between text-base font-medium max-[1550px]:text-sm max-[1350px]:text-xs max-[1250px]:text-[10px] max-[992px]:text-[9px]">
+                    <span>{option.title}</span>
+                    {option.id !== 'decide-later' && (
+                      <Button
+                        variant="outline"
+                        onClick={() => setPreview(option.id)}
+                      >
+                        preview
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-              {option.standard && (
-                <div className="flex gap-2 text-sm text-muted-foreground max-[1550px]:text-xs max-[1350px]:text-[11px] max-[1250px]:text-[10px] max-[992px]:text-[8px]">
-                  <Image
-                    src="/images/viewDeployment/ollama.svg"
-                    alt="Base icon"
-                    width={16}
-                    height={16}
-                  />
-                  {option.standard}
+                {option.standard && (
+                  <div className="flex gap-2 text-sm text-muted-foreground max-[1550px]:text-xs max-[1350px]:text-[11px] max-[1250px]:text-[10px] max-[992px]:text-[8px]">
+                    <Image
+                      src="/images/viewDeployment/ollama.svg"
+                      alt="Base icon"
+                      width={16}
+                      height={16}
+                    />
+                    {option.standard}
+                  </div>
+                )}
+                <div className="flex flex-col gap-1 text-sm text-muted-foreground max-[1550px]:text-xs max-[1350px]:text-[11px] max-[1250px]:text-[10px] max-[992px]:text-[8px]">
+                  {option.description ??
+                    option.advantages?.map((advantage) => (
+                      <span>{advantage}</span>
+                    ))}
                 </div>
-              )}
-              <div className="flex flex-col gap-1 text-sm text-muted-foreground max-[1550px]:text-xs max-[1350px]:text-[11px] max-[1250px]:text-[10px] max-[992px]:text-[8px]">
-                {option.description ??
-                  option.advantages?.map((advantage) => (
-                    <span>{advantage}</span>
-                  ))}
-              </div>
 
-              {option.price && (
-                <div className="flex items-center justify-end gap-1 pt-1 text-gray-400 max-[1550px]:bottom-5 max-[1550px]:right-5 max-[1350px]:bottom-4 max-[1350px]:right-4 max-[1250px]:bottom-3 max-[1250px]:right-3 max-[1250px]:gap-0.5 max-[992px]:bottom-2 max-[992px]:right-2">
-                  <Fuel className="max-[1550px]:size-4.5 size-5 max-[1350px]:size-4 max-[1250px]:size-3.5 max-[992px]:size-3" />
-                  <span className="text-base max-[1550px]:text-sm max-[1350px]:text-xs max-[1250px]:text-[10px] max-[992px]:text-[9px]">
-                    {option.price}
-                  </span>
-                </div>
-              )}
+                {option.price && (
+                  <div className="flex items-center justify-end gap-1 pt-1 text-gray-400 max-[1550px]:bottom-5 max-[1550px]:right-5 max-[1350px]:bottom-4 max-[1350px]:right-4 max-[1250px]:bottom-3 max-[1250px]:right-3 max-[1250px]:gap-0.5 max-[992px]:bottom-2 max-[992px]:right-2">
+                    <Fuel className="max-[1550px]:size-4.5 size-5 max-[1350px]:size-4 max-[1250px]:size-3.5 max-[992px]:size-3" />
+                    <span className="text-base max-[1550px]:text-sm max-[1350px]:text-xs max-[1250px]:text-[10px] max-[992px]:text-[9px]">
+                      {option.price}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </>
   )
 }
