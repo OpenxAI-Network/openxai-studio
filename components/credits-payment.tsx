@@ -27,7 +27,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from './ui/dialog'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
 import { Separator } from './ui/separator'
+import { useToast } from './ui/use-toast'
 
 export function CreditsPayment({
   item,
@@ -82,6 +85,10 @@ export function CreditsPayment({
       enabled: !!address,
     },
   })
+
+  const { toast } = useToast()
+  const [promoCode, setPromoCode] = useState<string>('')
+
   return (
     <Dialog
       open
@@ -164,55 +171,106 @@ export function CreditsPayment({
           )}
         </div>
         {step === 'buy' && (
-          <DialogFooter className="grid grid-cols-2">
-            <Button
-              className="rounded-lg border-primary text-primary"
-              variant="outline"
-              onClick={() => {
-                close(false)
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              className="rounded-lg"
-              onClick={() => {
-                performTransaction({
-                  transactionName: 'Buy Credits',
-                  transaction: async () => {
-                    return {
-                      abi: erc20Abi,
-                      address: tokenAddress,
-                      functionName: 'transfer',
-                      args: [
-                        OpenxAICreditDepositContract.address,
-                        BigInt(topUp) * BigInt(1_000_000),
-                      ],
-                    }
-                  },
-                  onSubmitted() {
-                    setStep('wait')
-                  },
-                  onConfirmed: () => {
-                    setStep('confirm')
-                    new Promise((resolve) => setTimeout(resolve, 3_000)).then(
-                      () => {
+          <DialogFooter>
+            <div className="flex w-full flex-col gap-2">
+              <div className="grid w-full grid-cols-2 gap-2">
+                <Button
+                  className="rounded-lg border-primary text-primary"
+                  variant="outline"
+                  onClick={() => {
+                    close(false)
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="rounded-lg"
+                  onClick={() => {
+                    performTransaction({
+                      transactionName: 'Buy Credits',
+                      transaction: async () => {
+                        return {
+                          abi: erc20Abi,
+                          address: tokenAddress,
+                          functionName: 'transfer',
+                          args: [
+                            OpenxAICreditDepositContract.address,
+                            BigInt(topUp) * BigInt(1_000_000),
+                          ],
+                        }
+                      },
+                      onSubmitted() {
+                        setStep('wait')
+                      },
+                      onConfirmed: () => {
+                        setStep('confirm')
+                        new Promise((resolve) =>
+                          setTimeout(resolve, 3_000)
+                        ).then(() => {
+                          refetchCredits()
+                          setStep('buy')
+                          close(true)
+                        })
+                      },
+                    })
+                  }}
+                  disabled={
+                    performingTransaction ||
+                    (balance !== undefined &&
+                      balance < BigInt(topUp) * BigInt(1_000_000))
+                  }
+                >
+                  Purchase Credits
+                </Button>
+              </div>
+              <div className="flex place-content-between place-items-center">
+                <Separator className="basis-[45%] bg-muted-foreground" />
+                <span>or</span>
+                <Separator className="basis-[45%] bg-muted-foreground" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="flex place-items-center gap-4">
+                  <Label className="shrink-0">Promo Code</Label>
+                  <Input
+                    placeholder="57ad010e-1df6-418e-ae9c-937dbfbeb834"
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value)}
+                  />
+                </div>
+                <Button
+                  className="rounded-lg"
+                  onClick={() => {
+                    axios
+                      .post(
+                        'https://indexer.core.openxai.org/api/promo_code/redeem',
+                        {
+                          code: promoCode,
+                          account: address,
+                        }
+                      )
+                      .then(() => {
                         refetchCredits()
                         setStep('buy')
                         close(true)
-                      }
-                    )
-                  },
-                })
-              }}
-              disabled={
-                performingTransaction ||
-                (balance !== undefined &&
-                  balance < BigInt(topUp) * BigInt(1_000_000))
-              }
-            >
-              Purchase Credits
-            </Button>
+                      })
+                      .catch(() => {
+                        toast({
+                          title: 'Error',
+                          description: 'Invalid Promo Code',
+                          variant: 'destructive',
+                        })
+                      })
+                  }}
+                  disabled={
+                    !new RegExp(
+                      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+                    ).test(promoCode)
+                  }
+                >
+                  Redeem
+                </Button>
+              </div>
+            </div>
           </DialogFooter>
         )}
       </DialogContent>
