@@ -172,7 +172,7 @@ export function CreditsPayment({
         </div>
         {step === 'buy' && (
           <DialogFooter>
-            <div className="flex w-full flex-col gap-2">
+            <div className="flex w-full flex-col gap-8">
               <div className="grid w-full grid-cols-2 gap-2">
                 <Button
                   className="rounded-lg border-primary text-primary"

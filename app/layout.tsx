@@ -34,8 +34,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const sessionCookie = cookies().get('userSessionToken')
-
   return (
     <html suppressHydrationWarning lang="en">
       <body

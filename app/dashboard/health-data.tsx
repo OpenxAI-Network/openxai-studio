@@ -43,15 +43,18 @@ import type { SelectedXnode } from '@/components/selected-xnode'
 export function useXnodes(sessionToken: string) {
   const { demoMode } = useDemoModeContext()
   const baseUrl = process.env.NEXT_PUBLIC_API_BACKEND_BASE_URL
-  
+
   return useQuery<Xnode[]>({
     queryKey: ['xnodes', sessionToken, demoMode, mockXNodes],
     queryFn: async () => {
       if (demoMode) return mockXNodes
       if (!baseUrl) throw new Error('API base URL not configured')
 
-      const apiUrl = `${baseUrl}/xnodes/functions/getXnodes`.replace(/\/+/g, '/')
-      
+      const apiUrl = `${baseUrl}/xnodes/functions/getXnodes`.replace(
+        /\/+/g,
+        '/'
+      )
+
       const response = await fetch(apiUrl, {
         method: 'GET',
         headers: {
@@ -77,7 +80,7 @@ export function useXnodes(sessionToken: string) {
     enabled: !!baseUrl || demoMode,
     refetchInterval: 30 * 1000,
     retry: 3,
-    retryDelay: 5000
+    retryDelay: 5000,
   })
 }
 
