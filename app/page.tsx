@@ -112,22 +112,22 @@ export default function Home() {
 
   return (
     <div className="flex size-full">
-      <div className="flex flex-col gap-32">
+      <div className="flex flex-1 basis-1/2 flex-col gap-32 max-xl:basis-2/3 max-xl:gap-20">
         <div className="mt-24 px-16">
-          <h1 className="text-balance pr-10 text-3xl font-semibold lg:text-7xl">
+          <h1 className="text-balance text-5xl font-semibold 2xl:text-7xl">
             Build and deploy AI agents in 5 minutes
           </h1>
           <div className="mt-12 flex items-center gap-4">
             <Link
               href="/app-store"
-              className="flex h-14 items-center rounded-3xl bg-primary px-12 text-xl font-medium text-background transition-colors hover:bg-primary/90"
+              className="flex h-14 items-center rounded-3xl bg-primary px-12 text-xl font-medium text-background transition-colors hover:bg-primary/90 max-xl:h-10 max-xl:px-6"
             >
               Build Now
             </Link>
             <Link
               href="https://docs.openxai.org"
               target="_blank"
-              className="flex h-14 place-items-center items-center gap-2 rounded px-2 font-medium text-blue-600 transition-colors hover:bg-foreground/10"
+              className="flex h-14 place-items-center items-center gap-2 rounded px-2 font-medium text-blue-600 transition-colors hover:bg-foreground/10 max-xl:h-10"
             >
               <span>Quick guide</span>
               <ArrowRight className="size-4" />
@@ -138,7 +138,7 @@ export default function Home() {
           <div className="flex place-content-center border-r border-gray-400 py-1">
             <div className="flex flex-col place-items-center">
               <div className="flex place-content-start">
-                <span className="text-4xl font-medium">
+                <span className="text-4xl font-medium max-xl:text-3xl">
                   {totalDeployments ?? '...'}
                 </span>
               </div>
@@ -148,7 +148,7 @@ export default function Home() {
           <div className="flex place-content-center border-r border-gray-400 py-1">
             <div className="flex flex-col place-items-center">
               <div className="flex place-content-start">
-                <span className="text-4xl font-medium">
+                <span className="text-4xl font-medium max-xl:text-3xl">
                   {ModelDefinitions.length}
                 </span>
               </div>
@@ -158,7 +158,9 @@ export default function Home() {
           <div className="flex place-content-center border-r border-gray-400 py-1">
             <div className="flex flex-col place-items-center">
               <div className="flex place-content-start">
-                <span className="text-4xl font-medium">{'>'}50</span>
+                <span className="text-4xl font-medium max-xl:text-3xl">
+                  {'>'}50
+                </span>
                 <span>K</span>
               </div>
               <span className="text-xs">Transaction /s</span>
@@ -167,7 +169,9 @@ export default function Home() {
           <div className="flex place-content-center py-1">
             <div className="flex flex-col place-items-center">
               <div className="flex place-content-start">
-                <span className="text-4xl font-medium">600</span>
+                <span className="text-4xl font-medium max-xl:text-3xl">
+                  600
+                </span>
                 <span>ms</span>
               </div>
               <span className="text-xs">Time to Finality (avg)</span>
@@ -267,7 +271,7 @@ export default function Home() {
           </div>
           <div className="flex place-content-center">
             <div className="flex place-items-center gap-3">
-              <div className="grid size-20 grid-cols-3 gap-0.5">
+              <div className="grid size-20 grid-cols-3 gap-0.5 max-xl:size-16">
                 {Array.from({ length: 30 }).map((_, i) => {
                   const day = Math.round(Date.now() / 86400_000) - 30 + i
                   const deploymentCount =
@@ -304,8 +308,8 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="flex w-full place-content-center place-items-center">
-        <Earth className="size-[700px]" />
+      <div className="flex w-full flex-1 basis-1/2 place-content-center place-items-center max-xl:basis-1/2">
+        <Earth className="size-full" />
       </div>
     </div>
   )
