@@ -2,7 +2,10 @@
 
 import { useMemo } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Earth, Rocket, Triangle } from 'lucide-react'
+import ModelDefinitions from '@/utils/model-definitions.json'
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
+import { ArrowRight, Earth, Triangle } from 'lucide-react'
 import {
   Label,
   PolarAngleAxis,
@@ -15,16 +18,97 @@ import {
 import { ChartContainer } from '@/components/ui/chart'
 
 export default function Home() {
-  const { data: activeDeployments } = { data: 22652 * 0.67 }
-  const { data: deploymentStock } = { data: 22652 * (1 - 0.67) }
-  const { data: dailyDeployments } = {
-    data: Array.from({ length: 30 }).map((_) =>
-      Math.round(Math.random() * 100)
-    ),
-  }
+  const { data: activeDeployments } = useQuery({
+    queryKey: ['activeDeployments'],
+    queryFn: async () => {
+      return axios
+        .get('https://indexer.core.openxai.org/api/ownaiv1/base/active')
+        .then((res) => res.data as number)
+    },
+  })
+  const { data: deploymentStock } = useQuery({
+    queryKey: ['deploymentStock'],
+    queryFn: async () => {
+      return axios
+        .get('https://indexer.core.openxai.org/api/ownaiv1/base/available')
+        .then((res) => res.data as number)
+    },
+  })
+  const { data: totalDeployments } = useQuery({
+    queryKey: ['totalDeployments'],
+    queryFn: async () => {
+      return axios
+        .get('https://indexer.core.openxai.org/api/deployment_signature/total')
+        .then((res) => res.data as number)
+    },
+  })
+  const { data: dailyDeployments } = useQuery({
+    queryKey: ['dailyDeployments'],
+    queryFn: async () => {
+      return axios
+        .get(
+          'https://indexer.core.openxai.org/api/deployment_signature/per_day'
+        )
+        .then((res) => res.data as { count: number; day: number }[])
+    },
+  })
+
+  const networkCapacity = useMemo(() => {
+    if (activeDeployments === undefined || deploymentStock === undefined) {
+      return undefined
+    }
+
+    return activeDeployments + deploymentStock
+  }, [activeDeployments, deploymentStock])
+
+  const networkCapacityPercentage = useMemo(() => {
+    if (activeDeployments === undefined || networkCapacity === undefined) {
+      return undefined
+    }
+
+    return (100 * activeDeployments) / networkCapacity
+  }, [activeDeployments, networkCapacity])
+
   const maxDailyDeploymentCount = useMemo(() => {
-    return Math.max(...dailyDeployments)
+    if (!dailyDeployments) {
+      return 1
+    }
+
+    return Math.max(...dailyDeployments.map((deployment) => deployment.count))
   }, [dailyDeployments])
+
+  const monthlyDeploymentCount = useMemo(() => {
+    if (!dailyDeployments) {
+      return undefined
+    }
+
+    return dailyDeployments
+      .filter(
+        (deployment) => Math.round(Date.now() / 86400_000) - deployment.day < 30
+      )
+      .reduce((prev, cur) => prev + cur.count, 0)
+  }, [dailyDeployments])
+
+  const lastMonthDeploymentCount = useMemo(() => {
+    if (!dailyDeployments) {
+      return undefined
+    }
+
+    return dailyDeployments
+      .filter((deployment) => {
+        const daysAgo = Math.round(Date.now() / 86400_000) - deployment.day
+        return daysAgo >= 30 && daysAgo < 60
+      })
+      .reduce((prev, cur) => prev + cur.count, 0)
+  }, [dailyDeployments])
+
+  const monthlyDeploymentGrowth = useMemo(() => {
+    if (monthlyDeploymentCount === undefined || !lastMonthDeploymentCount) {
+      return undefined
+    }
+
+    return (100 * monthlyDeploymentCount) / lastMonthDeploymentCount - 100
+  }, [monthlyDeploymentCount, lastMonthDeploymentCount])
 
   return (
     <div className="flex size-full">
@@ -54,19 +138,21 @@ export default function Home() {
           <div className="flex place-content-center border-r border-gray-400 py-1">
             <div className="flex flex-col place-items-center">
               <div className="flex place-content-start">
-                <span className="text-4xl font-medium">{'>'}50</span>
-                <span>K</span>
+                <span className="text-4xl font-medium">
+                  {totalDeployments ?? '...'}
+                </span>
               </div>
-              <span className="text-xs">Transaction /s</span>
+              <span className="text-xs">Total Deployments</span>
             </div>
           </div>
           <div className="flex place-content-center border-r border-gray-400 py-1">
             <div className="flex flex-col place-items-center">
               <div className="flex place-content-start">
-                <span className="text-4xl font-medium">600</span>
-                <span>ms</span>
+                <span className="text-4xl font-medium">
+                  {ModelDefinitions.length}
+                </span>
               </div>
-              <span className="text-xs">Time to Finality (avg)</span>
+              <span className="text-xs">Apps</span>
             </div>
           </div>
           <div className="flex place-content-center border-r border-gray-400 py-1">
@@ -104,10 +190,7 @@ export default function Home() {
                     accessibilityLayer
                     data={[
                       {
-                        data: Math.round(
-                          (100 * activeDeployments) /
-                            (activeDeployments + deploymentStock)
-                        ),
+                        data: networkCapacityPercentage ?? 0,
                         fill: 'hsl(var(--primary))',
                       },
                     ]}
@@ -156,10 +239,9 @@ export default function Home() {
                                   y={viewBox.cy}
                                   className="fill-foreground font-mono text-2xl font-bold"
                                 >
-                                  {(
-                                    (100 * activeDeployments) /
-                                    (activeDeployments + deploymentStock)
-                                  ).toFixed(0)}
+                                  {networkCapacityPercentage
+                                    ? networkCapacityPercentage.toFixed(0)
+                                    : '..'}
                                   %
                                 </tspan>
                               </text>
@@ -173,9 +255,9 @@ export default function Home() {
               </div>
               <div className="flex flex-col place-content-center">
                 <span className="text-2xl font-semibold">
-                  {(activeDeployments + deploymentStock).toLocaleString(
-                    'en-US'
-                  )}
+                  {networkCapacity
+                    ? networkCapacity.toLocaleString('en-US')
+                    : '...'}
                 </span>
                 <span className="text-sm text-muted-foreground">
                   Network Capacity
@@ -186,22 +268,33 @@ export default function Home() {
           <div className="flex place-content-center">
             <div className="flex place-items-center gap-3">
               <div className="grid size-20 grid-cols-3 gap-0.5">
-                {dailyDeployments.map((deploymentCount, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      backgroundColor: `hsla(219, 100%, 50%, ${(0.1 + 0.9 * (deploymentCount / maxDailyDeploymentCount)).toFixed(2)})`,
-                    }}
-                  />
-                ))}
+                {Array.from({ length: 30 }).map((_, i) => {
+                  const day = Math.round(Date.now() / 86400_000) - 30 + i
+                  const deploymentCount =
+                    dailyDeployments?.find(
+                      (deployment) => deployment.day === day
+                    )?.count ?? 0
+                  return (
+                    <div
+                      key={i}
+                      style={{
+                        backgroundColor: `hsla(219, 100%, 50%, ${(0.05 + 0.95 * (deploymentCount / maxDailyDeploymentCount)).toFixed(2)})`,
+                      }}
+                    />
+                  )
+                })}
               </div>
               <div className="flex flex-col place-content-center">
                 <div className="flex place-items-center gap-4 text-2xl">
-                  <span className="font-semibold">324</span>
-                  <div className="flex place-items-center gap-1 text-green-600">
-                    <Triangle className="size-4 fill-green-600" />
-                    <span>300%</span>
-                  </div>
+                  <span className="font-semibold">
+                    {monthlyDeploymentCount ?? '...'}
+                  </span>
+                  {monthlyDeploymentGrowth > 0 && (
+                    <div className="flex place-items-center gap-1 text-green-600">
+                      <Triangle className="size-4 fill-green-600" />
+                      <span>+{monthlyDeploymentGrowth.toFixed(0)}%</span>
+                    </div>
+                  )}
                 </div>
                 <span className="text-sm text-muted-foreground">
                   30 Days Deployments

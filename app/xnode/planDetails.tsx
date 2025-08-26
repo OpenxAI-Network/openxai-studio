@@ -27,13 +27,18 @@ export default function PlanDetails({ tokenId }: { tokenId: bigint }) {
   const contentRef = useRef<HTMLDivElement>(null)
   const [renewalMonths, setRenewalMonths] = useState('')
 
-  const pricePerMonth = 10
+  const { data: pricePerMonth } = useQuery({
+    queryKey: ['ownaiv1_price'],
+    queryFn: async () => {
+      return await axios
+        .get('https://indexer.core.openxai.org/api/ownaiv1/base/price')
+        .then((res) => res.data as number)
+    },
+  })
   const months = parseInt(renewalMonths) || 0
 
-  const calculatedRenewalCost = (
-    months > 0 ? months * pricePerMonth : 0
-  ).toFixed(2)
-  const totalCost = parseFloat(calculatedRenewalCost)
+  const calculatedRenewalCost =
+    pricePerMonth !== undefined && months > 0 ? months * pricePerMonth : 0
 
   useEffect(() => {
     if (contentRef.current) {
@@ -185,7 +190,7 @@ export default function PlanDetails({ tokenId }: { tokenId: bigint }) {
                     Price:
                   </span>
                   <span className="flex items-center text-[12px] font-medium md:text-sm">
-                    {pricePerMonth} GPU Credits / month
+                    {(pricePerMonth / 1_000_000).toFixed(0)} GPU Credits / month
                   </span>
                 </div>
               </div>
@@ -242,7 +247,7 @@ export default function PlanDetails({ tokenId }: { tokenId: bigint }) {
                     Renewal Cost:
                   </span>
                   <span className="flex items-center text-[12px] font-medium md:text-sm">
-                    {calculatedRenewalCost}{' '}
+                    {(calculatedRenewalCost / 1_000_000).toFixed(2)}{' '}
                     <span className="ml-1 text-[12px] font-semibold text-[#525252] md:text-sm">
                       GPU Credits
                     </span>
@@ -258,13 +263,13 @@ export default function PlanDetails({ tokenId }: { tokenId: bigint }) {
                   <div className="flex flex-col gap-1">
                     <span className="flex items-center font-medium">
                       <span className="text-[12px] font-bold text-[#0040B8] md:text-[16px]">
-                        {totalCost.toFixed(2)}
+                        {(calculatedRenewalCost / 1_000_000).toFixed(2)}
                         <span className="font-semibold"> GPU Credits</span>
                       </span>
                     </span>
                     {renewalMonths && parseInt(renewalMonths) > 0 && (
                       <span className="self-end text-[13px] text-[#525252]">
-                        {pricePerMonth}/month
+                        {(pricePerMonth / 1_000_000).toFixed(0)}/month
                       </span>
                     )}
                   </div>
@@ -297,7 +302,7 @@ export default function PlanDetails({ tokenId }: { tokenId: bigint }) {
                       return
                     }
 
-                    const credits_cost = totalCost * 1_000_000
+                    const credits_cost = calculatedRenewalCost
                     if (credits_cost > total_credits) {
                       performTransaction({
                         transactionName: 'Buy Credits',
@@ -364,7 +369,7 @@ export default function PlanDetails({ tokenId }: { tokenId: bigint }) {
                   }
                 >
                   {total_credits !== undefined &&
-                  totalCost * 1_000_000 > total_credits
+                  calculatedRenewalCost > total_credits
                     ? 'Buy Credits'
                     : 'Renew'}
                 </button>

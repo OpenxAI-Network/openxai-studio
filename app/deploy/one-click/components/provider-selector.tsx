@@ -384,20 +384,20 @@ function PaidProviderDialog({
     },
   })
 
-  const price = useMemo(() => {
-    switch (paidProvider) {
-      case 'Deploy Now':
-        return 10_000_000
-      default:
-        return 1_000_000_000_000_000
-    }
-  }, [paidProvider])
+  const { data: price } = useQuery({
+    queryKey: ['ownaiv1_price'],
+    queryFn: async () => {
+      return await axios
+        .get('https://indexer.core.openxai.org/api/ownaiv1/base/price')
+        .then((res) => res.data as number)
+    },
+  })
 
   const { toast } = useToast()
   const { signMessageAsync } = useSignMessage()
   const [deploying, setDeploying] = useState<boolean>(false)
 
-  if (total_credits === undefined) {
+  if (total_credits === undefined || price === undefined) {
     return <></>
   }
 

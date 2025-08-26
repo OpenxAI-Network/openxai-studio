@@ -152,7 +152,10 @@ export function CreditsPayment({
                     <span>You can stake your GPU to earn rewards</span>
                     <div className="flex gap-1">
                       <span>330% APY</span>
-                      <Link href="/" target="_blank">
+                      <Link
+                        href="https://docs.openxai.org/web3/staking-system"
+                        target="_blank"
+                      >
                         <HelpCircle className="size-5" />
                       </Link>
                     </div>
