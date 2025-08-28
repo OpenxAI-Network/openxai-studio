@@ -128,7 +128,7 @@ export function getFlake({ model, gpu }: { model: string; gpu: boolean }) {
             };
             hardware.nvidia.open = true;
             services.xserver.videoDrivers = [ "nvidia" ];`
-                : ''
+                : 'services.xnode-ai-chat.autoGenerate.enable = false;'
             }
 
             networking.firewall.allowedTCPPorts = [
