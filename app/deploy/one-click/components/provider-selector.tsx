@@ -7,8 +7,9 @@ import { useWeb3Modal } from '@web3modal/wagmi/react'
 import axios from 'axios'
 import { Check, CheckCircle2, Hourglass, Search, X } from 'lucide-react'
 import { useAccount, useSignMessage } from 'wagmi'
-
+import Lottie from 'lottie-react'
 import { cn } from '@/lib/utils'
+import flowAnimation from '@/utils/loader.json'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -406,6 +407,7 @@ function PaidProviderDialog({
       <CreditsPayment
         item="OpenxAI's Dedicated Tokenized GPU"
         price={price}
+        
         close={(success) => {
           if (success) {
             refetchCredits()
@@ -416,7 +418,7 @@ function PaidProviderDialog({
       />
     )
   }
-
+ 
   return (
     <Dialog
       open
@@ -427,18 +429,24 @@ function PaidProviderDialog({
       }}
     >
       {deploying ? (
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Deploying Tokenized Server</DialogTitle>
-            <DialogDescription className="flex place-items-center gap-1">
-              <Hourglass />
-              <span>
-                Please wait, this can take up to a minute. Do not refresh the
-                page.
-              </span>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
+        // <DialogContent className="border-none w-full h-full">
+        //   <DialogHeader>
+        //     <DialogTitle>Deploying Tokenized Server</DialogTitle>
+        //     <DialogDescription className="flex place-items-center gap-1">
+        //       <Hourglass />
+        //       <span>
+        //         Please wait, this can take up to a minute. Do not refresh the
+        //         page.
+        //       </span>
+        //     </DialogDescription>
+        //   </DialogHeader> 
+        // </DialogContent>
+        <div className="fixed bg-white/80 backdrop-blur-sm w-full h-full inset-0 flex justify-center items-center z-[100]">
+        <Lottie animationData={flowAnimation} autoplay loop />
+      </div>
+      
+       
+       
       ) : (
         <DialogContent>
           <DialogHeader>
