@@ -9,7 +9,7 @@ import axios from 'axios'
 import { Check } from 'lucide-react'
 import { type SignMessageReturnType } from 'viem'
 import { useAccount } from 'wagmi'
-
+import { useLoading } from '@/contexts/LoadingContext'
 import { cn } from '@/lib/utils'
 import {
   demoSession,
@@ -56,7 +56,7 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
   const [step, setStep] = useState<DeploymentStep>({})
   const [currentStep, setCurrentStep] = useState<number>(0)
   const [deploying, setDeploying] = useState<boolean>(false)
-
+  const { setLoading } = useLoading()
   const handleModelClick = () => {
     if (currentStep > 0) {
       setCurrentStep(0)
@@ -203,8 +203,10 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
       })
 
       router.push('/deployments')
+      setLoading(false)
     } catch (e) {
       console.error(e)
+      setLoading(false)
     }
   }
 
@@ -274,7 +276,7 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
 
   return (
     <>
-      <LoadingOverlay isVisible={deploying} />
+    
       <div className="flex flex-col space-y-8">
         <h2 className="text-xl font-semibold">One Click Deployment</h2>
 
@@ -374,6 +376,7 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
         open={askSignature}
         close={(signature) => {
           setAskSignature(false)
+          setLoading(true)
           setDeploying(true)
           ;(step.provider.type === 'demo'
             ? deployOnDemo({ signature })

@@ -1,15 +1,15 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState,useRef,useEffect,useCallback } from 'react'
 import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import axios from 'axios'
 import { Check, CheckCircle2, Hourglass, Search, X } from 'lucide-react'
 import { useAccount, useSignMessage } from 'wagmi'
-import Lottie from 'lottie-react'
+import Lottie,{ type LottieRefCurrentProps } from 'lottie-react'
 import { cn } from '@/lib/utils'
-import flowAnimation from '@/utils/loader.json'
+
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -71,7 +71,6 @@ export function ProviderSelector({
   onSelect,
 }: ProviderSelectorProps) {
   const [showExtendedOptions, setShowExtendedOptions] = useState(false)
-
   const { address } = useAccount()
   const { open } = useWeb3Modal()
   const { data: myServers, refetch: refetchMyServers } = useQuery({
@@ -371,6 +370,7 @@ function PaidProviderDialog({
   close: (select?: ProviderReturn) => void
 }) {
   const { address } = useAccount()
+  
   const { data: total_credits, refetch: refetchCredits } = useQuery({
     queryKey: ['total_credits', address ?? ''],
     enabled: !!address,
@@ -396,7 +396,71 @@ function PaidProviderDialog({
 
   const { toast } = useToast()
   const { signMessageAsync } = useSignMessage()
+  const videoRef = useRef<HTMLVideoElement>(null)
+ 
   const [deploying, setDeploying] = useState<boolean>(false)
+  const [shouldRender, setShouldRender] = useState(deploying)
+  const [loop, setLoop] = useState(true)
+  const [fastForward, setFastForward] = useState(false)
+ 
+
+  const applySpeed = (speed: number) => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = speed
+    }
+  }
+
+  const forceSpeedApplication = useCallback((speed: number) => {
+    setTimeout(() => {
+      applySpeed(speed)
+      setTimeout(() => applySpeed(speed), 100)
+    }, 50)
+  }, [])
+
+  useEffect(() => {
+    if (deploying) {
+      setShouldRender(true)
+      setLoop(true)
+      setFastForward(false)
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0
+        videoRef.current.play()
+      }
+      forceSpeedApplication(1)
+    } else if (videoRef.current) {
+      setLoop(false)
+      setFastForward(true)
+      forceSpeedApplication(16)
+    }
+  }, [deploying, forceSpeedApplication])
+
+  useEffect(() => {
+    if (shouldRender && videoRef.current) {
+      const intervalId = setInterval(() => {
+        if (deploying) {
+          applySpeed(1)
+        } else if (fastForward ) {
+          applySpeed(16)
+        }
+      }, 100)
+
+      return () => clearInterval(intervalId)
+    }
+  }, [shouldRender, deploying, fastForward])
+
+  const handleVideoEnd = () => {
+    if (!loop) {
+      setShouldRender(false)
+    }
+  }
+
+  const handleVideoLoaded = () => {
+    if (deploying) {
+      forceSpeedApplication(6)
+    } else if (fastForward) {
+      forceSpeedApplication(16)
+    }
+  }
 
   if (total_credits === undefined || price === undefined) {
     return <></>
@@ -428,7 +492,7 @@ function PaidProviderDialog({
         }
       }}
     >
-      {deploying ? (
+      {shouldRender ? (
         // <DialogContent className="border-none w-full h-full">
         //   <DialogHeader>
         //     <DialogTitle>Deploying Tokenized Server</DialogTitle>
@@ -441,12 +505,52 @@ function PaidProviderDialog({
         //     </DialogDescription>
         //   </DialogHeader> 
         // </DialogContent>
-        <div className="fixed bg-white/80 backdrop-blur-sm w-full h-full inset-0 flex justify-center items-center z-[100]">
-        <Lottie animationData={flowAnimation} autoplay loop />
-      </div>
-      
-       
-       
+        <div className="fixed bg-black/80 backdrop-blur-sm w-full h-full inset-0 flex justify-center items-center z-[100]">
+       {/* <Lottie
+            lottieRef={lottieRef}
+            animationData={flowAnimation}
+            loop={loop}
+            autoplay={true}
+            onComplete={() => {
+              setShouldRender(false)
+            }}
+            onLoopComplete={() => {
+              
+              if (deploying) {
+                applySpeed(6)
+              } else if (fastForward) {
+                applySpeed(8)
+              }
+            }}
+            onDOMLoaded={() => {
+              
+              if (deploying) {
+                forceSpeedApplication(6)
+              } else if (fastForward) {
+                forceSpeedApplication(8)
+              }
+            }}
+          /> */}
+        <div className="flex size-4/5 items-center justify-center">
+          <video
+            ref={videoRef}
+            className="h-full w-full object-contain"
+            loop={loop}
+            autoPlay
+            muted
+            playsInline
+            preload="auto"
+            onEnded={handleVideoEnd}
+            onLoadedMetadata={handleVideoLoaded}
+          >
+           
+            <source src="/video/GPU-animation.webm" type="video/webm"/>
+            
+          
+          </video>
+        </div>
+        
+      </div>  
       ) : (
         <DialogContent>
           <DialogHeader>
@@ -500,6 +604,9 @@ function PaidProviderDialog({
                       .finally(() => setDeploying(false))
                   })
                   .catch(console.error)
+                // setDeploying(true)
+                // setShouldRender(true)
+                // setTimeout(()=>{setDeploying(false)},30000)
               }}
             >
               Deploy Now

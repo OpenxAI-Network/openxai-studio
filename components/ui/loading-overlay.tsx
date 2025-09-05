@@ -1,66 +1,100 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import flowAnimation from '@/utils/loading.json'
-import Lottie from 'lottie-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useLoading } from '@/contexts/LoadingContext'
+import { usePathname } from 'next/navigation'
 
-interface LoadingOverlayProps {
-  isVisible: boolean
-  message?: string
-  fadeOut?: boolean
-}
-export function LoadingOverlay({
-  isVisible,
-  message = 'Reserving Xnode...',
-  fadeOut = false,
-}: LoadingOverlayProps) {
-  const [isMounted, setIsMounted] = useState(false)
-  const [isEntering, setIsEntering] = useState(false)
+export function LoadingOverlay() {
+  const { isLoading, loadingMessage } = useLoading()
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [shouldRender, setShouldRender] = useState(isLoading)
+  const [loop, setLoop] = useState(true)
+  const [fastForward, setFastForward] = useState(false)
+  const pathname = usePathname()
 
-  useEffect(() => {
-    if (isVisible) {
-      setIsEntering(true)
-
-      setTimeout(() => setIsEntering(false), 50)
+  const applySpeed = (speed: number) => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = speed
     }
-  }, [isVisible])
-
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
-  if (!isVisible || !isMounted) {
-    return null
   }
 
+  const forceSpeedApplication = useCallback((speed: number) => {
+    setTimeout(() => {
+      applySpeed(speed)
+      setTimeout(() => applySpeed(speed), 100)
+    }, 50)
+  }, [])
+
+  useEffect(() => {
+    if (isLoading) {
+      setShouldRender(true)
+      setLoop(true)
+      setFastForward(false)
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0
+        videoRef.current.play()
+      }
+      forceSpeedApplication(1)
+    } else if (videoRef.current) {
+      setLoop(false)
+      setFastForward(true)
+      forceSpeedApplication(16)
+    }
+  }, [isLoading, forceSpeedApplication])
+
+  useEffect(() => {
+    if (shouldRender && videoRef.current) {
+      const intervalId = setInterval(() => {
+        if (isLoading) {
+          applySpeed(1)
+        } else if (fastForward && pathname === '/deployments') {
+          applySpeed(16)
+        }
+      }, 100)
+
+      return () => clearInterval(intervalId)
+    }
+  }, [shouldRender, isLoading, fastForward, pathname])
+
+  const handleVideoEnd = () => {
+    if (!loop) {
+      setShouldRender(false)
+    }
+  }
+
+  const handleVideoLoaded = () => {
+    if (isLoading) {
+      forceSpeedApplication(6)
+    } else if (fastForward) {
+      forceSpeedApplication(16)
+    }
+  }
+
+  if (!shouldRender) return null
+
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm transition-all duration-300 ease-in-out ${
-        fadeOut
-          ? 'scale-95 opacity-0 backdrop-blur-none'
-          : isEntering
-            ? 'scale-105 opacity-0 backdrop-blur-none'
-            : 'scale-100 opacity-100 backdrop-blur-sm'
-      }`}
-    >
-      <div
-        className={`flex flex-col items-center space-y-20 text-white transition-all delay-100 duration-500 ${
-          fadeOut
-            ? 'translate-y-2 opacity-0'
-            : isEntering
-              ? 'translate-y-2 opacity-0'
-              : 'translate-y-0 opacity-100'
-        }`}
-      >
-        <div className="flex h-60 w-60 items-center justify-center">
-          <Lottie animationData={flowAnimation} loop={true} autoplay={true} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+      <div className="flex flex-col items-center space-y-10">
+        <div className="flex size-1/2 items-center justify-center">
+          <video
+            ref={videoRef}
+            className="h-full w-full object-contain"
+            loop={loop}
+            autoPlay
+            muted
+            playsInline
+            preload="auto"
+            onEnded={handleVideoEnd}
+            onLoadedMetadata={handleVideoLoaded}
+          >
+            <source src="/video/layers-animation.webm" type="video/webm"/>
+          </video>
         </div>
-        <div className="mt-20 text-center">
-          <h3 className="mb-2 text-xl font-semibold">{message}</h3>
-          <p className="text-sm text-gray-300">
-            This can take up to 1 minute...
-          </p>
-        </div>
+        {/* <div className="mt-10 text-center">
+          <h3 className="mb-2 text-xl font-semibold text-black">
+            {loadingMessage || 'Loading...'}
+          </h3>
+        </div> */}
       </div>
     </div>
   )

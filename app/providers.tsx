@@ -16,6 +16,7 @@ import DeploymentQueueProvider from '@/components/deployment-queue'
 import ScreenProvider from '@/components/screen-provider'
 import SelectedXnodeProvider from '@/components/selected-xnode'
 import SignatureCacheProvider from '@/components/signature-cache'
+import { LoadingProvider } from '@/contexts/LoadingContext'
 
 export const chains = [chain] as const
 const queryClient = new QueryClient()
@@ -68,13 +69,16 @@ export function Providers({
       <WagmiProvider config={wagmiConfig} initialState={initialState}>
         <QueryClientProvider client={queryClient}>
           <ThemeProvider attribute="class" enableSystem={false}>
+            <LoadingProvider>
             <DemoModeProvider>
               <SelectedXnodeProvider>
                 <DemoContextProvider>
                   <SignatureCacheProvider>
                     <DeploymentQueueProvider>
                       <ScreenProvider>
-                        {children}
+                        
+                          {children}
+                        
                         <ToastContainer />
                         <Toaster />
                       </ScreenProvider>
@@ -83,6 +87,7 @@ export function Providers({
                 </DemoContextProvider>
               </SelectedXnodeProvider>
             </DemoModeProvider>
+            </LoadingProvider>
           </ThemeProvider>
         </QueryClientProvider>
       </WagmiProvider>

@@ -13,6 +13,7 @@ import CTAHelp from '@/components/cta-help'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import { NavLayout } from '@/components/SidebarNav/sibebar-nav'
+import { LoadingOverlay } from '@/components/ui/loading-overlay'
 
 import { Providers } from './providers'
 
@@ -46,6 +47,7 @@ export default function RootLayout({
           <Header />
           <NavLayout>
             {children}
+            <LoadingOverlay/>
             <ScrollToTop />
           </NavLayout>
           <Footer />
