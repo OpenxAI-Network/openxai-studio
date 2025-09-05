@@ -235,7 +235,18 @@ const MapComponent: React.FC<MapClientComponentProps> = ({ providers, searchQuer
   
   return (
     <div className="flex flex-col gap-6">
-      <div ref={mapRef} style={{ height: '600px', width: '100%' }} />
+      <div style={{ position: 'relative', overflow: 'hidden' }}>
+        <div
+          ref={mapRef}
+          style={{
+            height: '600px',
+            width: '100%',
+            overflow: 'hidden',
+            position: 'relative',
+            transform: 'translateZ(0)'
+          }}
+        />
+      </div>
       
       {/* Stats Section */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-7">
