@@ -1,13 +1,13 @@
 'use client'
 
-import { useMemo, useState,useRef,useEffect,useCallback } from 'react'
+import { useMemo, useState, useRef, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import axios from 'axios'
 import { Check, CheckCircle2, Hourglass, Search, X } from 'lucide-react'
 import { useAccount, useSignMessage } from 'wagmi'
-import Lottie,{ type LottieRefCurrentProps } from 'lottie-react'
+import Lottie, { type LottieRefCurrentProps } from 'lottie-react'
 import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
@@ -42,7 +42,7 @@ type Provider = {
 interface ProviderSelectorProps {
   selected?: ProviderReturn
   showAll?: boolean
-  onSelect: (provider: ProviderReturn) => void
+  onSelect: (provider: ProviderReturn | null) => void
 }
 
 function EqualProvider({
@@ -174,10 +174,10 @@ export function ProviderSelector({
     ? providers
     : selected
       ? [
-          ...providers.filter((p) =>
-            EqualProvider({ provider1: selected, provider2: p.return })
-          ),
-        ]
+        ...providers.filter((p) =>
+          EqualProvider({ provider1: selected, provider2: p.return })
+        ),
+      ]
       : providers
 
   const [paidProvider, setPaidProvider] = useState<string | undefined>(
@@ -202,7 +202,12 @@ export function ProviderSelector({
                   setPaidProvider(provider.name)
                 }
               } else {
-                onSelect(provider.return)
+                // Toggle selection: deselect if already selected, select if not selected
+                if (EqualProvider({ provider1: selected, provider2: provider.return })) {
+                  onSelect(null)
+                } else {
+                  onSelect(provider.return)
+                }
               }
             }}
             className={cn(
@@ -370,7 +375,7 @@ function PaidProviderDialog({
   close: (select?: ProviderReturn) => void
 }) {
   const { address } = useAccount()
-  
+
   const { data: total_credits, refetch: refetchCredits } = useQuery({
     queryKey: ['total_credits', address ?? ''],
     enabled: !!address,
@@ -397,12 +402,12 @@ function PaidProviderDialog({
   const { toast } = useToast()
   const { signMessageAsync } = useSignMessage()
   const videoRef = useRef<HTMLVideoElement>(null)
- 
+
   const [deploying, setDeploying] = useState<boolean>(false)
   const [shouldRender, setShouldRender] = useState(deploying)
   const [loop, setLoop] = useState(true)
   const [fastForward, setFastForward] = useState(false)
- 
+
 
   const applySpeed = (speed: number) => {
     if (videoRef.current) {
@@ -439,7 +444,7 @@ function PaidProviderDialog({
       const intervalId = setInterval(() => {
         if (deploying) {
           applySpeed(1)
-        } else if (fastForward ) {
+        } else if (fastForward) {
           applySpeed(16)
         }
       }, 100)
@@ -471,7 +476,7 @@ function PaidProviderDialog({
       <CreditsPayment
         item="OpenxAI's Dedicated Tokenized GPU"
         price={price}
-        
+
         close={(success) => {
           if (success) {
             refetchCredits()
@@ -482,7 +487,7 @@ function PaidProviderDialog({
       />
     )
   }
- 
+
   return (
     <Dialog
       open
@@ -506,7 +511,7 @@ function PaidProviderDialog({
         //   </DialogHeader> 
         // </DialogContent>
         <div className="fixed bg-black/80 backdrop-blur-sm w-full h-full inset-0 flex justify-center items-center z-[100]">
-       {/* <Lottie
+          {/* <Lottie
             lottieRef={lottieRef}
             animationData={flowAnimation}
             loop={loop}
@@ -531,26 +536,26 @@ function PaidProviderDialog({
               }
             }}
           /> */}
-        <div className="flex size-4/5 items-center justify-center">
-          <video
-            ref={videoRef}
-            className="h-full w-full object-contain"
-            loop={loop}
-            autoPlay
-            muted
-            playsInline
-            preload="auto"
-            onEnded={handleVideoEnd}
-            onLoadedMetadata={handleVideoLoaded}
-          >
-           
-            <source src="/video/GPU-animation.webm" type="video/webm"/>
-            
-          
-          </video>
+          <div className="flex size-4/5 items-center justify-center">
+            <video
+              ref={videoRef}
+              className="h-full w-full object-contain"
+              loop={loop}
+              autoPlay
+              muted
+              playsInline
+              preload="auto"
+              onEnded={handleVideoEnd}
+              onLoadedMetadata={handleVideoLoaded}
+            >
+
+              <source src="/video/GPU-animation.webm" type="video/webm" />
+
+
+            </video>
+          </div>
+
         </div>
-        
-      </div>  
       ) : (
         <DialogContent>
           <DialogHeader>

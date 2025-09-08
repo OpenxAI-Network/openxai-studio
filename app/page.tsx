@@ -178,7 +178,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-2 mb-6">
           <div className="flex place-content-center border-r border-gray-400">
             <div className="flex place-items-center gap-3">
               <div>
@@ -314,3 +314,4 @@ export default function Home() {
     </div>
   )
 }
+

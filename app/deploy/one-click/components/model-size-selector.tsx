@@ -39,7 +39,7 @@ interface ModelSizeSelectorProps {
     cpuCores: number
   }
   templateId?: string
-  onSelect: (size: ModelSize) => void
+  onSelect: (size: ModelSize | null) => void
   app: string
 }
 
@@ -88,7 +88,16 @@ export function ModelSizeSelector({
         return (
           <div
             key={size.name}
-            onClick={() => isAvailable && onSelect(size)}
+            onClick={() => {
+              if (isAvailable) {
+                // Toggle selection: deselect if already selected, select if not selected
+                if (selected?.name === size.name) {
+                  onSelect(null)
+                } else {
+                  onSelect(size)
+                }
+              }
+            }}
             className={cn(
               'flex h-[128px] cursor-pointer flex-col rounded-lg border p-6 hover:border-primary/50 max-[1550px]:h-[120px] max-[1550px]:p-5 max-[1350px]:h-[112px] max-[1350px]:p-4 max-[1250px]:h-[100px] max-[1250px]:p-3 max-[992px]:h-[90px] max-[992px]:p-2',
               isAvailable ? 'border-border' : 'cursor-not-allowed opacity-50',

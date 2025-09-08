@@ -49,7 +49,7 @@ const PRICE_MAX = 10000
 
 type DeploymentProviderProps = {
   specs?: Specs
-  onSelect: (selectedProvider: HardwareProduct) => void
+  onSelect: (selectedProvider: HardwareProduct | null) => void
 }
 export default function DeploymentProvider({
   specs,
@@ -133,7 +133,7 @@ export default function DeploymentProvider({
         if (
           specs?.storage &&
           product.storage.reduce((prev, cur) => prev + cur.capacity, 0) <
-            specs.storage / 1024
+          specs.storage / 1024
         ) {
           return false
         }
@@ -318,20 +318,34 @@ export default function DeploymentProvider({
           key={id}
           product={product}
           onSelect={(selectedProduct) => {
-            setProvider(selectedProduct)
-            setConfig((prev) => ({
-              ...prev,
-              name: selectedProduct.productName!,
-              provider: selectedProduct.providerName!,
-              location: selectedProduct.location!,
-              isUnit: false,
-            }))
-            onSelect(selectedProduct)
+            if (selectedProduct) {
+              // Selecting a provider
+              setProvider(selectedProduct)
+              setConfig((prev) => ({
+                ...prev,
+                name: selectedProduct.productName!,
+                provider: selectedProduct.providerName!,
+                location: selectedProduct.location!,
+                isUnit: false,
+              }))
+              onSelect(selectedProduct)
+            } else {
+              // Deselecting a provider
+              setProvider(undefined)
+              setConfig((prev) => ({
+                ...prev,
+                name: '',
+                provider: '',
+                location: '',
+                isUnit: false,
+              }))
+              onSelect(null)
+            }
           }}
         />
       )
     })
-  }, [filteredProviderData, shownResults])
+  }, [filteredProviderData, shownResults, onSelect, setConfig, setProvider])
 
   return (
     <div>
@@ -659,14 +673,26 @@ function ProductCard({
       summary: string
     }
   }
-  onSelect: (product: HardwareProduct) => void
+  onSelect: (product: HardwareProduct | null) => void
 }) {
+  const { provider } = useDeploymentContext()
   const locations = useMemo(() => Object.keys(product), [product])
   const [location, setLocation] = useState<string>(locations.at(0))
   const selectedProduct = useMemo(() => product[location], [product, location])
 
+  // Check if this product is currently selected
+  const isSelected = useMemo(() => {
+    if (!provider) return false
+    return provider.id === selectedProduct.id && provider.location === selectedProduct.location
+  }, [provider, selectedProduct])
+
   return (
-    <li key={key} className="flex flex-col gap-4 rounded border px-6 py-4">
+    <li key={key} className={cn(
+      "flex flex-col gap-4 rounded border px-6 py-4 transition-all",
+      isSelected
+        ? "border-primary bg-primary/5 shadow-md"
+        : "border-border hover:border-primary/50"
+    )}>
       <div className="grid grid-cols-12 items-center gap-12">
         <div className="col-span-5 flex items-center gap-4">
           <Image
@@ -719,11 +745,17 @@ function ProductCard({
         <div className="col-span-3 flex flex-1 justify-end">
           <div className="flex flex-col items-center gap-2">
             <Button
-              variant={'outlinePrimary'}
+              variant={isSelected ? 'default' : 'outlinePrimary'}
               size="lg"
               className="min-w-48"
               onClick={() => {
-                onSelect({ ...selectedProduct, location })
+                if (isSelected) {
+                  // Deselect by passing undefined/null
+                  onSelect(null)
+                } else {
+                  // Select the product
+                  onSelect({ ...selectedProduct, location })
+                }
               }}
               disabled={
                 true ||
@@ -733,7 +765,7 @@ function ProductCard({
                   selectedProduct.type === 'Bare Metal')
               }
             >
-              Select
+              {isSelected ? 'Selected' : 'Select'}
             </Button>
             {selectedProduct.available === 0 && (
               <p className="text-sm text-muted-foreground">Unavailable</p>
