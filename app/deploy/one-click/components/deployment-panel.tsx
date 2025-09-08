@@ -376,6 +376,7 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
         open={askSignature}
         close={(signature) => {
           setAskSignature(false)
+          if (signature !== undefined) {
           setLoading(true)
           setDeploying(true)
           ;(step.provider.type === 'demo'
@@ -387,6 +388,7 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
           )
             .catch(console.error)
             .finally(() => setDeploying(false))
+        }
         }}
       />
     </>
