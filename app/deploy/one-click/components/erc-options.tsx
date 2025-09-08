@@ -28,7 +28,7 @@ type ERCOption = {
 interface ERCOptionsProps {
   selected?: ERCOption
   showAll?: boolean
-  onSelect: (option: ERCOption) => void
+  onSelect: (option: ERCOption | null) => void
 }
 
 export function ERCOptions({ selected, showAll, onSelect }: ERCOptionsProps) {
@@ -97,20 +97,20 @@ export function ERCOptions({ selected, showAll, onSelect }: ERCOptionsProps) {
               start={
                 preview === 'single-owner'
                   ? {
-                      Token: 'sellEntireMonetization',
-                      label: 'Sell entire service to someone',
-                      Token_label: 'ERC-721 (NFT)',
-                    }
+                    Token: 'sellEntireMonetization',
+                    label: 'Sell entire service to someone',
+                    Token_label: 'ERC-721 (NFT)',
+                  }
                   : preview === 'saas'
                     ? {
-                        Token: 'buildChainOnSaaS',
-                        label: 'Sell entire service to On-chain SaaS',
-                        Token_label: 'On-chain SaaS',
-                      }
+                      Token: 'buildChainOnSaaS',
+                      label: 'Sell entire service to On-chain SaaS',
+                      Token_label: 'On-chain SaaS',
+                    }
                     : {}
               }
-              setExpandedItem={() => {}}
-              setFinalAmount={() => {}}
+              setExpandedItem={() => { }}
+              setFinalAmount={() => { }}
             />
           </ScrollArea>
         </DialogContent>
@@ -124,7 +124,12 @@ export function ERCOptions({ selected, showAll, onSelect }: ERCOptionsProps) {
                 return
               }
 
-              onSelect(option)
+              // Toggle selection: deselect if already selected, select if not selected
+              if (selected?.id === option.id) {
+                onSelect(null)
+              } else {
+                onSelect(option)
+              }
             }}
             className={cn(
               'relative flex cursor-pointer items-start justify-between rounded-lg border p-6 hover:border-primary/50 max-[1550px]:p-5 max-[1350px]:p-4 max-[1250px]:p-3 max-[992px]:p-2',

@@ -92,17 +92,20 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
       provider: undefined,
       ercOption: undefined,
     }))
-    setCurrentStep(1)
+    // Only advance to step 1 if a model is selected, go back to step 0 if deselected
+    setCurrentStep(model ? 1 : 0)
   }
 
-  const handleProviderSelect = (provider: Provider) => {
+  const handleProviderSelect = (provider: Provider | null) => {
     setStep((prev) => ({ ...prev, provider }))
-    setCurrentStep(2)
+    // Only advance to step 2 if a provider is selected, go back to step 1 if deselected
+    setCurrentStep(provider ? 2 : 1)
   }
 
   const handleERCSelect = (ercOption: any) => {
     setStep((prev) => ({ ...prev, ercOption }))
-    setCurrentStep(3)
+    // Only advance to step 3 if an option is selected, go back to step 2 if deselected
+    setCurrentStep(ercOption ? 3 : 2)
   }
   const { toast } = useToast()
   const demos = useDemosAvailable()
@@ -169,9 +172,9 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
             version: modelSize,
             ...(signature && signature !== '0x'
               ? {
-                  deployer: address,
-                  signature,
-                }
+                deployer: address,
+                signature,
+              }
               : {}),
           }
         )
@@ -243,9 +246,9 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
           version: modelSize,
           ...(signature && signature !== '0x'
             ? {
-                deployer: address,
-                signature,
-              }
+              deployer: address,
+              signature,
+            }
             : {}),
         }
       )
@@ -276,7 +279,7 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
 
   return (
     <>
-    
+
       <div className="flex flex-col space-y-8">
         <h2 className="text-xl font-semibold">One Click Deployment</h2>
 
@@ -378,15 +381,15 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
           setAskSignature(false)
           setLoading(true)
           setDeploying(true)
-          ;(step.provider.type === 'demo'
-            ? deployOnDemo({ signature })
-            : deployOnXnode({
+            ; (step.provider.type === 'demo'
+              ? deployOnDemo({ signature })
+              : deployOnXnode({
                 xnode: `https://manager.${step.provider.tokenId}.${step.provider.chain}.${step.provider.collection}.openxai.network`,
                 signature,
               })
-          )
-            .catch(console.error)
-            .finally(() => setDeploying(false))
+            )
+              .catch(console.error)
+              .finally(() => setDeploying(false))
         }}
       />
     </>
