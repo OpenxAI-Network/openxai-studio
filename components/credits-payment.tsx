@@ -165,7 +165,7 @@ export function CreditsPayment({
                 balance < BigInt(topUp) * BigInt(1_000_000) && (
                   <Alert variant="destructive">
                     <AlertTriangle />
-                    <AlertTitle>
+                    <AlertTitle className=' leading-6'>
                       Insufficient USDC balance for account {address}
                     </AlertTitle>
                   </Alert>
@@ -231,8 +231,8 @@ export function CreditsPayment({
                 <span>or</span>
                 <Separator className="basis-[45%] bg-muted-foreground" />
               </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex place-items-center gap-4">
+              <div className="flex flex-col gap-6">
+                <div className="flex place-items-center gap-2">
                   <Label className="shrink-0">Promo Code</Label>
                   <Input
                     placeholder="57ad010e-1df6-418e-ae9c-937dbfbeb834"
