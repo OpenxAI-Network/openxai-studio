@@ -29,9 +29,9 @@ export function DeploymentCounter({
 
   return (
     <div className="flex">
-      <div className="flex place-items-center gap-1 rounded-lg bg-gray-200 px-2 py-1">
+      <div className="flex place-items-center gap-1 rounded-lg bg-gray-200 h-6 xl:h-7 px-2 py-1">
         <Rocket className="size-3" />
-        <span className="text-sm">{total?.toString()}</span>
+        <span className="text-[10px] xl:text-[12px] 2xl:text-sm">{total?.toString()}</span>
       </div>
       <div className="grow" />
     </div>

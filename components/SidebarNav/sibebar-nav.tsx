@@ -128,13 +128,13 @@ const NavContainer = React.forwardRef<
   HTMLElement,
   React.HTMLAttributes<HTMLElement>
 >(({ className, children, ...props }, ref) => {
-  const [collapsed, setCollapsed] = useState(true)
+  const [collapsed, setCollapsed] = useState(false)
 
   // Load collapsed state from local storage
-  useEffect(() => {
-    const stored = localStorage.getItem('nav-collapsed')
-    if (stored === 'true') setCollapsed(true)
-  }, [])
+  // useEffect(() => {
+  //   const stored = localStorage.getItem('nav-collapsed')
+  //   if (stored === 'true') setCollapsed(true)
+  // }, [])
 
   // Controlled state of Accordion and NavigationMenu components
   const [accordionValue, setAccordionValue] = useState([])
@@ -176,8 +176,8 @@ const NavContainer = React.forwardRef<
           className
         )}
         ref={ref}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        // onMouseEnter={handleMouseEnter}
+        // onMouseLeave={handleMouseLeave}
         {...props}
       >
         <Accordion

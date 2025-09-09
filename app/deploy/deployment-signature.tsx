@@ -41,7 +41,7 @@ export function DeploymentSignature({
         }
 
         if (!open) {
-          close(undefined) // Explicitly pass undefined when closing via X
+          close() 
         }
       }}
     >

@@ -178,7 +178,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-2 mb-6 w-[90%]">
+        <div className="grid grid-cols-2 mb-6 w-full 2xl:w-[90%] ">
           <div className="flex items-start justify-start border-r border-gray-400">
             <div className="flex place-items-center gap-3">
               <div>
