@@ -84,7 +84,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             )
           )}
         </div>
-        <div className="ml-4 mt-4 flex items-start text-left">
+        <div className="ml-2 mt-4 flex gap-1 items-start text-left">
           <span className="mr-2 text-xl text-red-500">❤️</span>
           <div className="text-xs text-neutral-500">
             <div>Made & Powered</div>
@@ -149,6 +149,7 @@ const NavContainer = React.forwardRef<
   }, [collapsed])
 
   const { demoMode } = useDemoModeContext()
+  
 
   return (
     <NavContext.Provider
