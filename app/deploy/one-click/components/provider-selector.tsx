@@ -562,6 +562,7 @@ function PaidProviderDialog({
                 })
                   .then((signature) => {
                     setDeploying(true)
+                    setShouldRender(true)
                     axios
                       .post(
                         'https://indexer.core.openxai.org/api/ownaiv1/base/mint',
@@ -580,7 +581,7 @@ function PaidProviderDialog({
                           tokenId: tokenId.toString(),
                         })
                       })
-                      .finally(() =>{setShouldRender(true);setDeploying(false)})
+                      .finally(() =>{setDeploying(false)})
                   })
                   .catch(console.error)
                 // setDeploying(true)
