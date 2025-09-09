@@ -47,7 +47,7 @@ export function DeploymentSignature({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className='mt-6'>
             Would you like to authenticate your deployment record?
           </DialogTitle>
         </DialogHeader>
