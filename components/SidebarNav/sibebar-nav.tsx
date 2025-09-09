@@ -128,7 +128,7 @@ const NavContainer = React.forwardRef<
   HTMLElement,
   React.HTMLAttributes<HTMLElement>
 >(({ className, children, ...props }, ref) => {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(true)
 
   // Load collapsed state from local storage
   useEffect(() => {
@@ -149,7 +149,17 @@ const NavContainer = React.forwardRef<
   }, [collapsed])
 
   const { demoMode } = useDemoModeContext()
+
+  const toggleCollapsed = (newCollapsed: boolean) => {
+    
+    setCollapsed(newCollapsed)
+    localStorage.setItem('nav-collapsed', String(newCollapsed))
   
+    
+  }
+
+  const handleMouseEnter = () => toggleCollapsed(false)
+  const handleMouseLeave = () => toggleCollapsed(true)
 
   return (
     <NavContext.Provider
@@ -160,12 +170,14 @@ const NavContainer = React.forwardRef<
     >
       <aside
         className={cn(
-          'duration-plico sticky top-20 flex h-[calc(100svh-5rem)] shrink-0 flex-col justify-between border-r bg-card text-card-foreground transition-[width] ease-in-out max-hdplus:top-16',
+          'duration-plico sticky top-20 flex h-[calc(100svh-5rem)] shrink-0 flex-col justify-between border-r bg-card text-card-foreground transition-[width] duration-500 delay-100 ease-in-out max-hdplus:top-16',
           collapsed ? 'w-14' : 'w-64 max-hdplus:w-52',
           demoMode && 'top-24 max-hdplus:top-20',
           className
         )}
         ref={ref}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         {...props}
       >
         <Accordion
