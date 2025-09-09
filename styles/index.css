@@ -66,6 +66,14 @@
   }
 }
 
+
+html {
+  
+  -ms-scroll-chaining: none; 
+  overscroll-behavior: none; 
+  
+}
+
 @layer base {
   * {
     @apply border-border;
