@@ -66,6 +66,10 @@ export default function Home() {
       return undefined
     }
 
+    if (networkCapacity === 0) {
+      return 0
+    }
+
     return (100 * activeDeployments) / networkCapacity
   }, [activeDeployments, networkCapacity])
 
