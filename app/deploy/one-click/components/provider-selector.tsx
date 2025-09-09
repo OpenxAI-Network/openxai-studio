@@ -7,7 +7,6 @@ import { useWeb3Modal } from '@web3modal/wagmi/react'
 import axios from 'axios'
 import { Check, CheckCircle2, Hourglass, Search, X } from 'lucide-react'
 import { useAccount, useSignMessage } from 'wagmi'
-import Lottie, { type LottieRefCurrentProps } from 'lottie-react'
 import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
@@ -511,31 +510,6 @@ function PaidProviderDialog({
         //   </DialogHeader> 
         // </DialogContent>
         <div className="fixed bg-black/80 backdrop-blur-sm w-full h-full inset-0 flex justify-center items-center z-[100]">
-          {/* <Lottie
-            lottieRef={lottieRef}
-            animationData={flowAnimation}
-            loop={loop}
-            autoplay={true}
-            onComplete={() => {
-              setShouldRender(false)
-            }}
-            onLoopComplete={() => {
-              
-              if (deploying) {
-                applySpeed(6)
-              } else if (fastForward) {
-                applySpeed(8)
-              }
-            }}
-            onDOMLoaded={() => {
-              
-              if (deploying) {
-                forceSpeedApplication(6)
-              } else if (fastForward) {
-                forceSpeedApplication(8)
-              }
-            }}
-          /> */}
           <div className="flex size-4/5 items-center justify-center">
             <video
               ref={videoRef}
@@ -606,7 +580,7 @@ function PaidProviderDialog({
                           tokenId: tokenId.toString(),
                         })
                       })
-                      .finally(() => setDeploying(false))
+                      .finally(() =>{setShouldRender(true);setDeploying(false)})
                   })
                   .catch(console.error)
                 // setDeploying(true)
