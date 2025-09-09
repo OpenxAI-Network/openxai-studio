@@ -223,9 +223,9 @@ export default function ResourcesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-8 text-3xl font-bold">Compute Resources</h1>
+      <h1 className="mb-8 text-[16px]  text-[#8F8F8F]">Compute Resources</h1>
       <div className="mb-8">
-        <h2 className="mb-4 text-xl font-semibold">Provider Locations</h2>
+        <h2 className="mb-6 text-[30px]  text-[#141414] font-bold">Provider Locations</h2>
         <MapComponent
           providers={providers}
           searchQuery={searchInput}
