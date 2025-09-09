@@ -5,6 +5,7 @@ import type { xnode } from '@openmesh-network/xnode-manager-sdk'
 import { useAuthLogin } from '@openmesh-network/xnode-manager-sdk-react'
 import { ChevronRight } from 'lucide-react'
 
+import { cn } from '@/lib/utils'
 import { useSignatureCacheContext } from '@/components/signature-cache'
 import { Signup } from '@/components/Signup'
 import { RequestPopupProvider } from '@/components/xnode/request-popup'
@@ -52,20 +53,29 @@ export default function XNodeDashboard({ baseUrl }: XnodePageProps) {
 
   return (
     <RequestPopupProvider session={session}>
-      <div className="container mx-auto mb-12 mt-0 max-w-screen-3xl">
+      <div
+        className={cn(
+          'container mx-auto mb-12 mt-0 max-w-screen-3xl',
+          signature && !session && status !== 'success' && 'bg-black'
+        )}
+      >
         {signature &&
           !session &&
           (status !== 'success' ? (
-            <div className="mt-40 flex place-items-center justify-center gap-5">
-              <div className="size-16 animate-spin rounded-full border-b-2 border-[#0354EC]" />
-              <div className="flex flex-col gap-1">
-                <span className="text-4xl font-semibold">
-                  XnodeOS is installing...
-                </span>
-                <span className="text-sm text-black/60">
-                  This can take up to 10 minutes. The page will reload
-                  automatically.
-                </span>
+            <div className="flex flex-col place-items-center">
+              <div className="max-w-[700px]">
+                <video
+                  className="size-full object-contain"
+                  autoPlay
+                  muted
+                  playsInline
+                  preload="auto"
+                >
+                  <source
+                    src="/video/layers-animation.webm"
+                    type="video/webm"
+                  />
+                </video>
               </div>
             </div>
           ) : (
