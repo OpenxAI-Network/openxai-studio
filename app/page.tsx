@@ -112,9 +112,9 @@ export default function Home() {
 
   return (
     <div className="flex size-full">
-      <div className="flex flex-1 basis-1/2 flex-col gap-32 max-xl:basis-2/3 max-xl:gap-20">
-        <div className="mt-24 px-16">
-          <h1 className="text-balance text-5xl font-semibold 2xl:text-7xl">
+      <div className="flex flex-1 basis-1/2 pl-16 flex-col gap-28 max-xl:basis-2/3 max-xl:gap-20">
+        <div className="mt-24 ">
+          <h1 className="text-balance pr-16 text-5xl font-semibold 2xl:text-7xl">
             Build and deploy AI agents in 5 minutes
           </h1>
           <div className="mt-12 flex items-center gap-4">
@@ -134,8 +134,8 @@ export default function Home() {
             </Link>
           </div>
         </div>
-        <div className="grid grid-cols-4">
-          <div className="flex place-content-center border-r border-gray-400 py-1">
+        <div className="grid grid-cols-4 w-[95%]">
+          <div className="flex justify-start border-r border-gray-400 py-1">
             <div className="flex flex-col place-items-center">
               <div className="flex place-content-start">
                 <span className="text-4xl font-medium max-xl:text-3xl">
@@ -166,7 +166,7 @@ export default function Home() {
               <span className="text-xs">Transaction /s</span>
             </div>
           </div>
-          <div className="flex place-content-center py-1">
+          <div className="flex justify-end py-1">
             <div className="flex flex-col place-items-center">
               <div className="flex place-content-start">
                 <span className="text-4xl font-medium max-xl:text-3xl">
@@ -178,8 +178,8 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-2 mb-6">
-          <div className="flex place-content-center border-r border-gray-400">
+        <div className="grid grid-cols-2 mb-6 w-[90%]">
+          <div className="flex items-start justify-start border-r border-gray-400">
             <div className="flex place-items-center gap-3">
               <div>
                 <ChartContainer
@@ -269,7 +269,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="flex place-content-center">
+          <div className="flex justify-end">
             <div className="flex place-items-center gap-3">
               <div className="grid size-20 grid-cols-3 gap-0.5 max-xl:size-16">
                 {Array.from({ length: 30 }).map((_, i) => {
@@ -308,8 +308,8 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="flex w-full flex-1 basis-1/2 place-content-center place-items-center max-xl:basis-1/2">
-        <Earth className="size-full" />
+      <div className="flex w-full flex-1 basis-1/2 max-xl:basis-1/2">
+        <Earth className="w-full h-full earth-height" />
       </div>
     </div>
   )

@@ -83,3 +83,16 @@
     -moz-appearance: textfield;
   }
 }
+
+@layer utilities {
+  @media (min-height: 1400px) {
+    .earth-height {
+      height: 60vh;
+    }
+  }
+  @media (min-height: 1800px) {
+    .earth-height {
+      height: 50vh;
+    }
+  }
+}
