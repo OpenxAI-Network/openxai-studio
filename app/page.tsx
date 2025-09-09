@@ -112,8 +112,8 @@ export default function Home() {
 
   return (
     <div className="flex size-full">
-      <div className="flex flex-1 basis-1/2 pl-16 flex-col gap-28 max-xl:basis-2/3 max-xl:gap-20">
-        <div className="mt-24 ">
+      <div className="flex flex-1 basis-1/2 flex-col gap-28 pl-16 max-xl:basis-2/3 max-xl:gap-20">
+        <div className="mt-24">
           <h1 className="text-balance pr-16 text-5xl font-semibold 2xl:text-7xl">
             Build and deploy AI agents in 5 minutes
           </h1>
@@ -134,7 +134,7 @@ export default function Home() {
             </Link>
           </div>
         </div>
-        <div className="grid grid-cols-4 w-[95%]">
+        <div className="grid w-[95%] grid-cols-4">
           <div className="flex justify-start border-r border-gray-400 py-1">
             <div className="flex flex-col place-items-center">
               <div className="flex place-content-start">
@@ -159,26 +159,24 @@ export default function Home() {
             <div className="flex flex-col place-items-center">
               <div className="flex place-content-start">
                 <span className="text-4xl font-medium max-xl:text-3xl">
-                  {'>'}50
+                  {'<'}10
                 </span>
-                <span>K</span>
+                <span>min</span>
               </div>
-              <span className="text-xs">Transaction /s</span>
+              <span className="text-xs">Deployment</span>
             </div>
           </div>
           <div className="flex justify-end py-1">
             <div className="flex flex-col place-items-center">
               <div className="flex place-content-start">
-                <span className="text-4xl font-medium max-xl:text-3xl">
-                  600
-                </span>
-                <span>ms</span>
+                <span className="text-4xl font-medium max-xl:text-3xl">80</span>
+                <span>%</span>
               </div>
-              <span className="text-xs">Time to Finality (avg)</span>
+              <span className="text-xs">Cheaper (up to)</span>
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-2 mb-6 w-full 2xl:w-[90%] ">
+        <div className="mb-6 grid w-full grid-cols-2 2xl:w-[90%]">
           <div className="flex items-start justify-start border-r border-gray-400">
             <div className="flex place-items-center gap-3">
               <div>
@@ -309,9 +307,8 @@ export default function Home() {
         </div>
       </div>
       <div className="flex w-full flex-1 basis-1/2 max-xl:basis-1/2">
-        <Earth className="w-full h-full earth-height" />
+        <Earth className="earth-height h-full w-full" />
       </div>
     </div>
   )
 }
-
