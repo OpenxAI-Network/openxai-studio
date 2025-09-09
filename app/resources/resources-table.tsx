@@ -230,7 +230,7 @@ export default function ResourcesTable({ providers, onSearchChange, onFiltersCha
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="relative flex max-w-96 items-center">
+      <div className="relative flex w-full items-center mb-4">
         <Search className="absolute left-3 size-4" />
         <Input
           type="text"
@@ -242,7 +242,7 @@ export default function ResourcesTable({ providers, onSearchChange, onFiltersCha
       </div>
       <div className="rounded-md border">
         <Table>
-          <TableHeader className="bg-muted text-muted-foreground">
+          <TableHeader className="bg-[#F5F8FF] text-[#3D3D3D]">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -272,7 +272,7 @@ export default function ResourcesTable({ providers, onSearchChange, onFiltersCha
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
-                  className="h-12 border-none odd:bg-muted/30"
+                  className="h-12 border-none "
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell className="pl-4" key={cell.id}>
