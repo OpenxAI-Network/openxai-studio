@@ -12,15 +12,20 @@ import { useDemoModeContext } from '../demo-mode'
 import { Button } from '../ui/button'
 
 export default function Header() {
-  const { address, status } = useAccount()
-
+  const { address, status,isConnected } = useAccount()
+ 
   const { open } = useWeb3Modal()
   const { push } = useRouter()
 
   const { demoMode, setDemoMode } = useDemoModeContext()
 
   const pressWalletButton = () => {
+  if(isConnected){
     open()
+  }else{
+    open({ view: 'Connect' }).catch(console.error);
+  }
+    
   }
 
   return (
