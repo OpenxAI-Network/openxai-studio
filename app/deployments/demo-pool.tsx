@@ -10,7 +10,7 @@ import {
   useRequestRequestInfo,
 } from '@openmesh-network/xnode-manager-sdk-react'
 import { Loader2 } from 'lucide-react'
-
+import { useDeploymentQueueContext } from '@/components/deployment-queue'
 import { useDemosAvailable, useDemoSession, type DemoXnode } from '@/lib/xnode'
 import { Ansi } from '@/components/ui/ansi'
 import { Button } from '@/components/ui/button'
@@ -26,7 +26,7 @@ import {
 
 export function DemoPool() {
   const { data: demoXnodes, isLoading } = useDemosAvailable()
-
+ const {setDeploymentComplete}=useDeploymentQueueContext()
   let { xnode: reservedXnode, deploymentId, processes } = useDemoContext()
   if (reservedXnode?.reservation?.reserved_until < Date.now() / 1000) {
     reservedXnode = undefined
@@ -41,6 +41,8 @@ export function DemoPool() {
     )
   }
 
+  
+
   return (
     <div className="flex flex-col gap-3">
       {reservedXnode && (
@@ -48,6 +50,7 @@ export function DemoPool() {
           xnode_id={reservedXnode?.id}
           request_id={deploymentId}
           processes={processes}
+          onDeploymentComplete={setDeploymentComplete}
         />
       )}
       <Table>
@@ -77,10 +80,12 @@ function ReservedDemoXnode({
   xnode_id,
   request_id,
   processes,
+  onDeploymentComplete,
 }: {
   xnode_id?: string
   request_id?: xnode.request.RequestId
   processes: string[]
+  onDeploymentComplete: (complete: boolean) => void
 }) {
   const session = useDemoSession({ xnode_id })
   const { data: deployment } = useRequestRequestInfo({
@@ -88,12 +93,19 @@ function ReservedDemoXnode({
     request_id,
   })
 
+  
+  
   return (
     <div className="flex flex-col gap-1">
       <span className="text-lg font-semibold">Your demo node</span>
       {deployment &&
         (deployment.result ? (
-          <ReservedDemoXnodeReady session={session} processes={processes} />
+          <ReservedDemoXnodeReady 
+            session={session} 
+            processes={processes} 
+           
+            onDeploymentComplete={onDeploymentComplete}
+          />
         ) : (
           <ReservedDemoXnodeDeployingCommand
             session={session}
@@ -108,17 +120,70 @@ function ReservedDemoXnode({
 function ReservedDemoXnodeReady({
   session,
   processes,
+  onDeploymentComplete
 }: {
   session?: xnode.utils.Session
   processes?: string[]
+  onDeploymentComplete: (complete: boolean) => void
 }) {
   const [selectedProcess, setSelectedProcess] = useState(processes?.at(0))
-
   const { data: logs } = useProcessLogs({
     session,
     scope: 'container:xnode-ai-chat',
     process: `${selectedProcess}.service`,
   })
+
+  const containerRef = useRef<HTMLDivElement>(null)
+  const goToAppButtonRef = useRef<HTMLAnchorElement>(null)
+  const hasTriggered = useRef(false)
+
+  useEffect(() => {
+    if (!goToAppButtonRef.current || hasTriggered.current) return
+
+    const checkVisibility = setTimeout(() => {
+      if (hasTriggered.current) return
+      
+      const rect = goToAppButtonRef.current!.getBoundingClientRect()
+      const isVisible = (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      )
+
+      if (isVisible && !hasTriggered.current) {
+        console.log("Go To App button is showing (immediately visible)")
+        hasTriggered.current = true
+        onDeploymentComplete(true)
+        return
+      }
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0]
+          if (entry.isIntersecting && !hasTriggered.current) {
+            
+            hasTriggered.current = true
+            
+            console.log("Go To App button is showing (became visible)")
+            
+            
+            observer.disconnect();
+          
+            onDeploymentComplete(true)
+          }
+        },
+        { threshold: 0.5 }
+      )
+
+      observer.observe(goToAppButtonRef.current)
+
+      return () => {
+        observer.disconnect()
+      }
+    }, 100) 
+
+    return () => clearTimeout(checkVisibility)
+  }, [onDeploymentComplete])
 
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const scrollToBottom = useMemo(() => {
@@ -131,14 +196,19 @@ function ReservedDemoXnodeReady({
       }
     }
   }, [scrollAreaRef])
+  
   useEffect(() => {
     scrollToBottom()
   }, [logs, scrollToBottom])
 
   return (
-    <div className="flex flex-col gap-1">
+    <div ref={containerRef} className="flex flex-col gap-1">
       <Button variant="outlinePrimary" className="max-w-32" asChild>
-        <Link href={session.baseUrl.replace('manager.', '')} target="_blank">
+        <Link
+          ref={goToAppButtonRef} // 👈 track visibility
+          href={session.baseUrl.replace('manager.', '')}
+          target="_blank"
+        >
           Go To App
         </Link>
       </Button>
@@ -174,6 +244,7 @@ function ReservedDemoXnodeReady({
     </div>
   )
 }
+
 
 function ReservedDemoXnodeDeployingCommand({
   session,

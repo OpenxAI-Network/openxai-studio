@@ -14,6 +14,9 @@ type DeploymentQueueContext = {
   getQueue: (xnode: string) => Deployment[]
   addToQueue: (xnode: string, deployment: Deployment) => void
   removeFromQueue: (xnode: string, container: string) => void
+  isDeploymentComplete: boolean 
+  setDeploymentComplete: (complete: boolean) => void
+ 
 }
 
 const DeploymentQueueContext = createContext<DeploymentQueueContext | null>(
@@ -35,6 +38,7 @@ export default function DeploymentQueueProvider({
   const [queue, setQueue] = useState<{
     [xnode: string]: Deployment[] | undefined
   }>({})
+  const [isDeploymentComplete, setDeploymentComplete] = useState(false)
 
   useEffect(() => {
     const stored = localStorage.getItem('deployment-queue')
@@ -43,6 +47,8 @@ export default function DeploymentQueueProvider({
       setQueue(JSON.parse(stored))
     }
   }, [])
+
+  
 
   const getQueue = (xnode: string) => {
     return queue[xnode] ?? []
@@ -72,7 +78,7 @@ export default function DeploymentQueueProvider({
 
   return (
     <DeploymentQueueContext.Provider
-      value={{ getQueue, addToQueue, removeFromQueue }}
+      value={{ getQueue, addToQueue, removeFromQueue,isDeploymentComplete, setDeploymentComplete}}
     >
       {children}
     </DeploymentQueueContext.Provider>
