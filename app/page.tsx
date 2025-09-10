@@ -66,6 +66,10 @@ export default function Home() {
       return undefined
     }
 
+    if (networkCapacity === 0) {
+      return 0
+    }
+
     return (100 * activeDeployments) / networkCapacity
   }, [activeDeployments, networkCapacity])
 
@@ -113,7 +117,7 @@ export default function Home() {
   return (
     <div className="flex size-full">
       <div className="flex flex-1 basis-1/2 pl-16 flex-col   max-xl:basis-2/3 ">
-        <div className="mt-24 ">
+        <div className="mt-24">
           <h1 className="text-balance pr-0 text-5xl font-semibold 2xl:text-7xl">
             Build and deploy AI agents in 5 minutes
           </h1>
@@ -139,38 +143,38 @@ export default function Home() {
 
             <div className="flex flex-col ">
               <div className="flex ">
-                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl">{'>'}50</span>
-                <span className="text-sm  lg:text-[12px]">K</span>
+                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl"> {totalDeployments ?? '...'}</span>
+               
               </div>
-              <span className="text-[10px] font-medium xl:text-[12px]">Transaction /s</span>
+              <span className="text-[10px] font-medium xl:text-[12px]">Total Deployments</span>
             </div>
           </div>
           <div className="flex justify-center   border-r border-gray-400 py-2 -ml-1  px-4 lg:px-2 xl:px-4">
             <div className="flex flex-col   ">
               <div className="flex  justify-center ">
-                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl ">600</span>
-                <span className="text-sm  lg:text-[12px]">ms</span>
+                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl "> {ModelDefinitions.length}</span>
+               
               </div>
-              <span className="text-[10px] font-medium xl:text-[12px]  text-center">Time to Finality (avg)</span>
+              <span className="text-[10px] font-medium xl:text-[12px]  text-center">Apps</span>
             </div>
           </div>
           <div className="flex w-full justify-center   border-gray-400 border-r py-2 px-5 lg:px-2 xl:px-5">
 
             <div className="flex flex-col ">
               <div className="flex  ">
-                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl">{'>'}50</span>
-                <span className="text-sm  lg:text-[12px]">K</span>
+                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl">{'<'}10</span>
+                <span className="text-sm  lg:text-[12px]">min</span>
               </div>
-              <span className="text-[10px] font-medium xl:text-[12px]">Transaction /s</span>
+              <span className="text-[10px] font-medium xl:text-[12px]">Deployment</span>
             </div>
           </div>
           <div className="flex justify-center items-center py-2 px-5 lg:px-2 xl:px-5">
             <div className="flex flex-col ">
               <div className="flex justify-center ">
-                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl">600</span>
-                <span className="text-sm  lg:text-[12px]">ms</span>
+                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl">80</span>
+                <span className="text-sm  lg:text-[12px]">%</span>
               </div>
-              <span className="text-[10px] font-medium xl:text-[12px]  text-center ">Time to Finality (avg)</span>
+              <span className="text-[10px] font-medium xl:text-[12px]  text-center ">Cheaper (up to)</span>
             </div>
           </div>
         </div>
@@ -320,4 +324,3 @@ export default function Home() {
     </div>
   )
 }
-

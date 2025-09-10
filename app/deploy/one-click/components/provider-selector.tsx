@@ -1,14 +1,14 @@
 'use client'
 
-import { useMemo, useState, useRef, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import axios from 'axios'
 import { Check, CheckCircle2, Hourglass, Search, X } from 'lucide-react'
 import { useAccount, useSignMessage } from 'wagmi'
-import { cn } from '@/lib/utils'
 
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -173,15 +173,24 @@ export function ProviderSelector({
     ? providers
     : selected
       ? [
-        ...providers.filter((p) =>
-          EqualProvider({ provider1: selected, provider2: p.return })
-        ),
-      ]
+          ...providers.filter((p) =>
+            EqualProvider({ provider1: selected, provider2: p.return })
+          ),
+        ]
       : providers
 
   const [paidProvider, setPaidProvider] = useState<string | undefined>(
     undefined
   )
+
+  const { data: deploymentStock } = useQuery({
+    queryKey: ['deploymentStock'],
+    queryFn: async () => {
+      return axios
+        .get('https://indexer.core.openxai.org/api/ownaiv1/base/available')
+        .then((res) => res.data as number)
+    },
+  })
 
   return (
     <>
@@ -195,6 +204,10 @@ export function ProviderSelector({
               }
 
               if (provider.name === 'Deploy Now') {
+                if (deploymentStock === 0) {
+                  return
+                }
+
                 if (!address) {
                   open()
                 } else {
@@ -202,7 +215,12 @@ export function ProviderSelector({
                 }
               } else {
                 // Toggle selection: deselect if already selected, select if not selected
-                if (EqualProvider({ provider1: selected, provider2: provider.return })) {
+                if (
+                  EqualProvider({
+                    provider1: selected,
+                    provider2: provider.return,
+                  })
+                ) {
                   onSelect(null)
                 } else {
                   onSelect(provider.return)
@@ -215,7 +233,9 @@ export function ProviderSelector({
                 provider1: selected,
                 provider2: provider.return,
               }) && 'border-primary bg-primary/5',
-              provider.disabled && 'cursor-not-allowed opacity-50'
+              (provider.disabled ||
+                (provider.name === 'Deploy Now' && deploymentStock === 0)) &&
+                'cursor-not-allowed opacity-50'
             )}
           >
             <div className={cn('flex items-center justify-between')}>
@@ -251,15 +271,27 @@ export function ProviderSelector({
               <div className="text-right">
                 {provider.action.label &&
                   (provider.name === 'Deploy Now' ? (
-                    <div
-                      className="max-[1550px]:py-0.75 max-[992px]:py-0.25 whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium text-black max-[1550px]:px-2.5 max-[1550px]:text-sm max-[1350px]:px-2 max-[1350px]:py-0.5 max-[1350px]:text-xs max-[1250px]:rounded-[3px] max-[1250px]:px-1.5 max-[1250px]:py-0.5 max-[1250px]:text-[10px] max-[992px]:rounded-[2px] max-[992px]:px-1 max-[992px]:text-[8px]"
-                      style={{
-                        background:
-                          'linear-gradient(to right, #bef264, #22c55e)',
-                      }}
-                    >
-                      {provider.action.label}
-                    </div>
+                    deploymentStock === 0 ? (
+                      <div
+                        className="max-[1550px]:py-0.75 max-[992px]:py-0.25 whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium text-black max-[1550px]:px-2.5 max-[1550px]:text-sm max-[1350px]:px-2 max-[1350px]:py-0.5 max-[1350px]:text-xs max-[1250px]:rounded-[3px] max-[1250px]:px-1.5 max-[1250px]:py-0.5 max-[1250px]:text-[10px] max-[992px]:rounded-[2px] max-[992px]:px-1 max-[992px]:text-[8px]"
+                        style={{
+                          background:
+                            'linear-gradient(to right, #f27264, #c55622)',
+                        }}
+                      >
+                        Out Of Stock
+                      </div>
+                    ) : (
+                      <div
+                        className="max-[1550px]:py-0.75 max-[992px]:py-0.25 whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium text-black max-[1550px]:px-2.5 max-[1550px]:text-sm max-[1350px]:px-2 max-[1350px]:py-0.5 max-[1350px]:text-xs max-[1250px]:rounded-[3px] max-[1250px]:px-1.5 max-[1250px]:py-0.5 max-[1250px]:text-[10px] max-[992px]:rounded-[2px] max-[992px]:px-1 max-[992px]:text-[8px]"
+                        style={{
+                          background:
+                            'linear-gradient(to right, #bef264, #22c55e)',
+                        }}
+                      >
+                        {provider.action.label}
+                      </div>
+                    )
                   ) : (
                     <span className="whitespace-nowrap text-sm max-[1550px]:text-sm max-[1350px]:text-xs max-[1250px]:text-[10px] max-[992px]:text-[8px]">
                       {provider.action.label}
@@ -407,7 +439,6 @@ function PaidProviderDialog({
   const [loop, setLoop] = useState(true)
   const [fastForward, setFastForward] = useState(false)
 
-
   const applySpeed = (speed: number) => {
     if (videoRef.current) {
       videoRef.current.playbackRate = speed
@@ -475,7 +506,6 @@ function PaidProviderDialog({
       <CreditsPayment
         item="OpenxAI's Dedicated Tokenized GPU"
         price={price}
-
         close={(success) => {
           if (success) {
             refetchCredits()
@@ -507,9 +537,9 @@ function PaidProviderDialog({
         //         page.
         //       </span>
         //     </DialogDescription>
-        //   </DialogHeader> 
+        //   </DialogHeader>
         // </DialogContent>
-        <div className="fixed bg-black/80 backdrop-blur-sm w-full h-full inset-0 flex justify-center items-center z-[100]">
+        <div className="fixed inset-0 z-[100] flex h-full w-full items-center justify-center bg-black/80 backdrop-blur-sm">
           <div className="flex size-4/5 items-center justify-center">
             <video
               ref={videoRef}
@@ -522,13 +552,9 @@ function PaidProviderDialog({
               onEnded={handleVideoEnd}
               onLoadedMetadata={handleVideoLoaded}
             >
-
               <source src="/video/GPU-animation.webm" type="video/webm" />
-
-
             </video>
           </div>
-
         </div>
       ) : (
         <DialogContent>
@@ -581,7 +607,9 @@ function PaidProviderDialog({
                           tokenId: tokenId.toString(),
                         })
                       })
-                      .finally(() =>{setDeploying(false)})
+                      .finally(() => {
+                        setDeploying(false)
+                      })
                   })
                   .catch(console.error)
                 // setDeploying(true)
