@@ -271,7 +271,7 @@ function StatCard({ title, value, isText = false }: { title: string; value: numb
   return (
     <div className="bg-[#F5F8FF] border border-[#EBEBEB] rounded-[10px]  flex flex-col gap-3 p-4">
 
-      <p className="text-lg  md:text-xl lg:text-3xl font-semibold text-[#0047CC]">
+      <p className="text-lg  md:text-[18px] lg:text-[18px] 2xl:text-3xl font-semibold text-[#0047CC]">
         {isText ? value : (value as number).toLocaleString()}
       </p>
       <h3 className="text-sm font-[400] text-[#666666] ">{title}</h3>
