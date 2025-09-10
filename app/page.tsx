@@ -117,7 +117,7 @@ export default function Home() {
   return (
     <div className="flex size-full">
       <div className="flex flex-1 basis-1/2 pl-16 flex-col   max-xl:basis-2/3 ">
-        <div className="mt-24">
+        <div className="mt-16">
           <h1 className="text-balance pr-0 text-5xl font-semibold 2xl:text-7xl" style={{ lineHeight: '1.2' }}>
             Build and deploy AI agents in 5 minutes
           </h1>
