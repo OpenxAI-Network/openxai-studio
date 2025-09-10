@@ -290,7 +290,7 @@ export default function Home() {
             <div className="flex place-items-center gap-3">
               <div className="grid size-20 grid-cols-3 gap-0.5 max-xl:size-16">
                 {Array.from({ length: 30 }).map((_, i) => {
-                  const day = Math.round(Date.now() / 86400_000) - 29 + i
+                  const day = Math.floor(Date.now() / 86400_000) - 29 + i
                   const deploymentCount =
                     dailyDeployments?.find(
                       (deployment) => deployment.day === day
