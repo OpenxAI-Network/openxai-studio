@@ -5,7 +5,7 @@ import Link from 'next/link'
 import ModelDefinitions from '@/utils/model-definitions.json'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { ArrowRight, Earth, Triangle } from 'lucide-react'
+import { ArrowRight, Triangle } from 'lucide-react'
 import {
   Label,
   PolarAngleAxis,
@@ -14,7 +14,7 @@ import {
   RadialBar,
   RadialBarChart,
 } from 'recharts'
-import Image from 'next/image'
+
 import { ChartContainer } from '@/components/ui/chart'
 
 export default function Home() {
@@ -116,9 +116,12 @@ export default function Home() {
 
   return (
     <div className="flex size-full">
-      <div className="flex flex-1 basis-1/2 pl-16 flex-col   max-xl:basis-2/3 ">
+      <div className="flex flex-1 basis-1/2 flex-col pl-16 max-xl:basis-2/3">
         <div className="mt-16">
-          <h1 className="text-balance pr-0 text-5xl font-semibold 2xl:text-7xl" style={{ lineHeight: '1.2' }}>
+          <h1
+            className="text-balance pr-0 text-5xl font-semibold 2xl:text-7xl"
+            style={{ lineHeight: '1.2' }}
+          >
             Build and deploy AI agents in 5 minutes
           </h1>
           <div className="mt-12 flex items-center gap-4">
@@ -138,47 +141,61 @@ export default function Home() {
             </Link>
           </div>
         </div>
-        <div className="grid grid-cols-2  md:grid-cols-4  my-14 xl:my-20 w-full 3xl:w-[80%] md:w-full gap-4 lg:gap-0 py-4 lg:py-0 ">
-          <div className="flex w-[90%] justify-start  items-start  border-gray-400 border-r py-2 pr-0 lg:pr-0 xl:pr-0">
-
-            <div className="flex flex-col ">
-              <div className="flex justify-center ">
-                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl"> {totalDeployments ?? '...'}</span>
-
+        <div className="my-14 grid w-full grid-cols-2 gap-4 py-4 md:w-full md:grid-cols-4 lg:gap-0 lg:py-0 xl:my-20 3xl:w-[80%]">
+          <div className="flex w-[90%] items-start justify-start border-r border-gray-400 py-2 pr-0 lg:pr-0 xl:pr-0">
+            <div className="flex flex-col">
+              <div className="flex justify-center">
+                <span className="text-xl font-medium lg:text-xl xl:text-3xl 3xl:text-4xl">
+                  {' '}
+                  {totalDeployments ?? '...'}
+                </span>
               </div>
-              <span className="text-[10px] font-medium xl:text-[12px]">Total Deployments</span>
+              <span className="text-[10px] font-medium xl:text-[12px]">
+                Total Deployments
+              </span>
             </div>
           </div>
-          <div className="flex justify-center   border-r border-gray-400 py-2 -ml-1  px-4 lg:px-2 xl:px-4">
-            <div className="flex flex-col   ">
-              <div className="flex  justify-center ">
-                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl "> {ModelDefinitions.length}</span>
-
+          <div className="-ml-1 flex justify-center border-r border-gray-400 px-4 py-2 lg:px-2 xl:px-4">
+            <div className="flex flex-col">
+              <div className="flex justify-center">
+                <span className="text-xl font-medium lg:text-xl xl:text-3xl 3xl:text-4xl">
+                  {' '}
+                  {ModelDefinitions.length}
+                </span>
               </div>
-              <span className="text-[10px] font-medium xl:text-[12px]  text-center">Apps</span>
+              <span className="text-center text-[10px] font-medium xl:text-[12px]">
+                Apps
+              </span>
             </div>
           </div>
-          <div className="flex w-full justify-center   border-gray-400 border-r py-2 px-5 lg:px-2 xl:px-5">
-
-            <div className="flex flex-col ">
-              <div className="flex  ">
-                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl">{'<'}10</span>
-                <span className="text-sm  lg:text-[12px]">min</span>
+          <div className="flex w-full justify-center border-r border-gray-400 px-5 py-2 lg:px-2 xl:px-5">
+            <div className="flex flex-col">
+              <div className="flex">
+                <span className="text-xl font-medium lg:text-xl xl:text-3xl 3xl:text-4xl">
+                  {'<'}10
+                </span>
+                <span className="text-sm lg:text-[12px]">min</span>
               </div>
-              <span className="text-[10px] font-medium xl:text-[12px]">Deployment</span>
+              <span className="text-[10px] font-medium xl:text-[12px]">
+                Deployment
+              </span>
             </div>
           </div>
-          <div className="flex justify-center items-center py-2 px-5 lg:px-2 xl:px-5">
-            <div className="flex flex-col ">
-              <div className="flex justify-center ">
-                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl">80</span>
-                <span className="text-sm  lg:text-[12px]">%</span>
+          <div className="flex items-center justify-center px-5 py-2 lg:px-2 xl:px-5">
+            <div className="flex flex-col">
+              <div className="flex justify-center">
+                <span className="text-xl font-medium lg:text-xl xl:text-3xl 3xl:text-4xl">
+                  80
+                </span>
+                <span className="text-sm lg:text-[12px]">%</span>
               </div>
-              <span className="text-[10px] font-medium xl:text-[12px]  text-center ">Cheaper (up to)</span>
+              <span className="text-center text-[10px] font-medium xl:text-[12px]">
+                Cheaper (up to)
+              </span>
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-2 mb-14 w-full 2xl:w-[90%] ">
+        <div className="mb-14 grid w-full grid-cols-2 2xl:w-[90%]">
           <div className="flex items-start justify-start border-r border-gray-400">
             <div className="flex place-items-center gap-3">
               <div>
@@ -243,7 +260,7 @@ export default function Home() {
                                   y={viewBox.cy}
                                   className="fill-foreground font-mono text-2xl font-bold"
                                 >
-                                  {networkCapacityPercentage
+                                  {networkCapacityPercentage !== undefined
                                     ? networkCapacityPercentage.toFixed(0)
                                     : '..'}
                                   %
@@ -258,12 +275,12 @@ export default function Home() {
                 </ChartContainer>
               </div>
               <div className="flex flex-col place-content-center">
-                <span className="text-xl xl:text-2xl font-semibold">
-                  {networkCapacity
+                <span className="text-xl font-semibold xl:text-2xl">
+                  {networkCapacity !== undefined
                     ? networkCapacity.toLocaleString('en-US')
                     : '...'}
                 </span>
-                <span className="text-[10px] xl:text-xs text-muted-foreground">
+                <span className="text-[10px] text-muted-foreground xl:text-xs">
                   Network Capacity
                 </span>
               </div>
@@ -290,7 +307,7 @@ export default function Home() {
               </div>
               <div className="flex flex-col place-content-center">
                 <div className="flex place-items-center gap-4 text-2xl">
-                  <span className=" text-xl xl:text-2xl font-semibold">
+                  <span className="text-xl font-semibold xl:text-2xl">
                     {monthlyDeploymentCount ?? '...'}
                   </span>
                   {monthlyDeploymentGrowth > 0 && (
@@ -300,7 +317,7 @@ export default function Home() {
                     </div>
                   )}
                 </div>
-                <span className="text-[10px] xl:text-xs text-muted-foreground">
+                <span className="text-[10px] text-muted-foreground xl:text-xs">
                   30 Days Deployments
                 </span>
               </div>
@@ -308,7 +325,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="flex w-full flex-1  mt-10 basis-1/2 max-xl:basis-1/2">
+      <div className="mt-10 flex w-full flex-1 basis-1/2 max-xl:basis-1/2">
         {/* <Earth className="w-full h-full earth-height" /> */}
         <video
           className="size-full object-contain"
@@ -317,7 +334,6 @@ export default function Home() {
           muted
           playsInline
           preload="auto"
-
         >
           <source src="/video/globe.webm" type="video/webm" />
         </video>

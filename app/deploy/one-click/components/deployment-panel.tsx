@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useLoading } from '@/contexts/LoadingContext'
 import { useDemoContext, useSetDemoContext } from '@/contexts/XnodeDemoContext'
 import ModelDefinitions from '@/utils/model-definitions.json'
 import { xnode } from '@openmesh-network/xnode-manager-sdk'
@@ -9,7 +10,7 @@ import axios from 'axios'
 import { Check } from 'lucide-react'
 import { type SignMessageReturnType } from 'viem'
 import { useAccount } from 'wagmi'
-import { useLoading } from '@/contexts/LoadingContext'
+
 import { cn } from '@/lib/utils'
 import {
   demoSession,
@@ -172,9 +173,9 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
             version: modelSize,
             ...(signature && signature !== '0x'
               ? {
-                deployer: address,
-                signature,
-              }
+                  deployer: address,
+                  signature,
+                }
               : {}),
           }
         )
@@ -246,9 +247,9 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
           version: modelSize,
           ...(signature && signature !== '0x'
             ? {
-              deployer: address,
-              signature,
-            }
+                deployer: address,
+                signature,
+              }
             : {}),
         }
       )
@@ -279,7 +280,6 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
 
   return (
     <>
-
       <div className="flex flex-col space-y-8">
         <h2 className="text-xl font-semibold">One Click Deployment</h2>
 
@@ -382,16 +382,16 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
           // if (signature !== undefined) {
           setLoading(true)
           setDeploying(true)
-            ; (step.provider.type === 'demo'
-              ? deployOnDemo({ signature })
-              : deployOnXnode({
+          ;(step.provider.type === 'demo'
+            ? deployOnDemo({ signature })
+            : deployOnXnode({
                 xnode: `https://manager.${step.provider.tokenId}.${step.provider.chain}.${step.provider.collection}.openxai.network`,
                 signature,
               })
           )
             .catch(console.error)
             .finally(() => setDeploying(false))
-        // }
+          // }
         }}
       />
     </>
