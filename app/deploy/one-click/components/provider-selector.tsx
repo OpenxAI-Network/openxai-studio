@@ -204,10 +204,6 @@ export function ProviderSelector({
               }
 
               if (provider.name === 'Deploy Now') {
-                if (deploymentStock === 0) {
-                  return
-                }
-
                 if (!address) {
                   open()
                 } else {
