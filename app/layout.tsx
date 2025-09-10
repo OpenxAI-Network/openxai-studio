@@ -51,7 +51,7 @@ export default function RootLayout({
             <ScrollToTop />
           </NavLayout>
           <Footer />
-          <CTAHelp />
+          {/* <CTAHelp /> */}
         </Providers>
       </body>
       <GoogleAnalytics gaId="G-9PSXBJPNPC" />

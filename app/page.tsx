@@ -14,7 +14,7 @@ import {
   RadialBar,
   RadialBarChart,
 } from 'recharts'
-
+import Image from 'next/image'
 import { ChartContainer } from '@/components/ui/chart'
 
 export default function Home() {
@@ -112,9 +112,9 @@ export default function Home() {
 
   return (
     <div className="flex size-full">
-      <div className="flex flex-1 basis-1/2 pl-16 flex-col gap-28 max-xl:basis-2/3 max-xl:gap-20">
+      <div className="flex flex-1 basis-1/2 pl-16 flex-col   max-xl:basis-2/3 ">
         <div className="mt-24 ">
-          <h1 className="text-balance pr-16 text-5xl font-semibold 2xl:text-7xl">
+          <h1 className="text-balance pr-0 text-5xl font-semibold 2xl:text-7xl">
             Build and deploy AI agents in 5 minutes
           </h1>
           <div className="mt-12 flex items-center gap-4">
@@ -134,51 +134,47 @@ export default function Home() {
             </Link>
           </div>
         </div>
-        <div className="grid grid-cols-4 w-[95%]">
-          <div className="flex justify-start border-r border-gray-400 py-1">
-            <div className="flex flex-col place-items-center">
-              <div className="flex place-content-start">
-                <span className="text-4xl font-medium max-xl:text-3xl">
-                  {totalDeployments ?? '...'}
-                </span>
+        <div className="grid grid-cols-2  md:grid-cols-4  my-14 xl:my-20 w-full 3xl:w-[80%] md:w-full gap-4 lg:gap-0 py-4 lg:py-0 ">
+          <div className="flex w-[90%] justify-start  items-start  border-gray-400 border-r py-2 pr-0 lg:pr-0 xl:pr-0">
+
+            <div className="flex flex-col ">
+              <div className="flex ">
+                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl">{'>'}50</span>
+                <span className="text-sm  lg:text-[12px]">K</span>
               </div>
-              <span className="text-xs">Total Deployments</span>
+              <span className="text-[10px] font-medium xl:text-[12px]">Transaction /s</span>
             </div>
           </div>
-          <div className="flex place-content-center border-r border-gray-400 py-1">
-            <div className="flex flex-col place-items-center">
-              <div className="flex place-content-start">
-                <span className="text-4xl font-medium max-xl:text-3xl">
-                  {ModelDefinitions.length}
-                </span>
+          <div className="flex justify-center   border-r border-gray-400 py-2 -ml-1  px-4 lg:px-2 xl:px-4">
+            <div className="flex flex-col   ">
+              <div className="flex  justify-center ">
+                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl ">600</span>
+                <span className="text-sm  lg:text-[12px]">ms</span>
               </div>
-              <span className="text-xs">Apps</span>
+              <span className="text-[10px] font-medium xl:text-[12px]  text-center">Time to Finality (avg)</span>
             </div>
           </div>
-          <div className="flex place-content-center border-r border-gray-400 py-1">
-            <div className="flex flex-col place-items-center">
-              <div className="flex place-content-start">
-                <span className="text-4xl font-medium max-xl:text-3xl">
-                  {'>'}50
-                </span>
-                <span>K</span>
+          <div className="flex w-full justify-center   border-gray-400 border-r py-2 px-5 lg:px-2 xl:px-5">
+
+            <div className="flex flex-col ">
+              <div className="flex  ">
+                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl">{'>'}50</span>
+                <span className="text-sm  lg:text-[12px]">K</span>
               </div>
-              <span className="text-xs">Transaction /s</span>
+              <span className="text-[10px] font-medium xl:text-[12px]">Transaction /s</span>
             </div>
           </div>
-          <div className="flex justify-end py-1">
-            <div className="flex flex-col place-items-center">
-              <div className="flex place-content-start">
-                <span className="text-4xl font-medium max-xl:text-3xl">
-                  600
-                </span>
-                <span>ms</span>
+          <div className="flex justify-center items-center py-2 px-5 lg:px-2 xl:px-5">
+            <div className="flex flex-col ">
+              <div className="flex justify-center ">
+                <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl">600</span>
+                <span className="text-sm  lg:text-[12px]">ms</span>
               </div>
-              <span className="text-xs">Time to Finality (avg)</span>
+              <span className="text-[10px] font-medium xl:text-[12px]  text-center ">Time to Finality (avg)</span>
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-2 mb-6 w-full 2xl:w-[90%] ">
+        <div className="grid grid-cols-2 mb-14 w-full 2xl:w-[90%] ">
           <div className="flex items-start justify-start border-r border-gray-400">
             <div className="flex place-items-center gap-3">
               <div>
@@ -258,12 +254,12 @@ export default function Home() {
                 </ChartContainer>
               </div>
               <div className="flex flex-col place-content-center">
-                <span className="text-2xl font-semibold">
+                <span className="text-xl xl:text-2xl font-semibold">
                   {networkCapacity
                     ? networkCapacity.toLocaleString('en-US')
                     : '...'}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-[10px] xl:text-xs text-muted-foreground">
                   Network Capacity
                 </span>
               </div>
@@ -290,7 +286,7 @@ export default function Home() {
               </div>
               <div className="flex flex-col place-content-center">
                 <div className="flex place-items-center gap-4 text-2xl">
-                  <span className="font-semibold">
+                  <span className=" text-xl xl:text-2xl font-semibold">
                     {monthlyDeploymentCount ?? '...'}
                   </span>
                   {monthlyDeploymentGrowth > 0 && (
@@ -300,7 +296,7 @@ export default function Home() {
                     </div>
                   )}
                 </div>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-[10px] xl:text-xs text-muted-foreground">
                   30 Days Deployments
                 </span>
               </div>
@@ -308,8 +304,18 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="flex w-full flex-1 basis-1/2 max-xl:basis-1/2">
-        <Earth className="w-full h-full earth-height" />
+      <div className="flex w-full flex-1  mt-10 basis-1/2 max-xl:basis-1/2">
+        {/* <Earth className="w-full h-full earth-height" /> */}
+        <Image
+          src="/video/globe-unscreen.gif"
+          alt="Earth"
+          width={700}
+          height={700}
+          className={`2xl:w-full 2xl:h-[650px] lg:w-[500px] lg:h-[500px]
+           xl:w-[600px] xl:h-[600px]" : "xl:w-full xl:h-[600px]
+            max-w-[700px] max-h-[700px] earth-height`}
+          draggable={false}
+        />
       </div>
     </div>
   )
