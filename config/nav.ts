@@ -74,7 +74,7 @@ export const navItems: Record<NavCategory, NavItem[]> = {
     {
       type: 'item',
       name: 'Community',
-      href: 'https://discourse.openxai.org/',
+      href: 'https://t.me/OpenxAINetwork',
       icon: Users,
     },
   ],
