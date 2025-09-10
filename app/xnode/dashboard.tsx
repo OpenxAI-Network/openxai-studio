@@ -85,7 +85,7 @@ export default function XNodeDashboard({ baseUrl }: XnodePageProps) {
             </div>
             <Resources session={session} />
 
-            <Rewards tokenId={tokenId} />
+            {/* <Rewards tokenId={tokenId} /> */}
           </>
         )}
         {!signature && (
