@@ -118,7 +118,7 @@ export default function Home() {
     <div className="flex size-full">
       <div className="flex flex-1 basis-1/2 pl-16 flex-col   max-xl:basis-2/3 ">
         <div className="mt-24">
-          <h1 className="text-balance pr-0 text-5xl font-semibold 2xl:text-7xl">
+          <h1 className="text-balance pr-0 text-5xl font-semibold 2xl:text-7xl" style={{ lineHeight: '1.2' }}>
             Build and deploy AI agents in 5 minutes
           </h1>
           <div className="mt-12 flex items-center gap-4">
@@ -142,9 +142,9 @@ export default function Home() {
           <div className="flex w-[90%] justify-start  items-start  border-gray-400 border-r py-2 pr-0 lg:pr-0 xl:pr-0">
 
             <div className="flex flex-col ">
-              <div className="flex ">
+              <div className="flex justify-center ">
                 <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl"> {totalDeployments ?? '...'}</span>
-               
+
               </div>
               <span className="text-[10px] font-medium xl:text-[12px]">Total Deployments</span>
             </div>
@@ -153,7 +153,7 @@ export default function Home() {
             <div className="flex flex-col   ">
               <div className="flex  justify-center ">
                 <span className="text-xl font-medium xl:text-3xl lg:text-xl  3xl:text-4xl "> {ModelDefinitions.length}</span>
-               
+
               </div>
               <span className="text-[10px] font-medium xl:text-[12px]  text-center">Apps</span>
             </div>
@@ -310,16 +310,17 @@ export default function Home() {
       </div>
       <div className="flex w-full flex-1  mt-10 basis-1/2 max-xl:basis-1/2">
         {/* <Earth className="w-full h-full earth-height" /> */}
-        <Image
-          src="/video/globe-unscreen.gif"
-          alt="Earth"
-          width={700}
-          height={700}
-          className={`2xl:w-full 2xl:h-[650px] lg:w-[500px] lg:h-[500px]
-           xl:w-[600px] xl:h-[600px]" : "xl:w-full xl:h-[600px]
-            max-w-[700px] max-h-[700px] earth-height`}
-          draggable={false}
-        />
+        <video
+          className="size-full object-contain"
+          loop={true}
+          autoPlay
+          muted
+          playsInline
+          preload="auto"
+
+        >
+          <source src="/video/globe.webm" type="video/webm" />
+        </video>
       </div>
     </div>
   )
