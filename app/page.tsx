@@ -122,7 +122,7 @@ export default function Home() {
             className="text-balance pr-0 text-5xl font-semibold 2xl:text-7xl"
             style={{ lineHeight: '1.2' }}
           >
-            Build and deploy AI agents in 5 minutes
+            Build and deploy AI services & agents in 5 minutes
           </h1>
           <div className="mt-12 flex items-center gap-4">
             <Link
