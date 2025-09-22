@@ -10,7 +10,7 @@ import {
   useRequestRequestInfo,
 } from '@openmesh-network/xnode-manager-sdk-react'
 import { Loader2 } from 'lucide-react'
-import { useDeploymentQueueContext } from '@/components/deployment-queue'
+
 import { useDemosAvailable, useDemoSession, type DemoXnode } from '@/lib/xnode'
 import { Ansi } from '@/components/ui/ansi'
 import { Button } from '@/components/ui/button'
@@ -23,10 +23,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useDeploymentQueueContext } from '@/components/deployment-queue'
 
 export function DemoPool() {
   const { data: demoXnodes, isLoading } = useDemosAvailable()
- const {setDeploymentComplete}=useDeploymentQueueContext()
+  const { setDeploymentComplete } = useDeploymentQueueContext()
   let { xnode: reservedXnode, deploymentId, processes } = useDemoContext()
   if (reservedXnode?.reservation?.reserved_until < Date.now() / 1000) {
     reservedXnode = undefined
@@ -40,8 +41,6 @@ export function DemoPool() {
       </div>
     )
   }
-
-  
 
   return (
     <div className="flex flex-col gap-3">
@@ -93,17 +92,14 @@ function ReservedDemoXnode({
     request_id,
   })
 
-  
-  
   return (
     <div className="flex flex-col gap-1">
       <span className="text-lg font-semibold">Your demo node</span>
       {deployment &&
         (deployment.result ? (
-          <ReservedDemoXnodeReady 
-            session={session} 
-            processes={processes} 
-           
+          <ReservedDemoXnodeReady
+            session={session}
+            processes={processes}
             onDeploymentComplete={onDeploymentComplete}
           />
         ) : (
@@ -120,7 +116,7 @@ function ReservedDemoXnode({
 function ReservedDemoXnodeReady({
   session,
   processes,
-  onDeploymentComplete
+  onDeploymentComplete,
 }: {
   session?: xnode.utils.Session
   processes?: string[]
@@ -133,57 +129,7 @@ function ReservedDemoXnodeReady({
     process: `${selectedProcess}.service`,
   })
 
-  const containerRef = useRef<HTMLDivElement>(null)
-  const goToAppButtonRef = useRef<HTMLAnchorElement>(null)
-  const hasTriggered = useRef(false)
-
-  useEffect(() => {
-    if (!goToAppButtonRef.current || hasTriggered.current) return
-
-    const checkVisibility = setTimeout(() => {
-      if (hasTriggered.current) return
-      
-      const rect = goToAppButtonRef.current!.getBoundingClientRect()
-      const isVisible = (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-      )
-
-      if (isVisible && !hasTriggered.current) {
-        console.log("Go To App button is showing (immediately visible)")
-        hasTriggered.current = true
-        onDeploymentComplete(true)
-        return
-      }
-      const observer = new IntersectionObserver(
-        (entries) => {
-          const entry = entries[0]
-          if (entry.isIntersecting && !hasTriggered.current) {
-            
-            hasTriggered.current = true
-            
-            console.log("Go To App button is showing (became visible)")
-            
-            
-            observer.disconnect();
-          
-            onDeploymentComplete(true)
-          }
-        },
-        { threshold: 0.5 }
-      )
-
-      observer.observe(goToAppButtonRef.current)
-
-      return () => {
-        observer.disconnect()
-      }
-    }, 100) 
-
-    return () => clearTimeout(checkVisibility)
-  }, [onDeploymentComplete])
+  const [hasTriggered, setHasTriggered] = useState(false)
 
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const scrollToBottom = useMemo(() => {
@@ -196,22 +142,99 @@ function ReservedDemoXnodeReady({
       }
     }
   }, [scrollAreaRef])
-  
+
   useEffect(() => {
     scrollToBottom()
   }, [logs, scrollToBottom])
 
+  const { data: openWebUI } = useProcessLogs({
+    session,
+    scope: 'container:xnode-ai-chat',
+    process: `open-webui.service`,
+    overrides: {
+      enabled: processes !== undefined && processes.includes('open-webui'),
+    },
+  })
+
+  const { data: ollamaModelLoader, dataUpdatedAt: ollamaModelLoaderUpdate } =
+    useProcessLogs({
+      session,
+      scope: 'container:xnode-ai-chat',
+      process: `ollama-model-loader.service`,
+      overrides: {
+        enabled:
+          processes !== undefined && processes.includes('ollama-model-loader'),
+      },
+    })
+
+  const appPrepare = useMemo(() => {
+    const waitingFor = []
+    if (processes === undefined) {
+      return { waitingFor: ['processes'] }
+    }
+
+    if (
+      processes.includes('open-webui') &&
+      (openWebUI === undefined ||
+        (openWebUI.length < 100 && // More logs can cause the desired message to disappear
+          !openWebUI.some(
+            (log) =>
+              'UTF8' in log.message &&
+              log.message.UTF8.output.includes(
+                'Waiting for application startup.'
+              )
+          )))
+    ) {
+      waitingFor.push('open-webui')
+    }
+
+    if (
+      processes.includes('ollama-model-loader') &&
+      (ollamaModelLoader === undefined ||
+        Date.now() - ollamaModelLoaderUpdate > 10_000 || // outdated
+        !ollamaModelLoader.some(
+          (log, i) =>
+            i === ollamaModelLoader.length - 1 && // Changing model on deployment will restart the model loader, only consider last message
+            'UTF8' in log.message &&
+            log.message.UTF8.output.includes(
+              'ollama-model-loader.service: Deactivated successfully.'
+            )
+        ))
+    ) {
+      waitingFor.push('ollama-model-loader')
+    }
+
+    if (waitingFor.length === 0 && !hasTriggered) {
+      setHasTriggered(true)
+      onDeploymentComplete(true)
+    }
+    return { waitingFor }
+  }, [processes, openWebUI, ollamaModelLoader])
+
   return (
-    <div ref={containerRef} className="flex flex-col gap-1">
-      <Button variant="outlinePrimary" className="max-w-32" asChild>
-        <Link
-          ref={goToAppButtonRef} // 👈 track visibility
-          href={session.baseUrl.replace('manager.', '')}
-          target="_blank"
-        >
-          Go To App
-        </Link>
-      </Button>
+    <div className="flex flex-col gap-1">
+      {appPrepare.waitingFor.length > 0 ? (
+        <div className="flex gap-4">
+          {appPrepare.waitingFor.map((app, i) => (
+            <div className="flex place-items-center gap-2">
+              <div className="size-4 animate-spin rounded-full border-b-2 border-black" />
+              <span key={i}>
+                {app === 'open-webui'
+                  ? 'Preparing web interface'
+                  : app === 'ollama-model-loader'
+                    ? 'Downloading LLM model'
+                    : ''}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <Button variant="outlinePrimary" className="max-w-32" asChild>
+          <Link href={session.baseUrl.replace('manager.', '')} target="_blank">
+            Go To App
+          </Link>
+        </Button>
+      )}
       <div className="flex flex-col">
         <div className="flex">
           {processes?.map((process) => (
@@ -244,7 +267,6 @@ function ReservedDemoXnodeReady({
     </div>
   )
 }
-
 
 function ReservedDemoXnodeDeployingCommand({
   session,
