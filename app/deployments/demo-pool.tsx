@@ -209,7 +209,7 @@ function ReservedDemoXnodeReady({
       onDeploymentComplete(true)
     }
     return { waitingFor }
-  }, [processes, openWebUI, ollamaModelLoader])
+  }, [processes, openWebUI, ollamaModelLoader, ollamaModelLoaderUpdate])
 
   return (
     <div className="flex flex-col gap-1">
