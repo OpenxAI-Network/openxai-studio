@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { useAccount } from 'wagmi'
 
@@ -153,16 +152,16 @@ export default function Tokenization({
       image: '/images/subNavBarData/ethereum.svg',
       value: 'Ethereum',
     },
-    {
-      image: '/images/subNavBarData/bitcoin.svg',
-      value: 'Bitcoin',
-    },
   ]
 
   const Price_OPTIONS = [
     {
       image: '/images/openxai-logo.png',
       value: 'OPENX',
+    },
+    {
+      image: '/images/subNavBarData/usdc.png',
+      value: 'USDC',
     },
   ]
 
@@ -171,7 +170,7 @@ export default function Tokenization({
   return (
     <div className="font-inter">
       <div className="mx-auto">
-        <div className="relative mb-8 flex gap-8 py-2">
+        <div className="relative mb-8 flex place-items-center gap-8 py-2">
           <div className="space-y-2">
             <Select
               value={JSON.stringify(selectedChain)}
@@ -202,7 +201,7 @@ export default function Tokenization({
             {isConnected ? (
               <button
                 type="button"
-                className="flex h-10 w-full items-center rounded-md bg-primary px-8 text-sm text-background"
+                className="flex h-9 w-full items-center rounded-md bg-primary px-8 text-sm text-background"
               >
                 {address && status === 'connected' && (
                   <span className="w-full">{formatAddress(address)}</span>
