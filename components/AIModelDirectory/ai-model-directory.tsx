@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DeploymentCounter } from '@/app/deploy/deloyment-counter'
 
+import { SimpleTooltip } from '../Common/SimpleTooltip'
 import { SortDropdown } from './ai-model-dropdown'
 
 interface ModelOption {
@@ -81,7 +82,7 @@ function ModelCard({ data }: { data: ModelData }) {
         'flex h-[200px] cursor-pointer flex-col rounded-lg border p-4 hover:bg-muted/50'
       )}
     >
-      <div className="flex items-start gap-4 mb-1">
+      <div className="mb-1 flex items-start gap-4">
         <img
           src={iconPath}
           alt={data.name}
@@ -89,28 +90,36 @@ function ModelCard({ data }: { data: ModelData }) {
         />
         <div className="flex flex-col">
           <div className="flex gap-2">
-            <h3 className="text-[13px] xl:text-[16px] 2xl:text-lg font-semibold">{data.name}</h3>
-            <DeploymentCounter app={data.name} />
+            <h3 className="text-[13px] font-semibold xl:text-[16px] 2xl:text-lg">
+              {data.name}
+            </h3>
+            <SimpleTooltip tooltip="Total deployment count">
+              <DeploymentCounter app={data.name} />
+            </SimpleTooltip>
           </div>
-          <p className="mt-1 text-[10px] xl:text-[12px] 2xl:text-[13px] text-muted-foreground">{data.desc}</p>
+          <p className="mt-1 text-[10px] text-muted-foreground xl:text-[12px] 2xl:text-[13px]">
+            {data.desc}
+          </p>
         </div>
-        <span className="ml-auto text-[10px] xl:text-[13px] text-muted-foreground">
-          {data.last_updated}
+        <span className="ml-auto text-[10px] text-muted-foreground xl:text-[13px]">
+          <SimpleTooltip tooltip="Last updated">
+            <span>{data.last_updated}</span>
+          </SimpleTooltip>
         </span>
       </div>
 
-      <div className="mt-auto flex items-center  justify-between">
+      <div className="mt-auto flex items-center justify-between">
         <div className="flex max-h-[80px] flex-wrap gap-2 overflow-y-auto">
           {sizes.map((size) => (
             <span
               key={size}
-              className="whitespace-nowrap rounded bg-blue-100 px-2 py-1 text-[10px] xl:text-xs font-medium text-blue-700"
+              className="whitespace-nowrap rounded bg-blue-100 px-2 py-1 text-[10px] font-medium text-blue-700 xl:text-xs"
             >
               {size.trim()}
             </span>
           ))}
         </div>
-        <span className="rounded bg-emerald-100 px-2 py-1 text-[10px] xl:text-xs font-medium text-emerald-700">
+        <span className="rounded bg-emerald-100 px-2 py-1 text-[10px] font-medium text-emerald-700 xl:text-xs">
           {data.type}
         </span>
       </div>
@@ -262,7 +271,7 @@ export default function AppDirectory() {
         </TabsList>
       </Tabs>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2  lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filteredAndSortedItems.map((item) => (
           <ModelCard key={item.id} data={item} />
         ))}
