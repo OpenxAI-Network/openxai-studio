@@ -60,7 +60,7 @@ export function useDeployModel() {
             container: 'xnode-ai-chat',
           },
           data: {
-            update_inputs: null,
+            update_inputs: [],
             settings: {
               network: 'containernet',
               flake: getFlake({ model, gpu: false }),

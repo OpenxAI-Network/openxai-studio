@@ -29,7 +29,7 @@ export function useDeployDemo() {
             container: 'xnode-ai-chat',
           },
           data: {
-            update_inputs: null,
+            update_inputs: [],
             settings: {
               network: 'containernet',
               flake: `{
