@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useAppKit } from '@reown/appkit/react'
 import { useAccount } from 'wagmi'
 
 import {
@@ -138,7 +138,7 @@ export default function Tokenization({
     setIAgree(event.target.checked)
   }
 
-  const { open } = useWeb3Modal()
+  const { open } = useAppKit()
   const pressWalletButton = () => {
     open()
   }

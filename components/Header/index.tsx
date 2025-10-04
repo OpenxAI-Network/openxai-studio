@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useAppKit } from '@reown/appkit/react'
 import { BellDot, HelpCircle, Settings, TriangleAlert } from 'lucide-react'
 import { useAccount } from 'wagmi'
 
@@ -12,20 +12,19 @@ import { useDemoModeContext } from '../demo-mode'
 import { Button } from '../ui/button'
 
 export default function Header() {
-  const { address, status,isConnected } = useAccount()
- 
-  const { open } = useWeb3Modal()
+  const { address, status, isConnected } = useAccount()
+
+  const { open } = useAppKit()
   const { push } = useRouter()
 
   const { demoMode, setDemoMode } = useDemoModeContext()
 
   const pressWalletButton = () => {
-  if(isConnected){
-    open()
-  }else{
-    open({ view: 'Connect' }).catch(console.error);
-  }
-    
+    if (isConnected) {
+      open()
+    } else {
+      open({ view: 'Connect' }).catch(console.error)
+    }
   }
 
   return (

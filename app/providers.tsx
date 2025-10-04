@@ -1,11 +1,12 @@
 'use client'
 
 import AccountContextProvider from '@/contexts/AccountContext'
+import { LoadingProvider } from '@/contexts/LoadingContext'
 import { DemoContextProvider } from '@/contexts/XnodeDemoContext'
 import { chain } from '@/utils/chain'
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+import { createAppKit } from '@reown/appkit/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { createWeb3Modal } from '@web3modal/wagmi/react'
-import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
 import { ThemeProvider } from 'next-themes'
 import { ToastContainer } from 'react-toastify'
 import { WagmiProvider, type State } from 'wagmi'
@@ -16,7 +17,6 @@ import DeploymentQueueProvider from '@/components/deployment-queue'
 import ScreenProvider from '@/components/screen-provider'
 import SelectedXnodeProvider from '@/components/selected-xnode'
 import SignatureCacheProvider from '@/components/signature-cache'
-import { LoadingProvider } from '@/contexts/LoadingContext'
 
 export const chains = [chain] as const
 const queryClient = new QueryClient()
@@ -30,22 +30,17 @@ const metadata = {
   icons: ['https://studio.openxai.org/images/openxai-logo.png'],
 }
 
-export const wagmiConfig = defaultWagmiConfig({
-  chains,
+export const wagmiAdapter = new WagmiAdapter({
+  networks: [chain],
   projectId,
-  metadata,
   ssr: true,
-  auth: {
-    email: false,
-    socials: [],
-  },
 })
 
-createWeb3Modal({
-  wagmiConfig: wagmiConfig,
+createAppKit({
+  adapters: [wagmiAdapter],
+  networks: [chain],
+  metadata,
   projectId,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
-  enableOnramp: true, // Optional - false as default
   themeMode: 'light',
   themeVariables: {
     '--w3m-border-radius-master': '0.375px',
@@ -55,6 +50,10 @@ createWeb3Modal({
     'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa',
     'a797aa35c0fadbfc1a53e7f675162ed5226968b44a19ee3d24385c64d1d3c393',
   ],
+  features: {
+    email: false,
+    socials: false,
+  },
 })
 
 export function Providers({
@@ -66,27 +65,29 @@ export function Providers({
 }) {
   return (
     <AccountContextProvider>
-      <WagmiProvider config={wagmiConfig} initialState={initialState}>
+      <WagmiProvider
+        config={wagmiAdapter.wagmiConfig as any}
+        initialState={initialState}
+      >
         <QueryClientProvider client={queryClient}>
           <ThemeProvider attribute="class" enableSystem={false}>
             <LoadingProvider>
-            <DemoModeProvider>
-              <SelectedXnodeProvider>
-                <DemoContextProvider>
-                  <SignatureCacheProvider>
-                    <DeploymentQueueProvider>
-                      <ScreenProvider>
-                        
+              <DemoModeProvider>
+                <SelectedXnodeProvider>
+                  <DemoContextProvider>
+                    <SignatureCacheProvider>
+                      <DeploymentQueueProvider>
+                        <ScreenProvider>
                           {children}
-                        
-                        <ToastContainer />
-                        <Toaster />
-                      </ScreenProvider>
-                    </DeploymentQueueProvider>
-                  </SignatureCacheProvider>
-                </DemoContextProvider>
-              </SelectedXnodeProvider>
-            </DemoModeProvider>
+
+                          <ToastContainer />
+                          <Toaster />
+                        </ScreenProvider>
+                      </DeploymentQueueProvider>
+                    </SignatureCacheProvider>
+                  </DemoContextProvider>
+                </SelectedXnodeProvider>
+              </DemoModeProvider>
             </LoadingProvider>
           </ThemeProvider>
         </QueryClientProvider>

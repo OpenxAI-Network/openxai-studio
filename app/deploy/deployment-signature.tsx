@@ -1,6 +1,6 @@
 'use client'
 
-import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react'
+import { useAppKit, useAppKitState } from '@reown/appkit/react'
 import { CheckSquare2 } from 'lucide-react'
 import type { SignMessageReturnType } from 'viem'
 import { useAccount, useSignMessage } from 'wagmi'
@@ -27,8 +27,8 @@ export function DeploymentSignature({
   close: (signature?: SignMessageReturnType) => void
 }) {
   const { address } = useAccount()
-  const { open: connectWallet } = useWeb3Modal()
-  const { open: connectWalletOpen } = useWeb3ModalState()
+  const { open: connectWallet } = useAppKit()
+  const { open: connectWalletOpen } = useAppKitState()
 
   const { toast } = useToast()
   const { signMessageAsync } = useSignMessage()
@@ -41,13 +41,13 @@ export function DeploymentSignature({
         }
 
         if (!open) {
-          close() 
+          close()
         }
       }}
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className='mt-6'>
+          <DialogTitle className="mt-6">
             Would you like to authenticate your deployment record?
           </DialogTitle>
         </DialogHeader>

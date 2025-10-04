@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { prefix } from '@/utils/prefix'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useAppKit } from '@reown/appkit/react'
 import { LogOut, User } from 'lucide-react'
 import { useDisconnect } from 'wagmi'
 
@@ -27,7 +27,7 @@ type GlobalSearchProps = {
 }
 export function GlobalSearch({ onSelect }: GlobalSearchProps) {
   // const { disconnect } = useDisconnect()
-  // const { open } = useWeb3Modal()
+  // const { open } = useAppKit()
   const [user, , setUser] = useUser()
   const { refresh } = useRouter()
   return (

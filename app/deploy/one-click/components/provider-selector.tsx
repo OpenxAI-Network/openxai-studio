@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
+import { useAppKit } from '@reown/appkit/react'
 import { useQuery } from '@tanstack/react-query'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
 import axios from 'axios'
 import { Check, CheckCircle2, Hourglass, Search, X } from 'lucide-react'
 import { useAccount, useSignMessage } from 'wagmi'
@@ -71,7 +71,7 @@ export function ProviderSelector({
 }: ProviderSelectorProps) {
   const [showExtendedOptions, setShowExtendedOptions] = useState(false)
   const { address } = useAccount()
-  const { open } = useWeb3Modal()
+  const { open } = useAppKit()
   const { data: myServers, refetch: refetchMyServers } = useQuery({
     queryKey: [address ?? ''],
     enabled: !!address,
