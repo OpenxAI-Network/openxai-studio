@@ -1,20 +1,22 @@
-
 'use client'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useLoading } from '@/contexts/LoadingContext'
 import { usePathname } from 'next/navigation'
+import { useLoading } from '@/contexts/LoadingContext'
+
 import { useDeploymentQueueContext } from '../deployment-queue'
 
 export function LoadingOverlay() {
   const { isLoading, loadingMessage } = useLoading()
-  const { isDeploymentComplete,setDeploymentComplete} = useDeploymentQueueContext()
+  const { isDeploymentComplete, setDeploymentComplete } =
+    useDeploymentQueueContext()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [shouldRender, setShouldRender] = useState(isLoading)
   const [loop, setLoop] = useState(true)
   const [fastForward, setFastForward] = useState(false)
   const pathname = usePathname()
 
-  const FAST_FORWARD_START = 300 
+  const FAST_FORWARD_START = 300
 
   const applySpeed = (speed: number) => {
     if (videoRef.current) {
@@ -29,14 +31,17 @@ export function LoadingOverlay() {
     }, 50)
   }, [])
 
-  const jumpToTimeAndSpeed = useCallback((time: number, speed: number) => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = time
-      setTimeout(() => {
-        forceSpeedApplication(speed)
-      }, 100)
-    }
-  }, [forceSpeedApplication])
+  const jumpToTimeAndSpeed = useCallback(
+    (time: number, speed: number) => {
+      if (videoRef.current) {
+        videoRef.current.currentTime = time
+        setTimeout(() => {
+          forceSpeedApplication(speed)
+        }, 100)
+      }
+    },
+    [forceSpeedApplication]
+  )
 
   useEffect(() => {
     if (isLoading) {
@@ -44,41 +49,49 @@ export function LoadingOverlay() {
       setLoop(true)
       setDeploymentComplete(false)
       setFastForward(false)
-      
+
       if (videoRef.current) {
         videoRef.current.currentTime = 0
         videoRef.current.play()
-        forceSpeedApplication(3)
+        forceSpeedApplication(2)
       }
     } else if (videoRef.current) {
       setLoop(false)
       setFastForward(true)
-      
-     
-      if (fastForward && pathname === '/deployments' && isDeploymentComplete ) {
-        console.log("Now speeded ==>",isDeploymentComplete)
+
+      if (fastForward && pathname === '/deployments' && isDeploymentComplete) {
+        console.log('Now speeded ==>', isDeploymentComplete)
         jumpToTimeAndSpeed(FAST_FORWARD_START, 16)
         // setTimeout(()=>{
         //   jumpToTimeAndSpeed(FAST_FORWARD_START, 8)
         // },11000)
-       
+
         // forceSpeedApplication(16)
       } else if (pathname !== '/deployments') {
-        
         // jumpToTimeAndSpeed(FAST_FORWARD_START, 16)
       } else {
-        
-        forceSpeedApplication(3)
+        forceSpeedApplication(2)
       }
     }
-  }, [isLoading, forceSpeedApplication, jumpToTimeAndSpeed, FAST_FORWARD_START, pathname, isDeploymentComplete])
+  }, [
+    isLoading,
+    forceSpeedApplication,
+    jumpToTimeAndSpeed,
+    FAST_FORWARD_START,
+    pathname,
+    isDeploymentComplete,
+  ])
 
   useEffect(() => {
     if (shouldRender && videoRef.current) {
       const intervalId = setInterval(() => {
         if (isLoading) {
           applySpeed(3)
-        } else if (fastForward && pathname === '/deployments' && isDeploymentComplete) {
+        } else if (
+          fastForward &&
+          pathname === '/deployments' &&
+          isDeploymentComplete
+        ) {
           applySpeed(16)
         }
       }, 100)
@@ -95,12 +108,12 @@ export function LoadingOverlay() {
 
   const handleVideoLoaded = () => {
     if (isLoading) {
-      forceSpeedApplication(3)
+      forceSpeedApplication(2)
       if (videoRef.current) {
         videoRef.current.currentTime = 0
       }
     } else if (fastForward) {
-      forceSpeedApplication(3)
+      forceSpeedApplication(2)
     }
   }
 
@@ -109,11 +122,11 @@ export function LoadingOverlay() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
       <div className="flex flex-col items-center space-y-10">
-        <div className="flex size-1/3  2xl:size-1/2 items-center justify-center">
+        <div className="flex size-1/3 items-center justify-center 2xl:size-1/2">
           <video
             ref={videoRef}
             className="size-full object-contain"
-            loop={loop} 
+            loop={loop}
             autoPlay
             muted
             playsInline
@@ -121,10 +134,9 @@ export function LoadingOverlay() {
             onEnded={handleVideoEnd}
             onLoadedMetadata={handleVideoLoaded}
           >
-            <source src="/video/layers-animation.webm" type="video/webm"/>
+            <source src="/video/layers-animation.webm" type="video/webm" />
           </video>
         </div>
-        
       </div>
     </div>
   )

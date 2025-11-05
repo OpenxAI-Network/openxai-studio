@@ -136,6 +136,7 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
       return
     }
 
+    setLoading(true)
     try {
       if (activeReservation) {
         deployOnXnode = reservedXnode.xnode
@@ -380,7 +381,6 @@ export function DeploymentPanel({ templateId, app }: DeploymentPanelProps) {
         close={(signature) => {
           setAskSignature(false)
           // if (signature !== undefined) {
-          setLoading(true)
           setDeploying(true)
           ;(step.provider.type === 'demo'
             ? deployOnDemo({ signature })
