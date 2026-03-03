@@ -75,7 +75,7 @@ export function useDeployModel() {
 export function getFlake({ model, gpu }: { model: string; gpu: boolean }) {
   return `{
   inputs = {
-    xnode-manager.url = "github:Openmesh-Network/xnode-manager";
+    xnodeos.url = "github:Openmesh-Network/xnodeos";
     xnode-ai-chat.url = "github:OpenxAI-Network/xnode-ai-chat";
     nixpkgs.follows = "xnode-ai-chat/nixpkgs";
   };
@@ -99,13 +99,9 @@ export function getFlake({ model, gpu }: { model: string; gpu: boolean }) {
         inherit inputs;
       };
       modules = [
-        inputs.xnode-manager.nixosModules.container
+        inputs.xnodeos.nixosModules.container
         {
-          services.xnode-container.xnode-config = {
-            host-platform = ./xnode-config/host-platform;
-            state-version = ./xnode-config/state-version;
-            hostname = ./xnode-config/hostname;
-          };
+          services.xnode-container.xnode-config = ./xnode-config;
         }
         inputs.xnode-ai-chat.nixosModules.default
         (
@@ -119,7 +115,7 @@ export function getFlake({ model, gpu }: { model: string; gpu: boolean }) {
 
             ${
               gpu
-                ? `services.ollama.acceleration = "cuda";
+                ? `services.ollama.package = pkgs.ollama-cuda;
             hardware.graphics = {
               enable = true;
               extraPackages = [
@@ -128,7 +124,8 @@ export function getFlake({ model, gpu }: { model: string; gpu: boolean }) {
             };
             hardware.nvidia.open = true;
             services.xserver.videoDrivers = [ "nvidia" ];`
-                : 'services.xnode-ai-chat.autoGenerate.enable = false;'
+                : `services.ollama.package = pkgs.ollama-cpu;
+                services.xnode-ai-chat.autoGenerate.enable = false;`
             }
 
             networking.firewall.allowedTCPPorts = [

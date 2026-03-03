@@ -195,10 +195,10 @@ function ReservedDemoXnodeReady({
         !ollamaModelLoader.some(
           (log, i) =>
             i === ollamaModelLoader.length - 1 && // Changing model on deployment will restart the model loader, only consider last message
-            'UTF8' in log.message &&
-            log.message.UTF8.output.includes(
-              'ollama-model-loader.service: Deactivated successfully.'
-            )
+            'Bytes' in log.message &&
+            new TextDecoder('utf-8')
+              .decode(new Uint8Array(log.message.Bytes.output))
+              .includes('success')
         ))
     ) {
       waitingFor.push('ollama-model-loader')
